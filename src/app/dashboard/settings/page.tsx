@@ -19,7 +19,9 @@ import {
   CheckCircle,
   Eye,
   EyeOff,
-  AlertTriangle
+  AlertTriangle,
+  X,
+  ShieldOff,
 } from 'lucide-react';
 import { PageWrapper } from '@/components/ui/PageWrapper';
 import { Card } from '@/components/ui/Card';
@@ -39,6 +41,11 @@ export default function SettingsPage() {
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [isConnectingSheet, setIsConnectingSheet] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+
+  // Delete Account Modal State
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
   // Company Details State
   const [companyName, setCompanyName] = useState('');
@@ -160,13 +167,52 @@ export default function SettingsPage() {
         })
       });
 
-      if (!res.ok) throw new Error('Failed to update profile');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update profile');
+
+      // Immediately reflect changes in local state without re-fetch
+      if (data.adminProfile) {
+        setDisplayName(data.adminProfile.display_name || displayName);
+        setAvatarUrl(data.adminProfile.avatar_url || '');
+        setSignatureUrl(data.adminProfile.signature_url || '');
+        setDesignation(data.adminProfile.designation || '');
+      }
+
       toast.success('Profile details saved successfully!', { id: saveToast });
-      fetchSettings();
-    } catch (err: any) {
-      toast.error(err.message || 'Save failed', { id: saveToast });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Save failed';
+      toast.error(msg, { id: saveToast });
     } finally {
       setIsSavingProfile(false);
+    }
+  };
+
+  // Delete Account handler
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== 'DELETE') {
+      toast.error('Please type DELETE to confirm account deletion.');
+      return;
+    }
+    setIsDeletingAccount(true);
+    const delToast = toast.loading('Deleting account and all associated data...');
+    try {
+      const res = await fetch('/api/auth/delete-account', {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Account deletion failed');
+
+      toast.success('Account deleted. Signing out...', { id: delToast });
+
+      // Sign out client-side session and redirect
+      await supabase.auth.signOut();
+      router.push('/login');
+      router.refresh();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Deletion failed';
+      toast.error(msg, { id: delToast });
+      setIsDeletingAccount(false);
+      setShowDeleteModal(false);
     }
   };
 
@@ -640,7 +686,33 @@ export default function SettingsPage() {
                 </div>
               </div>
             </Card>
+
+            {/* Delete Account Danger Zone */}
+            <Card className="border border-rose-100 p-6 bg-rose-50/30">
+              <div className="flex items-start justify-between">
+                <div className="flex items-start space-x-3">
+                  <div className="p-2.5 bg-rose-100 rounded-xl">
+                    <ShieldOff className="h-4.5 w-4.5 text-rose-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-slate-900">Danger Zone — Delete Account</h3>
+                    <p className="text-[11px] text-slate-500 mt-1 max-w-sm">
+                      Permanently delete your admin account, including your avatar, signature, and all profile data. This action <span className="font-bold text-rose-600">cannot be undone</span>.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { setDeleteConfirmText(''); setShowDeleteModal(true); }}
+                  className="flex items-center space-x-1.5 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition-colors shadow-sm shrink-0"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  <span>Delete Account</span>
+                </button>
+              </div>
+            </Card>
           )}
+
 
           {/* TAB 3: Connected Google Sheets */}
           {activeTab === 'sheets' && (
@@ -873,6 +945,91 @@ export default function SettingsPage() {
         </div>
 
       </div>
+
+      {/* Delete Account Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-rose-100">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-2.5">
+                <div className="p-2 bg-rose-100 rounded-xl">
+                  <ShieldOff className="h-4.5 w-4.5 text-rose-600" />
+                </div>
+                <h2 className="text-sm font-black text-slate-900">Delete Your Account</h2>
+              </div>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                disabled={isDeletingAccount}
+                className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Warning Block */}
+            <div className="p-4 bg-rose-50 border border-rose-100 rounded-xl mb-5 space-y-2">
+              <p className="text-xs font-bold text-rose-700 flex items-center">
+                <AlertTriangle className="h-3.5 w-3.5 mr-1.5 shrink-0" />
+                This action is permanent and cannot be undone.
+              </p>
+              <ul className="text-[11px] text-rose-600 space-y-1 pl-5 list-disc">
+                <li>Your admin profile and credentials will be deleted</li>
+                <li>Your avatar and signature files will be removed from storage</li>
+                <li>You will be immediately signed out of all sessions</li>
+                <li>All audit log entries will reference your account as deleted</li>
+              </ul>
+            </div>
+
+            {/* Confirmation Input */}
+            <div className="mb-5">
+              <label className="block text-xs font-bold text-slate-500 mb-2 uppercase">
+                Type <span className="text-rose-600 font-black tracking-widest">DELETE</span> to confirm
+              </label>
+              <input
+                type="text"
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="Type DELETE here"
+                autoFocus
+                className="block w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-xl text-slate-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-colors font-mono tracking-widest"
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center space-x-3">
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={isDeletingAccount}
+                className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl text-xs font-semibold transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteAccount}
+                disabled={deleteConfirmText !== 'DELETE' || isDeletingAccount}
+                className="flex-1 px-4 py-2.5 bg-rose-600 hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center space-x-1.5"
+              >
+                {isDeletingAccount ? (
+                  <>
+                    <span className="animate-spin h-3.5 w-3.5 border-2 border-white border-t-transparent rounded-full" />
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span>Permanently Delete</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </PageWrapper>
   );
 }
+
