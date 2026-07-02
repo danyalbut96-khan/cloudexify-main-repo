@@ -155,6 +155,7 @@ interface ProposalProps {
   adminName: string;
   adminDesignation?: string | null;
   signatureUrl?: string | null;
+  logoBase64?: string | null;
 }
 
 export const ProposalPDF: React.FC<ProposalProps> = ({
@@ -163,7 +164,9 @@ export const ProposalPDF: React.FC<ProposalProps> = ({
   adminName,
   adminDesignation,
   signatureUrl,
+  logoBase64,
 }) => {
+  const logoSrc = companySettings.company_logo_url || logoBase64 || null;
   let scopePoints: string[] = [];
   try {
     if (proposal.scope_of_work && proposal.scope_of_work.startsWith('[')) {
@@ -194,8 +197,8 @@ export const ProposalPDF: React.FC<ProposalProps> = ({
         {/* Header */}
         <View style={styles.header}>
           <View>
-            {companySettings.company_logo_url ? (
-              <Image style={{ maxHeight: 40, maxWidth: 120, objectFit: 'contain', marginBottom: 5 }} src={companySettings.company_logo_url} />
+            {logoSrc ? (
+              <Image style={{ maxHeight: 40, maxWidth: 120, objectFit: 'contain', marginBottom: 5 }} src={logoSrc} />
             ) : (
               <Text style={styles.logoPlaceholder}>{companySettings.company_name}</Text>
             )}

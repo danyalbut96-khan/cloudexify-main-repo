@@ -4,6 +4,19 @@ import { isRateLimited } from '@/lib/utils'
 import { pdf } from '@react-pdf/renderer'
 import React from 'react'
 import { InvoicePDF } from '@/components/documents/InvoicePDF'
+import { readFileSync } from 'fs'
+import { join } from 'path'
+
+/** Read the logo from /public/logo.png and encode as base64 data URI for server-side PDF rendering */
+function getLogoBase64(): string | null {
+  try {
+    const logoPath = join(process.cwd(), 'public', 'logo.png')
+    const buffer = readFileSync(logoPath)
+    return `data:image/png;base64,${buffer.toString('base64')}`
+  } catch {
+    return null
+  }
+}
 
 export async function GET(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for') || '127.0.0.1'
@@ -57,12 +70,16 @@ export async function GET(request: NextRequest) {
     const adminName = signatureData?.full_name || 'Authorized Accountant'
     const signatureUrl = signatureData?.signature_url || null
 
-    // 4. Render PDF to Buffer
+    // 4. Read logo from /public/logo.png as base64 for PDF rendering (FIX 9)
+    const logoBase64 = getLogoBase64()
+
+    // 5. Render PDF to Buffer
     const docElement = React.createElement(InvoicePDF, {
       invoice,
       companySettings,
       adminName,
-      signatureUrl
+      signatureUrl,
+      logoBase64,
     })
 
     const pdfBuffer = await pdf(docElement as any).toBuffer()
@@ -75,7 +92,8 @@ export async function GET(request: NextRequest) {
         'Cache-Control': 'no-store'
       }
     })
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Error generating PDF' }, { status: 500 })
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Error generating PDF'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

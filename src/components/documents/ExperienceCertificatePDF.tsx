@@ -106,6 +106,16 @@ const styles = StyleSheet.create({
     fontSize: 7,
     color: '#94A3B8',
   },
+  // FIX 7: Verification footer
+  verificationFooter: {
+    position: 'absolute',
+    bottom: 14,
+    left: 50,
+    right: 50,
+    fontSize: 6,
+    color: '#CBD5E1',
+    textAlign: 'center',
+  },
 });
 
 interface ExperienceCertificateProps {
@@ -117,6 +127,7 @@ interface ExperienceCertificateProps {
   completionDate: string;
   performanceGrade: 'Excellent' | 'Very Good' | 'Good';
   skillsGained: string; // comma separated list
+  logoBase64?: string | null;
 }
 
 export const ExperienceCertificatePDF: React.FC<ExperienceCertificateProps> = ({
@@ -128,6 +139,7 @@ export const ExperienceCertificatePDF: React.FC<ExperienceCertificateProps> = ({
   completionDate,
   performanceGrade,
   skillsGained,
+  logoBase64,
 }) => {
   const currentDate = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
@@ -136,15 +148,16 @@ export const ExperienceCertificatePDF: React.FC<ExperienceCertificateProps> = ({
   });
 
   const startDate = new Date(new Date(completionDate).getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  const logoSrc = companySettings.company_logo_url || logoBase64 || null;
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header */}
+        {/* Header — FIX 9: logo on left */}
         <View style={styles.headerContainer}>
           <View>
-            {companySettings.company_logo_url ? (
-              <Image style={{ maxHeight: 40, maxWidth: 120, objectFit: 'contain' }} src={companySettings.company_logo_url} />
+            {logoSrc ? (
+              <Image style={{ maxHeight: 40, maxWidth: 120, objectFit: 'contain' }} src={logoSrc} />
             ) : (
               <Text style={styles.logoPlaceholder}>{companySettings.company_name}</Text>
             )}
@@ -203,6 +216,11 @@ export const ExperienceCertificatePDF: React.FC<ExperienceCertificateProps> = ({
           <Text>CloudExify Software Development</Text>
           <Text>Certificate ID: {intern.registration_number}</Text>
         </View>
+
+        {/* FIX 7: Verification footer */}
+        <Text style={styles.verificationFooter}>
+          This document can be verified at cloudexify.com/verify/{intern.registration_number}
+        </Text>
       </Page>
     </Document>
   );

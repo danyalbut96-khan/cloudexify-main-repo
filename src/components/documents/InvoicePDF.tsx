@@ -148,6 +148,7 @@ interface InvoiceProps {
   companySettings: any;
   adminName: string;
   signatureUrl?: string | null;
+  logoBase64?: string | null;
 }
 
 export const InvoicePDF: React.FC<InvoiceProps> = ({
@@ -155,8 +156,10 @@ export const InvoicePDF: React.FC<InvoiceProps> = ({
   companySettings,
   adminName,
   signatureUrl,
+  logoBase64,
 }) => {
   const subtotal = invoice.line_items.reduce((sum: number, item: any) => sum + (Number(item.quantity || 0) * Number(item.unitPrice || 0)), 0);
+  const logoSrc = companySettings.company_logo_url || logoBase64 || null;
 
   return (
     <Document>
@@ -164,7 +167,11 @@ export const InvoicePDF: React.FC<InvoiceProps> = ({
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.logoPlaceholder}>{companySettings.company_name}</Text>
+            {logoSrc ? (
+              <Image style={{ maxHeight: 40, maxWidth: 120, objectFit: 'contain', marginBottom: 5 }} src={logoSrc} />
+            ) : (
+              <Text style={styles.logoPlaceholder}>{companySettings.company_name}</Text>
+            )}
             <Text style={styles.detailText}>{companySettings.company_address}</Text>
             <Text style={styles.detailText}>{companySettings.company_website}</Text>
             <Text style={styles.detailText}>{companySettings.company_email}</Text>

@@ -1,10 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { isRateLimited, sanitizeInput } from '@/lib/utils'
+import { isRateLimited } from '@/lib/utils'
 import { logAction } from '@/lib/server-utils'
 import { pdf } from '@react-pdf/renderer'
 import React from 'react'
 import { OfferLetterPDF } from '@/components/documents/OfferLetterPDF'
+import { readFileSync } from 'fs'
+import { join } from 'path'
+
+/** Read the logo from /public/logo.png and encode as base64 data URI for server-side PDF rendering */
+function getLogoBase64(): string | null {
+  try {
+    const logoPath = join(process.cwd(), 'public', 'logo.png')
+    const buffer = readFileSync(logoPath)
+    return `data:image/png;base64,${buffer.toString('base64')}`
+  } catch {
+    return null
+  }
+}
 
 export async function GET(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for') || '127.0.0.1'
@@ -61,19 +74,23 @@ export async function GET(request: NextRequest) {
     const signatureUrl = signatureData?.signature_url || null
     const adminDesignation = signatureData?.designation || null
 
-    // 4. Render PDF to Buffer
+    // 4. Read logo from /public/logo.png as base64 for PDF rendering (FIX 9)
+    const logoBase64 = getLogoBase64()
+
+    // 5. Render PDF to Buffer
     const docElement = React.createElement(OfferLetterPDF, {
       intern,
       companySettings,
       adminName,
       adminDesignation,
       signatureUrl,
-      joiningDate
+      joiningDate,
+      logoBase64,
     })
 
     const pdfBuffer = await pdf(docElement as any).toBuffer()
 
-    // 5. Update Intern Document generated status
+    // 6. Update Intern Document generated status
     const { error: docUpdateError } = await supabase
       .from('intern_documents')
       .upsert({
@@ -86,7 +103,7 @@ export async function GET(request: NextRequest) {
       console.error('Failed to update intern document record:', docUpdateError)
     }
 
-    // 6. Record in Audit Logs
+    // 7. Record in Audit Logs
     await logAction(
       user.email!,
       `Generated Internship Offer Letter for intern ${intern.full_name} (${intern.registration_number})`,
@@ -94,7 +111,7 @@ export async function GET(request: NextRequest) {
       intern.id
     )
 
-    // 7. Return Stream response
+    // 8. Return Stream response
     return new NextResponse(pdfBuffer as any, {
       headers: {
         'Content-Type': 'application/pdf',
@@ -102,7 +119,8 @@ export async function GET(request: NextRequest) {
         'Cache-Control': 'no-store'
       }
     })
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Error generating PDF' }, { status: 500 })
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Error generating PDF'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
