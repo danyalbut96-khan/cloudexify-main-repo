@@ -150,8 +150,8 @@ const styles = StyleSheet.create({
 });
 
 interface ProposalProps {
-  proposal: Proposal;
-  companySettings: CompanySettings;
+  proposal: any;
+  companySettings: any;
   adminName: string;
   signatureUrl?: string | null;
 }

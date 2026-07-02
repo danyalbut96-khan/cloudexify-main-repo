@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
 
 interface InvoiceProps {
   invoice: any;
-  companySettings: CompanySettings;
+  companySettings: any;
   adminName: string;
   signatureUrl?: string | null;
 }
