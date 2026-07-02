@@ -90,16 +90,16 @@ export async function GET(request: NextRequest) {
         }
       });
 
-      // Upsert rows
-      for (const row of rowsToSync) {
+      // Prepare the insert and update operations with pre-assigned serial numbers synchronously
+      const operations = rowsToSync.map((row) => {
         const emailLower = row.email!.toLowerCase()
         const existing = dbEmailMap.get(emailLower)
 
         if (existing) {
-          // Update details if they exist
-          const { error: updateErr } = await supabase
-            .from('interns')
-            .update({
+          return {
+            isUpdate: true,
+            id: existing.id,
+            payload: {
               full_name: row.full_name,
               whatsapp: row.whatsapp || null,
               gender: row.gender || null,
@@ -109,18 +109,14 @@ export async function GET(request: NextRequest) {
               skill_level: row.skill_level || null,
               available_hours: row.available_hours || null,
               referral_source: row.referral_source || null
-            })
-            .eq('id', existing.id)
-
-          if (!updateErr) syncedCount++
+            }
+          }
         } else {
-          // Insert new intern row with unique consecutive registration code
           maxSerialNum++
           const registrationNumber = `CX-INT-2025-${String(maxSerialNum).padStart(3, '0')}`
-
-          const { data: newIntern, error: insertErr } = await supabase
-            .from('interns')
-            .insert({
+          return {
+            isUpdate: false,
+            payload: {
               registration_number: registrationNumber,
               full_name: row.full_name,
               email: emailLower,
@@ -132,21 +128,42 @@ export async function GET(request: NextRequest) {
               skill_level: row.skill_level || null,
               available_hours: row.available_hours || null,
               referral_source: row.referral_source || null
-            })
-            .select()
-            .single()
-
-          if (!insertErr && newIntern) {
-            // Also initialize their document tracker row automatically
-            await supabase
-              .from('intern_documents')
-              .insert({ intern_id: newIntern.id })
-
-            syncedCount++
-          } else if (insertErr) {
-            console.error('Error inserting synced intern:', insertErr)
+            }
           }
         }
+      })
+
+      // Execute database operations in parallel batches of 50 to avoid timeouts
+      const batchSize = 50
+      for (let i = 0; i < operations.length; i += batchSize) {
+        const batch = operations.slice(i, i + batchSize)
+        await Promise.all(
+          batch.map(async (op) => {
+            if (op.isUpdate) {
+              const { error: updateErr } = await supabase
+                .from('interns')
+                .update(op.payload as any)
+                .eq('id', op.id)
+              if (!updateErr) syncedCount++
+            } else {
+              const { data: newIntern, error: insertErr } = await supabase
+                .from('interns')
+                .insert(op.payload as any)
+                .select()
+                .single()
+
+              if (!insertErr && newIntern) {
+                // Initialize document tracker
+                await supabase
+                  .from('intern_documents')
+                  .insert({ intern_id: newIntern.id })
+                syncedCount++
+              } else if (insertErr) {
+                console.error('Error inserting synced intern:', insertErr)
+              }
+            }
+          })
+        )
       }
     }
 

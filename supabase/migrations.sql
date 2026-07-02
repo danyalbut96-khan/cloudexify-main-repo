@@ -171,4 +171,15 @@ UPDATE public.sheet_connections
 SET 
   sheet_url = REPLACE(REPLACE(sheet_url, '&#x2F;', '/'), '&amp;', '&');
 
+-- Enable RLS on admin_signatures and add full access policy for authenticated admins
+ALTER TABLE public.admin_signatures ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Admin full access to admin_signatures" ON public.admin_signatures;
+CREATE POLICY "Admin full access to admin_signatures" 
+  ON public.admin_signatures FOR ALL 
+  TO authenticated 
+  USING (auth.role() = 'authenticated') 
+  WITH CHECK (auth.role() = 'authenticated');
+
+
 

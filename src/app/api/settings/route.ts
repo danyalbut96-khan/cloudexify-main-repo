@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Sync signature metadata back to admin_signatures for templates selector backwards compatibility
-      await supabase
+      const { error: syncError } = await supabase
         .from('admin_signatures')
         .upsert({
           email: user.email!,
@@ -121,6 +121,10 @@ export async function POST(request: NextRequest) {
           designation: sanitizedBody.designation,
           updated_at: new Date().toISOString()
         })
+
+      if (syncError) {
+        return NextResponse.json({ error: 'Failed to sync designation/signature details: ' + syncError.message }, { status: 400 })
+      }
 
       await logAction(user.email!, 'Updated personal administrator profile details', 'settings', user.id)
       return NextResponse.json({ adminProfile: data })
