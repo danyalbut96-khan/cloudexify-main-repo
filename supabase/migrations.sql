@@ -126,3 +126,19 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_admin();
+
+-- =========================================================================
+-- SYSTEM SCHEMAS ALTERATIONS (COLUMNS DRIFT)
+-- =========================================================================
+
+ALTER TABLE invoices ADD COLUMN IF NOT EXISTS tax_percentage numeric(5, 2) DEFAULT 0.00;
+ALTER TABLE invoices ADD COLUMN IF NOT EXISTS payment_terms text DEFAULT 'Net 30';
+
+ALTER TABLE proposals ADD COLUMN IF NOT EXISTS why_cloudexify text DEFAULT 'CloudExify is a Pakistan-based software development company specializing in premium web apps, mobile apps, SaaS, and AI-powered solutions. We ship clean, secure, production-level code.';
+
+ALTER TABLE company_settings ADD COLUMN IF NOT EXISTS bank_details text DEFAULT 'Bank: Habib Bank Limited (HBL)
+Account Name: CloudExify Private Limited
+Account Number: 1234-567890-01
+Branch Code: 0123
+IBAN: PK00 HABB 0123 4567 8901';
+

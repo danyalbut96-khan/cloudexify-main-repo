@@ -72,6 +72,7 @@ export function useSessionTimeout() {
         window.removeEventListener(event, handleActivity);
       });
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showWarning, router]);
 
   return { showWarning, stayLoggedIn };

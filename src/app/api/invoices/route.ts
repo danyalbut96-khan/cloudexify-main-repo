@@ -71,7 +71,9 @@ export async function POST(request: NextRequest) {
         amount_pkr: sanitizedBody.amount_pkr,
         generated_by: user.email,
         generated_date: new Date().toISOString().split('T')[0],
-        status: sanitizedBody.status || 'unpaid'
+        status: sanitizedBody.status || 'unpaid',
+        tax_percentage: sanitizedBody.tax_percentage || 0.00,
+        payment_terms: sanitizedBody.payment_terms || 'Net 30'
       })
       .select()
       .single()

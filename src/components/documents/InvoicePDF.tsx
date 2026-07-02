@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
 });
 
 interface InvoiceProps {
-  invoice: Invoice;
+  invoice: any;
   companySettings: CompanySettings;
   adminName: string;
   signatureUrl?: string | null;
@@ -156,7 +156,7 @@ export const InvoicePDF: React.FC<InvoiceProps> = ({
   adminName,
   signatureUrl,
 }) => {
-  const subtotal = invoice.line_items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
+  const subtotal = invoice.line_items.reduce((sum: number, item: any) => sum + (Number(item.quantity || 0) * Number(item.unitPrice || 0)), 0);
 
   return (
     <Document>
@@ -200,7 +200,7 @@ export const InvoicePDF: React.FC<InvoiceProps> = ({
             <Text style={styles.colTotal}>Total (PKR)</Text>
           </View>
 
-          {invoice.line_items.map((item, idx) => (
+          {invoice.line_items.map((item: any, idx: number) => (
             <View key={idx} style={styles.tableRow}>
               <Text style={styles.colDesc}>{item.description}</Text>
               <Text style={styles.colQty}>{item.quantity}</Text>
@@ -218,14 +218,25 @@ export const InvoicePDF: React.FC<InvoiceProps> = ({
               <Text>{formatPKR(subtotal)}</Text>
             </View>
             <View style={styles.summaryRow}>
-              <Text>Sales Tax (0%):</Text>
-              <Text>Rs. 0</Text>
+              <Text>Sales Tax ({invoice.tax_percentage || 0}%):</Text>
+              <Text>{formatPKR(subtotal * (Number(invoice.tax_percentage || 0) / 100))}</Text>
             </View>
             <View style={styles.totalRow}>
               <Text style={styles.bold}>Total PKR:</Text>
-              <Text style={styles.bold}>{formatPKR(invoice.amount_pkr)}</Text>
+              <Text style={styles.bold}>{formatPKR(Number(invoice.amount_pkr))}</Text>
             </View>
           </View>
+        </View>
+
+        {/* Payment & Bank Details */}
+        <View style={{ marginBottom: 25, borderTopWidth: 1, borderTopColor: '#E2E8F0', paddingTop: 8 }}>
+          <Text style={[styles.bold, { fontSize: 8, marginBottom: 4 }]}>PAYMENT & TRANSFER DETAILS</Text>
+          <Text style={{ fontSize: 7, color: '#64748B', marginBottom: 2 }}><Text style={styles.bold}>Terms:</Text> {invoice.payment_terms || 'Net 30'}</Text>
+          {companySettings.bank_details && 
+            companySettings.bank_details.split('\n').map((line: string, i: number) => (
+              <Text key={i} style={{ fontSize: 7, color: '#64748B' }}>{line}</Text>
+            ))
+          }
         </View>
 
         {/* Signature */}

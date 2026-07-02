@@ -2,17 +2,23 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Download, Filter, Eye, Award, FileSpreadsheet } from 'lucide-react';
+import { Search, Download, Filter, Eye, Award, FileSpreadsheet, RefreshCw, X, FileText, ArrowUpRight } from 'lucide-react';
 import { PageWrapper } from '@/components/ui/PageWrapper';
 import { TableSkeleton } from '@/components/ui/Skeleton';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { Modal } from '@/components/ui/Modal';
 import toast from 'react-hot-toast';
 
 export default function InternsPage() {
   const router = useRouter();
   const [interns, setInterns] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSynced, setLastSynced] = useState<string | null>(null);
+
+  // Profile Modal State
+  const [selectedIntern, setSelectedIntern] = useState<any | null>(null);
   
   // Search & Filters State
   const [search, setSearch] = useState('');
@@ -43,13 +49,46 @@ export default function InternsPage() {
   };
 
   useEffect(() => {
-    // Debounce search slightly
+    // Read last synced state from client storage
+    if (typeof window !== 'undefined') {
+      const timestamp = localStorage.getItem('cx_interns_last_synced');
+      if (timestamp) {
+        setLastSynced(timestamp);
+      }
+    }
+
     const timer = setTimeout(() => {
       fetchInterns();
     }, 300);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, domain, semester, offerStatus, certStatus]);
+
+  // Sync Google Sheets
+  const handleSyncSheets = async () => {
+    setIsSyncing(true);
+    const syncToast = toast.loading('Syncing Google Sheet connections for Interns...');
+    try {
+      const res = await fetch('/api/sheets/fetch?mappedTo=interns');
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to sync Google Sheets');
+      }
+
+      toast.success(data.message || 'Synchronization completed successfully!', { id: syncToast });
+      const nowString = new Date().toLocaleString();
+      setLastSynced(nowString);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('cx_interns_last_synced', nowString);
+      }
+      fetchInterns();
+    } catch (err: any) {
+      toast.error(err.message || 'Synchronization error', { id: syncToast });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   // Export to CSV
   const handleExport = () => {
@@ -105,6 +144,27 @@ export default function InternsPage() {
     toast.success('Grid data exported successfully to CSV!');
   };
 
+  const handleDownloadDoc = async (docType: string, id: string, name: string) => {
+    const downloadToast = toast.loading(`Downloading ${docType.replace('-', ' ')} PDF...`);
+    try {
+      const response = await fetch(`/api/documents/${docType}?internId=${id}`);
+      if (!response.ok) throw new Error('Document download failed');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${name}_${docType.replace('-', '_')}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success('Document downloaded successfully!', { id: downloadToast });
+    } catch (err: any) {
+      toast.error(err.message || 'Download failed', { id: downloadToast });
+    }
+  };
+
   const domainOptions = [
     'Python Programming',
     'C++ Programming',
@@ -118,19 +178,39 @@ export default function InternsPage() {
     <PageWrapper
       title="Interns Registry"
       actions={
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleExport}
-          className="flex items-center space-x-1.5 font-semibold text-slate-700 bg-white"
-        >
-          <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
-          <span>Export CSV</span>
-        </Button>
+        <div className="flex space-x-2.5">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSyncSheets}
+            isLoading={isSyncing}
+            className="flex items-center space-x-1.5 font-semibold text-slate-700 bg-white"
+          >
+            <RefreshCw className={`h-4 w-4 text-blue-500 ${isSyncing ? 'animate-spin' : ''}`} />
+            <span>Sync Sheets</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            className="flex items-center space-x-1.5 font-semibold text-slate-700 bg-white"
+          >
+            <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
+            <span>Export CSV</span>
+          </Button>
+        </div>
       }
     >
+      {/* Last Sync Timestamp Indicator */}
+      {lastSynced && (
+        <div className="text-[10px] text-slate-400 font-semibold mb-3 tracking-wide text-right uppercase">
+          Last Synced: {lastSynced}
+        </div>
+      )}
+
       {/* Search and Filters grid */}
-      <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-[0_1px_2px_rgba(0,0,0,0.02)] space-y-4">
+      <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-[0_1px_2px_rgba(0,0,0,0.02)] space-y-4 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Search */}
           <div className="relative">
@@ -251,7 +331,7 @@ export default function InternsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => router.push(`/dashboard/interns/${intern.id}`)}
+                        onClick={() => setSelectedIntern(intern)}
                         className="text-blue-600 hover:bg-blue-50/50 py-1 px-2.5 rounded-lg h-7 font-bold text-xs"
                       >
                         <Eye className="h-3.5 w-3.5 mr-1" />
@@ -273,6 +353,206 @@ export default function InternsPage() {
           </div>
         )}
       </div>
+
+      {/* Intern Profile Slide-Over/Modal Details */}
+      {selectedIntern && (
+        <Modal
+          isOpen={!!selectedIntern}
+          onClose={() => setSelectedIntern(null)}
+          title={`Intern Profile: ${selectedIntern.full_name}`}
+          size="lg"
+        >
+          <div className="space-y-6 text-slate-700 font-sans leading-normal">
+            
+            {/* 1. Core Profile Details Card */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 border-b border-slate-100 pb-5">
+              <div>
+                <p className="text-[10px] text-slate-400 font-bold uppercase">Registration Number</p>
+                <p className="text-xs font-bold text-slate-900">{selectedIntern.registration_number}</p>
+              </div>
+
+              <div>
+                <p className="text-[10px] text-slate-400 font-bold uppercase">Domain Track</p>
+                <p className="text-xs font-semibold text-slate-900">{selectedIntern.domain}</p>
+              </div>
+
+              <div>
+                <p className="text-[10px] text-slate-400 font-bold uppercase">Skill Experience</p>
+                <p className="text-xs font-semibold text-slate-900">{selectedIntern.skill_level || 'Beginner'}</p>
+              </div>
+
+              <div>
+                <p className="text-[10px] text-slate-400 font-bold uppercase">Email Address</p>
+                <p className="text-xs font-medium text-slate-800 break-all">{selectedIntern.email}</p>
+              </div>
+
+              <div>
+                <p className="text-[10px] text-slate-400 font-bold uppercase">WhatsApp Contact</p>
+                <p className="text-xs font-medium text-slate-800">{selectedIntern.whatsapp || '-'}</p>
+              </div>
+
+              <div>
+                <p className="text-[10px] text-slate-400 font-bold uppercase">Gender Selection</p>
+                <p className="text-xs font-medium text-slate-800">{selectedIntern.gender || '-'}</p>
+              </div>
+
+              <div>
+                <p className="text-[10px] text-slate-400 font-bold uppercase">University / College</p>
+                <p className="text-xs font-semibold text-slate-800">{selectedIntern.university || '-'}</p>
+              </div>
+
+              <div>
+                <p className="text-[10px] text-slate-400 font-bold uppercase">Active Semester</p>
+                <p className="text-xs font-bold text-slate-800">{selectedIntern.semester || '-'}</p>
+              </div>
+
+              <div>
+                <p className="text-[10px] text-slate-400 font-bold uppercase">Hours Available</p>
+                <p className="text-xs font-bold text-slate-800">{selectedIntern.available_hours ? `${selectedIntern.available_hours} hrs/wk` : '-'}</p>
+              </div>
+            </div>
+
+            {/* 2. Documents History Tracker and Actions */}
+            <div>
+              <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4">Official Document Status</h4>
+              
+              <div className="space-y-3.5">
+                {/* Offer Letter */}
+                <div className="flex items-center justify-between border border-slate-100 rounded-xl p-3 bg-slate-50/50">
+                  <div className="flex items-center space-x-3">
+                    <FileText className="h-4.5 w-4.5 text-slate-400" />
+                    <div>
+                      <p className="text-xs font-bold text-slate-900">Offer Letter</p>
+                      <p className="text-[10px] text-slate-400">
+                        {selectedIntern.intern_documents?.offer_letter_generated ? 'Generated and logged' : 'Not generated yet'}
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    {selectedIntern.intern_documents?.offer_letter_generated ? (
+                      <button
+                        onClick={() => handleDownloadDoc('offer-letter', selectedIntern.id, selectedIntern.full_name)}
+                        className="px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-100 rounded-lg text-xs font-bold transition-colors"
+                      >
+                        Download PDF
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => router.push(`/dashboard/documents/offer-letter?internId=${selectedIntern.id}`)}
+                        className="inline-flex items-center px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-transform shadow-sm"
+                      >
+                        Generate Letter <ArrowUpRight className="h-3 w-3 ml-1" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Completion Certificate */}
+                <div className="flex items-center justify-between border border-slate-100 rounded-xl p-3 bg-slate-50/50">
+                  <div className="flex items-center space-x-3">
+                    <Award className="h-4.5 w-4.5 text-slate-400" />
+                    <div>
+                      <p className="text-xs font-bold text-slate-900">Completion Certificate</p>
+                      <p className="text-[10px] text-slate-400">
+                        {selectedIntern.intern_documents?.certificate_generated ? 'Generated and logged' : 'Not generated yet'}
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    {selectedIntern.intern_documents?.certificate_generated ? (
+                      <button
+                        onClick={() => handleDownloadDoc('certificate', selectedIntern.id, selectedIntern.full_name)}
+                        className="px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-100 rounded-lg text-xs font-bold transition-colors"
+                      >
+                        Download PDF
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => router.push(`/dashboard/documents/certificate?internId=${selectedIntern.id}`)}
+                        className="inline-flex items-center px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-transform shadow-sm"
+                      >
+                        Generate Certificate <ArrowUpRight className="h-3 w-3 ml-1" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Experience Letter */}
+                <div className="flex items-center justify-between border border-slate-100 rounded-xl p-3 bg-slate-50/50">
+                  <div className="flex items-center space-x-3">
+                    <FileText className="h-4.5 w-4.5 text-slate-400" />
+                    <div>
+                      <p className="text-xs font-bold text-slate-900">Experience Letter</p>
+                      <p className="text-[10px] text-slate-400">
+                        {selectedIntern.intern_documents?.experience_certificate_generated ? 'Generated and logged' : 'Not generated yet'}
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    {selectedIntern.intern_documents?.experience_certificate_generated ? (
+                      <button
+                        onClick={() => handleDownloadDoc('experience-certificate', selectedIntern.id, selectedIntern.full_name)}
+                        className="px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-100 rounded-lg text-xs font-bold transition-colors"
+                      >
+                        Download PDF
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => router.push(`/dashboard/documents/experience-certificate?internId=${selectedIntern.id}`)}
+                        className="inline-flex items-center px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-transform shadow-sm"
+                      >
+                        Generate Letter <ArrowUpRight className="h-3 w-3 ml-1" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Recommendation Letter */}
+                <div className="flex items-center justify-between border border-slate-100 rounded-xl p-3 bg-slate-50/50">
+                  <div className="flex items-center space-x-3">
+                    <FileText className="h-4.5 w-4.5 text-slate-400" />
+                    <div>
+                      <p className="text-xs font-bold text-slate-900">Recommendation Letter</p>
+                      <p className="text-[10px] text-slate-400">
+                        {selectedIntern.intern_documents?.recommendation_letter_generated ? 'Generated and logged' : 'Not generated yet'}
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    {selectedIntern.intern_documents?.recommendation_letter_generated ? (
+                      <button
+                        onClick={() => handleDownloadDoc('recommendation-letter', selectedIntern.id, selectedIntern.full_name)}
+                        className="px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-100 rounded-lg text-xs font-bold transition-colors"
+                      >
+                        Download PDF
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => router.push(`/dashboard/documents/recommendation-letter?internId=${selectedIntern.id}`)}
+                        className="inline-flex items-center px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-transform shadow-sm"
+                      >
+                        Generate Letter <ArrowUpRight className="h-3 w-3 ml-1" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div className="flex justify-end pt-3">
+              <button
+                type="button"
+                onClick={() => setSelectedIntern(null)}
+                className="px-5 py-2 border border-slate-200 text-slate-500 hover:bg-slate-50 rounded-lg text-xs font-semibold"
+              >
+                Close Profile
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
     </PageWrapper>
   );
 }

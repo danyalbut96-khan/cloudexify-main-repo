@@ -57,6 +57,7 @@ export async function POST(request: NextRequest) {
         scope_of_work: sanitizedBody.scope_of_work,
         timeline: sanitizedBody.timeline,
         estimated_cost: sanitizedBody.estimated_cost,
+        why_cloudexify: sanitizedBody.why_cloudexify,
         sent_by: user.email,
         sent_date: new Date().toISOString().split('T')[0],
         status: sanitizedBody.status || 'draft'

@@ -61,12 +61,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     {
       name: 'Proposals',
       icon: FileSignature,
-      path: '/dashboard/proposals',
+      path: '/dashboard/documents/proposal',
     },
     {
       name: 'Invoices',
       icon: Receipt,
-      path: '/dashboard/invoices',
+      path: '/dashboard/documents/invoice',
     },
     {
       name: 'Audit Log',

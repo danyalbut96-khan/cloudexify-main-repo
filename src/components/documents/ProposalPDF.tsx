@@ -162,9 +162,29 @@ export const ProposalPDF: React.FC<ProposalProps> = ({
   adminName,
   signatureUrl,
 }) => {
-  const scopePoints = proposal.scope_of_work
-    ? proposal.scope_of_work.split('\n').filter(p => p.trim() !== '')
-    : [];
+  let scopePoints: string[] = [];
+  try {
+    if (proposal.scope_of_work && proposal.scope_of_work.startsWith('[')) {
+      scopePoints = JSON.parse(proposal.scope_of_work);
+    } else {
+      scopePoints = proposal.scope_of_work
+        ? proposal.scope_of_work.split('\n').filter((p: string) => p.trim() !== '')
+        : [];
+    }
+  } catch {
+    scopePoints = proposal.scope_of_work
+      ? proposal.scope_of_work.split('\n').filter((p: string) => p.trim() !== '')
+      : [];
+  }
+
+  let timelineTable: any[] = [];
+  let isJsonTimeline = false;
+  try {
+    if (proposal.timeline && proposal.timeline.startsWith('[')) {
+      timelineTable = JSON.parse(proposal.timeline);
+      isJsonTimeline = true;
+    }
+  } catch {}
 
   return (
     <Document>
@@ -203,7 +223,7 @@ export const ProposalPDF: React.FC<ProposalProps> = ({
         {/* Section: Description */}
         <Text style={styles.sectionTitle}>1. Project Description</Text>
         <Text style={styles.textBlock}>
-          {proposal.description || 'No project description was provided. This proposal details the services and technical scope required for building high-quality software solutions in cooperation with our team.'}
+          {proposal.description || 'No project description was provided. This proposal details the services and technical scope required for building high-quality software solutions.'}
         </Text>
 
         {/* Section: Scope of Work */}
@@ -221,8 +241,31 @@ export const ProposalPDF: React.FC<ProposalProps> = ({
 
         {/* Section: Timeline */}
         <Text style={styles.sectionTitle}>3. Implementation Timeline</Text>
+        {isJsonTimeline ? (
+          <View style={{ marginTop: 5, marginBottom: 15 }}>
+            <View style={{ flexDirection: 'row', backgroundColor: '#0F172A', padding: 5, color: '#FFFFFF', fontWeight: 'bold', fontSize: 8 }}>
+              <Text style={{ width: '40%' }}>Phase Name</Text>
+              <Text style={{ width: '25%', textAlign: 'center' }}>Duration</Text>
+              <Text style={{ width: '35%', textAlign: 'right' }}>Key Deliverable</Text>
+            </View>
+            {timelineTable.map((item, idx) => (
+              <View key={idx} style={{ flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#E2E8F0', padding: 6, fontSize: 8 }}>
+                <Text style={{ width: '40%' }}>{item.phase}</Text>
+                <Text style={{ width: '25%', textAlign: 'center' }}>{item.duration}</Text>
+                <Text style={{ width: '35%', textAlign: 'right' }}>{item.deliverable}</Text>
+              </View>
+            ))}
+          </View>
+        ) : (
+          <Text style={styles.textBlock}>
+            The estimated delivery timeframe for this project is <Text style={{ fontWeight: 'bold', color: '#0F172A' }}>{proposal.timeline || 'TBD'}</Text>.
+          </Text>
+        )}
+
+        {/* Section: Why CloudExify */}
+        <Text style={styles.sectionTitle}>4. Why CloudExify</Text>
         <Text style={styles.textBlock}>
-          The estimated delivery timeframe for this project is <Text style={{ fontWeight: 'bold', color: '#0F172A' }}>{proposal.timeline || 'TBD'}</Text>, structured in milestones including wireframes, alpha release, beta release, testing, and deployment.
+          {proposal.why_cloudexify || 'CloudExify is a Pakistan-based software development company specializing in premium web apps, mobile apps, SaaS, and AI-powered solutions. We ship clean, secure, production-level code.'}
         </Text>
 
         {/* Section: Pricing */}
