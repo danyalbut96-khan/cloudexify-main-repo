@@ -1,0 +1,129 @@
+export type InternDomain =
+  | 'Python Programming'
+  | 'C++ Programming'
+  | 'Java Programming'
+  | 'Data Science & AI Basics'
+  | 'Cybersecurity Fundamentals'
+  | 'Full Stack Development';
+
+export interface Intern {
+  id: string;
+  registration_number: string;
+  full_name: string;
+  email: string;
+  whatsapp?: string;
+  gender?: string;
+  university?: string;
+  semester?: number;
+  domain: InternDomain;
+  skill_level?: 'Beginner' | 'Intermediate' | 'Advanced';
+  available_hours?: number;
+  referral_source?: string;
+  created_at: string;
+  intern_documents?: InternDocuments;
+}
+
+export interface InternDocuments {
+  id: string;
+  intern_id: string;
+  offer_letter_generated: boolean;
+  offer_letter_date?: string;
+  certificate_generated: boolean;
+  certificate_date?: string;
+  experience_certificate_generated: boolean;
+  experience_certificate_date?: string;
+  recommendation_letter_generated: boolean;
+  recommendation_letter_date?: string;
+}
+
+export interface Employee {
+  id: string;
+  full_name: string;
+  email: string;
+  position: string;
+  department: string;
+  joining_date: string;
+  status: 'active' | 'terminated' | 'resigned' | 'on_leave';
+  created_at: string;
+  employee_documents?: EmployeeDocuments;
+}
+
+export interface EmployeeDocuments {
+  id: string;
+  employee_id: string;
+  offer_letter_generated: boolean;
+  appointment_letter_generated: boolean;
+  experience_certificate_generated: boolean;
+}
+
+export interface Project {
+  id: string;
+  project_name: string;
+  client_name: string;
+  status: 'inquiry' | 'in_progress' | 'completed';
+  start_date?: string;
+  end_date?: string;
+  value_pkr: number;
+  created_at: string;
+}
+
+export interface Proposal {
+  id: string;
+  client_name: string;
+  client_email: string;
+  proposal_title: string;
+  description?: string;
+  scope_of_work?: string;
+  timeline?: string;
+  estimated_cost: number;
+  sent_by: string; // admin email
+  sent_date?: string;
+  status: 'draft' | 'sent' | 'accepted' | 'rejected';
+  created_at: string;
+}
+
+export interface InvoiceLineItem {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+}
+
+export interface Invoice {
+  id: string;
+  client_name: string;
+  client_email: string;
+  project_name: string;
+  invoice_number: string;
+  line_items: InvoiceLineItem[];
+  amount_pkr: number;
+  generated_by: string; // admin email
+  generated_date: string;
+  status: 'unpaid' | 'paid';
+  created_at: string;
+}
+
+export interface AuditLog {
+  id: string;
+  admin_email: string;
+  action: string;
+  entity_type: string;
+  entity_id?: string;
+  timestamp: string;
+}
+
+export interface CompanySettings {
+  id: number;
+  company_name: string;
+  company_address: string;
+  company_website: string;
+  company_email: string;
+  company_logo_url?: string | null;
+  updated_at: string;
+}
+
+export interface AdminSignature {
+  email: string;
+  full_name: string;
+  signature_url?: string | null;
+  updated_at: string;
+}
