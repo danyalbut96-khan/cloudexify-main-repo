@@ -1,0 +1,128 @@
+-- =========================================================================
+-- CLOUDEXIFY DATABASE MIGRATIONS
+-- =========================================================================
+
+-- 1. Create sheet_connections table
+CREATE TABLE IF NOT EXISTS sheet_connections (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  sheet_name text NOT NULL,
+  sheet_url text NOT NULL,
+  mapped_to text NOT NULL CHECK (mapped_to IN ('interns', 'employees', 'projects', 'invoices', 'proposals')),
+  is_active boolean DEFAULT true,
+  created_by text,
+  created_at timestamptz DEFAULT now()
+);
+
+-- 2. Create admin_profiles table
+CREATE TABLE IF NOT EXISTS admin_profiles (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  admin_id uuid REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE,
+  display_name text,
+  avatar_url text,
+  signature_url text,
+  updated_at timestamptz DEFAULT now()
+);
+
+-- =========================================================================
+-- STORAGE BUCKETS CONFIGURATION
+-- =========================================================================
+
+-- Create avatars and signatures buckets if they do not exist
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('admin-avatars', 'admin-avatars', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('admin-signatures', 'admin-signatures', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- =========================================================================
+-- ROW LEVEL SECURITY (RLS) & POLICIES
+-- =========================================================================
+
+-- Enable RLS on new tables
+ALTER TABLE sheet_connections ENABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_profiles ENABLE ROW LEVEL SECURITY;
+
+-- sheet_connections policies: Authenticated admins have full read/write access
+DROP POLICY IF EXISTS "Admin full access to sheet_connections" ON sheet_connections;
+CREATE POLICY "Admin full access to sheet_connections" 
+  ON sheet_connections FOR ALL 
+  TO authenticated 
+  USING (auth.role() = 'authenticated') 
+  WITH CHECK (auth.role() = 'authenticated');
+
+-- admin_profiles policies: Authenticated admins can edit their own profiles
+DROP POLICY IF EXISTS "Admins can view all profiles" ON admin_profiles;
+CREATE POLICY "Admins can view all profiles" 
+  ON admin_profiles FOR SELECT 
+  TO authenticated 
+  USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Admins can edit own profile" ON admin_profiles;
+CREATE POLICY "Admins can edit own profile" 
+  ON admin_profiles FOR ALL 
+  TO authenticated 
+  USING (auth.uid() = admin_id) 
+  WITH CHECK (auth.uid() = admin_id);
+
+-- Storage bucket access control policies
+DROP POLICY IF EXISTS "Allow authenticated admins full access to avatars" ON storage.objects;
+CREATE POLICY "Allow authenticated admins full access to avatars"
+  ON storage.objects FOR ALL
+  TO authenticated
+  USING (bucket_id = 'admin-avatars')
+  WITH CHECK (bucket_id = 'admin-avatars');
+
+DROP POLICY IF EXISTS "Allow authenticated admins full access to signatures" ON storage.objects;
+CREATE POLICY "Allow authenticated admins full access to signatures"
+  ON storage.objects FOR ALL
+  TO authenticated
+  USING (bucket_id = 'admin-signatures')
+  WITH CHECK (bucket_id = 'admin-signatures');
+
+-- =========================================================================
+-- DATABASE TRIGGERS
+-- =========================================================================
+
+-- Create trigger function to sync new signups with both admin_profiles and admin_signatures
+CREATE OR REPLACE FUNCTION public.handle_new_admin()
+RETURNS trigger AS $$
+BEGIN
+  -- Insert into public.admin_profiles
+  INSERT INTO public.admin_profiles (admin_id, display_name, avatar_url, signature_url)
+  VALUES (
+    new.id,
+    coalesce(new.raw_user_meta_data->>'full_name', split_part(new.email, '@', 1)),
+    NULL,
+    NULL
+  )
+  ON CONFLICT (admin_id) DO NOTHING;
+
+  -- Maintain backwards compatibility for documents via public.admin_signatures
+  INSERT INTO public.admin_signatures (email, full_name, signature_url)
+  VALUES (
+    new.email,
+    coalesce(new.raw_user_meta_data->>'full_name', split_part(new.email, '@', 1)),
+    NULL
+  )
+  ON CONFLICT (email) DO NOTHING;
+
+  -- Create audit log entry
+  INSERT INTO public.audit_logs (admin_email, action, entity_type, entity_id)
+  VALUES (
+    new.email,
+    'Signed up as a system administrator',
+    'auth',
+    new.id::text
+  );
+
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Rebuild trigger
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_admin();
