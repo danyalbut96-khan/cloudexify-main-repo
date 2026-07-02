@@ -142,3 +142,33 @@ Account Number: 1234-567890-01
 Branch Code: 0123
 IBAN: PK00 HABB 0123 4567 8901';
 
+-- =========================================================================
+-- DESIGNATION COLUMNS AND URL UNESCAPING MIGRATIONS
+-- =========================================================================
+
+-- Add designation column to profiles tables for signatory roles
+ALTER TABLE public.admin_profiles ADD COLUMN IF NOT EXISTS designation text;
+ALTER TABLE public.admin_signatures ADD COLUMN IF NOT EXISTS designation text;
+
+-- Cleanup script to unescape any corrupted URLs, emails, or signature paths stored in DB
+UPDATE public.company_settings
+SET 
+  company_website = REPLACE(REPLACE(company_website, '&#x2F;', '/'), '&amp;', '&'),
+  company_logo_url = REPLACE(REPLACE(company_logo_url, '&#x2F;', '/'), '&amp;', '&')
+WHERE id = 1;
+
+UPDATE public.admin_profiles
+SET 
+  signature_url = REPLACE(REPLACE(signature_url, '&#x2F;', '/'), '&amp;', '&'),
+  avatar_url = REPLACE(REPLACE(avatar_url, '&#x2F;', '/'), '&amp;', '&');
+
+UPDATE public.admin_signatures
+SET 
+  signature_url = REPLACE(REPLACE(signature_url, '&#x2F;', '/'), '&amp;', '&'),
+  designation = REPLACE(REPLACE(designation, '&#x2F;', '/'), '&amp;', '&');
+
+UPDATE public.sheet_connections
+SET 
+  sheet_url = REPLACE(REPLACE(sheet_url, '&#x2F;', '/'), '&amp;', '&');
+
+

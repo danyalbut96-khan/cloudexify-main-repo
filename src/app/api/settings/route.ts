@@ -101,6 +101,7 @@ export async function POST(request: NextRequest) {
           display_name: sanitizedBody.display_name,
           avatar_url: sanitizedBody.avatar_url,
           signature_url: sanitizedBody.signature_url,
+          designation: sanitizedBody.designation,
           updated_at: new Date().toISOString()
         })
         .select()
@@ -117,6 +118,7 @@ export async function POST(request: NextRequest) {
           email: user.email!,
           full_name: sanitizedBody.display_name,
           signature_url: sanitizedBody.signature_url,
+          designation: sanitizedBody.designation,
           updated_at: new Date().toISOString()
         })
 
