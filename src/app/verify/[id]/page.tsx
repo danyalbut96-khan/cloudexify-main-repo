@@ -46,14 +46,14 @@ export default async function VerifyDocumentPage({ params }: { params: { id: str
       
       {/* Brand Header */}
       <div className="mb-8 text-center">
-        {companySettings?.company_logo_url ? (
+        {companySettings?.company_logo_url || true ? (
           <img 
-            src={companySettings.company_logo_url} 
-            alt="CloudExify Logo" 
+            src={companySettings?.company_logo_url || '/logo.png'} 
+            alt="Company Logo" 
             className="h-12 mx-auto object-contain"
           />
         ) : (
-          <h1 className="text-2xl font-black text-blue-600 tracking-tight">CloudExify.</h1>
+          <h1 className="text-2xl font-black text-blue-600 tracking-tight">{companySettings?.company_name || 'CloudExify.'}</h1>
         )}
       </div>
 
