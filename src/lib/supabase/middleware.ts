@@ -73,8 +73,8 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Redirect to dashboard if logged-in user tries to view login page
-  if (user && pathname.startsWith('/login')) {
+  // Redirect to dashboard if logged-in user tries to view login or signup page
+  if (user && (pathname.startsWith('/login') || pathname.startsWith('/signup'))) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)
