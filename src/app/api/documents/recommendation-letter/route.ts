@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { isRateLimited, logAction } from '@/lib/utils'
+import { isRateLimited } from '@/lib/utils'
+import { logAction } from '@/lib/server-utils'
 import { pdf } from '@react-pdf/renderer'
 import React from 'react'
 import { RecommendationLetterPDF } from '@/components/documents/RecommendationLetterPDF'
@@ -70,7 +71,7 @@ export async function GET(request: NextRequest) {
       customText
     })
 
-    const pdfBuffer = await pdf(docElement).toBuffer()
+    const pdfBuffer = await pdf(docElement as any).toBuffer()
 
     // 5. Update Intern Document generated status
     const { error: docUpdateError } = await supabase

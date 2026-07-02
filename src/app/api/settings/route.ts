@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
-import { isRateLimited, logAction, sanitizeObject } from '@/lib/utils'
+import { isRateLimited, sanitizeObject } from '@/lib/utils'
+import { logAction } from '@/lib/server-utils'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {

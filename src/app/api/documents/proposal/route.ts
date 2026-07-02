@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
       signatureUrl
     })
 
-    const pdfBuffer = await pdf(docElement).toBuffer()
+    const pdfBuffer = await pdf(docElement as any).toBuffer()
 
     // 5. Return Stream response
     return new NextResponse(pdfBuffer, {

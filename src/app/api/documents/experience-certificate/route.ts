@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { isRateLimited, logAction } from '@/lib/utils'
+import { isRateLimited } from '@/lib/utils'
+import { logAction } from '@/lib/server-utils'
 import { pdf } from '@react-pdf/renderer'
 import React from 'react'
 import { ExperienceCertificatePDF } from '@/components/documents/ExperienceCertificatePDF'
@@ -72,7 +73,7 @@ export async function GET(request: NextRequest) {
       skillsGained
     })
 
-    const pdfBuffer = await pdf(docElement).toBuffer()
+    const pdfBuffer = await pdf(docElement as any).toBuffer()
 
     // 5. Update Intern Document generated status
     const { error: docUpdateError } = await supabase
@@ -96,7 +97,7 @@ export async function GET(request: NextRequest) {
     )
 
     // 7. Return Stream response
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(pdfBuffer as any, {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="Experience_Certificate_${intern.registration_number}.pdf"`,
