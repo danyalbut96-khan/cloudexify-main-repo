@@ -33,7 +33,7 @@ export default function SettingsPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'branding' | 'profile' | 'sheets' | 'security'>('branding');
   const [loading, setLoading] = useState(true);
-  
+
   // Loading states for actions
   const [isSavingCompany, setIsSavingCompany] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
@@ -78,7 +78,7 @@ export default function SettingsPage() {
       const res = await fetch('/api/settings');
       if (!res.ok) throw new Error('Failed to load settings data');
       const data = await res.json();
-      
+
       if (data.companySettings) {
         setCompanyName(data.companySettings.company_name);
         setCompanyAddress(data.companySettings.company_address);
@@ -94,7 +94,7 @@ export default function SettingsPage() {
       }
 
       setSheetConnections(data.sheetConnections || []);
-      
+
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setAdminEmail(user.email || '');
@@ -377,14 +377,13 @@ export default function SettingsPage() {
   return (
     <PageWrapper title="System Settings">
       <div className="flex flex-col lg:flex-row gap-6 items-start text-slate-700 font-sans">
-        
+
         {/* Navigation Sidebar Cards */}
         <div className="w-full lg:w-64 bg-slate-900 border border-slate-800 rounded-xl p-2.5 flex flex-row lg:flex-col gap-1.5 shrink-0 select-none overflow-x-auto">
           <button
             onClick={() => setActiveTab('branding')}
-            className={`flex items-center space-x-2.5 px-4 py-2.5 rounded-lg text-xs font-semibold tracking-wide uppercase transition-colors text-left shrink-0 ${
-              activeTab === 'branding' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
-            }`}
+            className={`flex items-center space-x-2.5 px-4 py-2.5 rounded-lg text-xs font-semibold tracking-wide uppercase transition-colors text-left shrink-0 ${activeTab === 'branding' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
+              }`}
           >
             <Building className="h-4 w-4" />
             <span>Company Branding</span>
@@ -392,9 +391,8 @@ export default function SettingsPage() {
 
           <button
             onClick={() => setActiveTab('profile')}
-            className={`flex items-center space-x-2.5 px-4 py-2.5 rounded-lg text-xs font-semibold tracking-wide uppercase transition-colors text-left shrink-0 ${
-              activeTab === 'profile' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
-            }`}
+            className={`flex items-center space-x-2.5 px-4 py-2.5 rounded-lg text-xs font-semibold tracking-wide uppercase transition-colors text-left shrink-0 ${activeTab === 'profile' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
+              }`}
           >
             <User className="h-4 w-4" />
             <span>My Profile</span>
@@ -402,9 +400,8 @@ export default function SettingsPage() {
 
           <button
             onClick={() => setActiveTab('sheets')}
-            className={`flex items-center space-x-2.5 px-4 py-2.5 rounded-lg text-xs font-semibold tracking-wide uppercase transition-colors text-left shrink-0 ${
-              activeTab === 'sheets' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
-            }`}
+            className={`flex items-center space-x-2.5 px-4 py-2.5 rounded-lg text-xs font-semibold tracking-wide uppercase transition-colors text-left shrink-0 ${activeTab === 'sheets' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
+              }`}
           >
             <FileSpreadsheet className="h-4 w-4" />
             <span>Connected Sheets</span>
@@ -412,9 +409,8 @@ export default function SettingsPage() {
 
           <button
             onClick={() => setActiveTab('security')}
-            className={`flex items-center space-x-2.5 px-4 py-2.5 rounded-lg text-xs font-semibold tracking-wide uppercase transition-colors text-left shrink-0 ${
-              activeTab === 'security' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
-            }`}
+            className={`flex items-center space-x-2.5 px-4 py-2.5 rounded-lg text-xs font-semibold tracking-wide uppercase transition-colors text-left shrink-0 ${activeTab === 'security' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
+              }`}
           >
             <KeyRound className="h-4 w-4" />
             <span>Security & Password</span>
@@ -423,7 +419,7 @@ export default function SettingsPage() {
 
         {/* Dynamic Panels */}
         <div className="flex-1 w-full">
-          
+
           {/* TAB 1: Company Branding details */}
           {activeTab === 'branding' && (
             <Card className="border border-slate-100 p-6">
@@ -470,7 +466,7 @@ export default function SettingsPage() {
                         required
                         value={companyWebsite}
                         onChange={(e) => setCompanyWebsite(e.target.value)}
-                        placeholder="https://cloudexify.com"
+                        placeholder="https://cloudexify.site"
                         className="block w-full pl-9 pr-3.5 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                       />
                     </div>
@@ -487,7 +483,7 @@ export default function SettingsPage() {
                         required
                         value={companyEmail}
                         onChange={(e) => setCompanyEmail(e.target.value)}
-                        placeholder="billing@cloudexify.com"
+                        placeholder="billing@cloudexify.site"
                         className="block w-full pl-9 pr-3.5 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                       />
                     </div>
