@@ -152,6 +152,7 @@ interface OfferLetterProps {
   intern: Intern;
   companySettings: CompanySettings;
   adminName: string;
+  adminDesignation?: string | null;
   signatureUrl?: string | null;
   joiningDate: string;
 }
@@ -160,6 +161,7 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
   intern,
   companySettings,
   adminName,
+  adminDesignation,
   signatureUrl,
   joiningDate,
 }) => {
@@ -175,7 +177,11 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
         {/* Header */}
         <View style={styles.headerContainer}>
           <View>
-            <Text style={styles.logoPlaceholder}>{companySettings.company_name}</Text>
+            {companySettings.company_logo_url ? (
+              <Image style={{ maxHeight: 40, maxWidth: 120, objectFit: 'contain' }} src={companySettings.company_logo_url} />
+            ) : (
+              <Text style={styles.logoPlaceholder}>{companySettings.company_name}</Text>
+            )}
           </View>
           <View style={styles.companyInfo}>
             <Text style={styles.companyName}>{companySettings.company_name}</Text>
@@ -255,7 +261,7 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
             )}
             <View style={styles.signatureLine}>
               <Text style={styles.boldText}>{adminName}</Text>
-              <Text style={styles.signerTitle}>Managing Director / Founder</Text>
+              <Text style={styles.signerTitle}>{adminDesignation || 'Managing Director / Founder'}</Text>
               <Text style={styles.signerTitle}>{companySettings.company_name}</Text>
             </View>
           </View>

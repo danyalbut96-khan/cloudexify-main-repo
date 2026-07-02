@@ -112,6 +112,7 @@ interface ExperienceCertificateProps {
   intern: Intern;
   companySettings: CompanySettings;
   adminName: string;
+  adminDesignation?: string | null;
   signatureUrl?: string | null;
   completionDate: string;
   performanceGrade: 'Excellent' | 'Very Good' | 'Good';
@@ -122,6 +123,7 @@ export const ExperienceCertificatePDF: React.FC<ExperienceCertificateProps> = ({
   intern,
   companySettings,
   adminName,
+  adminDesignation,
   signatureUrl,
   completionDate,
   performanceGrade,
@@ -141,7 +143,11 @@ export const ExperienceCertificatePDF: React.FC<ExperienceCertificateProps> = ({
         {/* Header */}
         <View style={styles.headerContainer}>
           <View>
-            <Text style={styles.logoPlaceholder}>{companySettings.company_name}</Text>
+            {companySettings.company_logo_url ? (
+              <Image style={{ maxHeight: 40, maxWidth: 120, objectFit: 'contain' }} src={companySettings.company_logo_url} />
+            ) : (
+              <Text style={styles.logoPlaceholder}>{companySettings.company_name}</Text>
+            )}
           </View>
           <View style={styles.companyInfo}>
             <Text style={styles.companyName}>{companySettings.company_name}</Text>
@@ -187,7 +193,7 @@ export const ExperienceCertificatePDF: React.FC<ExperienceCertificateProps> = ({
           )}
           <View style={styles.signatureLine}>
             <Text style={styles.bold}>{adminName}</Text>
-            <Text style={styles.signerTitle}>Managing Director / Founder</Text>
+            <Text style={styles.signerTitle}>{adminDesignation || 'Managing Director / Founder'}</Text>
             <Text style={styles.signerTitle}>{companySettings.company_name}</Text>
           </View>
         </View>

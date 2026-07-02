@@ -134,6 +134,7 @@ interface CertificateProps {
   intern: Intern;
   companySettings: CompanySettings;
   adminName: string;
+  adminDesignation?: string | null;
   signatureUrl?: string | null;
   completionDate: string;
 }
@@ -142,6 +143,7 @@ export const CertificatePDF: React.FC<CertificateProps> = ({
   intern,
   companySettings,
   adminName,
+  adminDesignation,
   signatureUrl,
   completionDate,
 }) => {
@@ -152,7 +154,11 @@ export const CertificatePDF: React.FC<CertificateProps> = ({
           <View style={styles.innerBorder} />
 
           {/* Logo / Branding */}
-          <Text style={styles.logo}>{companySettings.company_name.toUpperCase()}</Text>
+          {companySettings.company_logo_url ? (
+            <Image style={{ maxHeight: 45, maxWidth: 140, objectFit: 'contain', marginBottom: 5 }} src={companySettings.company_logo_url} />
+          ) : (
+            <Text style={styles.logo}>{companySettings.company_name.toUpperCase()}</Text>
+          )}
           <Text style={styles.subtitle}>Software Development Company</Text>
 
           {/* Certificate Title */}
@@ -200,7 +206,7 @@ export const CertificatePDF: React.FC<CertificateProps> = ({
               )}
               <View style={styles.signatureLine}>
                 <Text style={styles.metaVal}>{adminName}</Text>
-                <Text style={styles.metaLabel}>Authorized Signature</Text>
+                <Text style={styles.metaLabel}>{adminDesignation || 'Authorized Signature'}</Text>
               </View>
             </View>
           </View>

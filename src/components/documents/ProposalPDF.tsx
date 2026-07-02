@@ -153,6 +153,7 @@ interface ProposalProps {
   proposal: any;
   companySettings: any;
   adminName: string;
+  adminDesignation?: string | null;
   signatureUrl?: string | null;
 }
 
@@ -160,6 +161,7 @@ export const ProposalPDF: React.FC<ProposalProps> = ({
   proposal,
   companySettings,
   adminName,
+  adminDesignation,
   signatureUrl,
 }) => {
   let scopePoints: string[] = [];
@@ -192,7 +194,11 @@ export const ProposalPDF: React.FC<ProposalProps> = ({
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.logoPlaceholder}>{companySettings.company_name}</Text>
+            {companySettings.company_logo_url ? (
+              <Image style={{ maxHeight: 40, maxWidth: 120, objectFit: 'contain', marginBottom: 5 }} src={companySettings.company_logo_url} />
+            ) : (
+              <Text style={styles.logoPlaceholder}>{companySettings.company_name}</Text>
+            )}
             <Text style={{ fontSize: 7, color: '#64748B' }}>{companySettings.company_website}</Text>
           </View>
           <View style={styles.companyDetails}>
@@ -284,7 +290,7 @@ export const ProposalPDF: React.FC<ProposalProps> = ({
             )}
             <View style={styles.signatureLine}>
               <Text style={{ fontWeight: 'bold' }}>{adminName}</Text>
-              <Text style={styles.signerTitle}>Managing Director / Founder</Text>
+              <Text style={styles.signerTitle}>{adminDesignation || 'Managing Director / Founder'}</Text>
               <Text style={styles.signerTitle}>{companySettings.company_name}</Text>
             </View>
           </View>
