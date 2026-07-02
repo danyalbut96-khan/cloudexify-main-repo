@@ -1,15 +1,12 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Image, Font } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import { Intern, CompanySettings } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
 
-// Register standard fonts if needed, but Helvetica is default
 const styles = StyleSheet.create({
   page: {
-    paddingTop: 40,
-    paddingBottom: 70,
-    paddingHorizontal: 50,
+    padding: 50,
     fontFamily: 'Helvetica',
     fontSize: 10,
     lineHeight: 1.5,
@@ -18,41 +15,42 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 40,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+    paddingBottom: 20,
+    marginBottom: 30,
+  },
+  companyInfo: {
+    alignItems: 'flex-end',
+  },
+  companyName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#0F172A',
+    marginBottom: 4,
+  },
+  companyMeta: {
+    fontSize: 8,
+    color: '#64748B',
   },
   logoPlaceholder: {
     fontSize: 22,
     fontWeight: 'bold',
     color: '#2563EB',
   },
-  companyInfo: {
-    alignItems: 'flex-end',
-    maxWidth: '50%',
-  },
-  companyName: {
-    fontSize: 9,
-    fontWeight: 'bold',
-    color: '#0F172A',
-    marginBottom: 2,
-  },
-  companyMeta: {
-    fontSize: 8,
-    color: '#64748B',
-    textAlign: 'right',
-  },
   title: {
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#0F172A',
     textAlign: 'center',
-    marginBottom: 25,
+    marginBottom: 20,
     textTransform: 'uppercase',
-    letterSpacing: 2,
+    letterSpacing: 1,
   },
   date: {
     marginBottom: 15,
-    fontSize: 10,
+    fontSize: 9,
     color: '#475569',
   },
   recipient: {
@@ -64,12 +62,12 @@ const styles = StyleSheet.create({
     color: '#0F172A',
     marginBottom: 2,
   },
-  recipientCity: {
-    fontSize: 10,
+  recipientDetails: {
+    fontSize: 9,
     color: '#475569',
   },
   body: {
-    marginBottom: 15,
+    marginBottom: 25,
     textAlign: 'justify',
   },
   paragraph: {
@@ -79,178 +77,80 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#0F172A',
   },
-  // Internship Details Table
-  tableContainer: {
+  termsTable: {
     marginVertical: 15,
-    borderRadius: 6,
-    overflow: 'hidden',
     borderWidth: 1,
     borderColor: '#E2E8F0',
-  },
-  tableHeader: {
-    backgroundColor: '#3B82F6', // Blue header
-    padding: 8,
-  },
-  tableHeaderText: {
-    color: '#FFFFFF',
-    fontSize: 10,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
+    borderRadius: 4,
   },
   tableRow: {
     flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
-    paddingVertical: 8,
-    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+    padding: 8,
   },
-  tableRowStriped: {
+  tableRowLast: {
     flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    backgroundColor: '#F8FAFC',
+    padding: 8,
   },
   tableLabel: {
     width: '30%',
     fontWeight: 'bold',
-    color: '#2563EB', // Blue labels
-    fontSize: 9,
+    color: '#0F172A',
   },
   tableValue: {
     width: '70%',
-    color: '#334155',
-    fontSize: 9,
-  },
-  // Terms & Conditions Box
-  termsBox: {
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 6,
-    padding: 12,
-    marginTop: 10,
-    marginBottom: 15,
-  },
-  termsTitle: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: '#0F172A',
-    marginBottom: 8,
-  },
-  bulletPoint: {
-    flexDirection: 'row',
-    marginBottom: 4,
-  },
-  bulletText: {
-    fontSize: 9,
     color: '#475569',
-    lineHeight: 1.4,
-    flex: 1,
-  },
-  bulletDot: {
-    width: 10,
-    fontSize: 9,
-    color: '#475569',
-  },
-  acceptanceText: {
-    fontSize: 10,
-    fontStyle: 'italic',
-    color: '#475569',
-    marginBottom: 20,
-    textAlign: 'justify',
   },
   closing: {
-    marginBottom: 30,
+    marginTop: 20,
+    marginBottom: 40,
   },
-  // Signatures
   signatureContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 10,
+    marginTop: 20,
   },
   signatureBox: {
     width: '45%',
+    alignItems: 'center',
   },
   signatureImage: {
+    width: 100,
     height: 40,
-    objectFit: 'contain',
     marginBottom: 5,
+    objectFit: 'contain',
   },
-  signatureLineEmpty: {
-    height: 45, // Space for physical signature if no image
-  },
-  signatureDivider: {
+  signatureLine: {
+    width: '100%',
     borderTopWidth: 1,
-    borderTopColor: '#CBD5E1',
+    borderTopColor: '#94A3B8',
+    marginTop: 10,
     paddingTop: 5,
-    marginTop: 5,
-  },
-  signerName: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: '#0F172A',
-    marginBottom: 1,
+    alignItems: 'center',
   },
   signerTitle: {
     fontSize: 8,
     color: '#64748B',
-    marginBottom: 1,
   },
-  companyLink: {
-    fontSize: 8,
-    color: '#2563EB',
-    marginTop: 3,
-  },
-  // Footer
   footer: {
     position: 'absolute',
     bottom: 30,
     left: 50,
     right: 50,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+    paddingTop: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    borderTopWidth: 2,
-    borderTopColor: '#3B82F6', // Blue top border for footer
-    paddingTop: 10,
-  },
-  footerLeft: {
-    width: '75%',
-  },
-  footerLine: {
-    fontSize: 8,
-    color: '#0F172A',
-    fontWeight: 'bold',
-    marginBottom: 3,
-  },
-  footerText: {
-    fontSize: 8,
-    color: '#64748B',
-    marginBottom: 2,
-  },
-  footerLink: {
-    fontSize: 8,
-    color: '#2563EB',
-    marginBottom: 2,
-  },
-  footerRight: {
-    width: '25%',
-    alignItems: 'flex-end',
+    fontSize: 7,
+    color: '#94A3B8',
   },
   qrCode: {
-    width: 50,
-    height: 50,
-    marginBottom: 4,
-  },
-  scanText: {
-    fontSize: 6,
-    color: '#3B82F6',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
+    width: 45,
+    height: 45,
+    marginBottom: 2,
+  }
 });
 
 interface OfferLetterProps {
@@ -276,45 +176,26 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
   offerLetterNumber,
   qrCodeBase64,
 }) => {
-  // Format joining date and calculate end date (+2 months)
-  const startDateObj = new Date(joiningDate);
-  const formattedStartDate = startDateObj.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  });
-  
-  const endDateObj = new Date(startDateObj);
-  endDateObj.setMonth(endDateObj.getMonth() + 2);
-  // Subtract 1 day to make it exactly 2 months (e.g., July 1 to Aug 31)
-  endDateObj.setDate(endDateObj.getDate() - 1);
-  const formattedEndDate = endDateObj.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  });
-
   const currentDate = new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
     month: 'long',
     day: 'numeric',
-    year: 'numeric',
   });
 
   const logoSrc = companySettings.company_logo_url || logoBase64 || null;
-  const cName = companySettings.company_name || '[Update in Settings]';
-  const cAddress = companySettings.company_address || '[Update in Settings]';
-  const cWebsite = companySettings.company_website || '[Update in Settings]';
-  const cEmail = companySettings.company_email || '[Update in Settings]';
-  const cPhone = companySettings.company_phone || '[Update in Settings]';
+  const cName = companySettings.company_name || 'CloudExify';
+  const cAddress = companySettings.company_address || 'Address Not Set';
+  const cWebsite = companySettings.company_website || 'cloudexify.com';
+  const cEmail = companySettings.company_email || 'admin@cloudexify.com';
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header: Logo Left, Info Right */}
+        {/* Header */}
         <View style={styles.headerContainer}>
           <View>
             {logoSrc ? (
-              <Image style={{ maxHeight: 35, maxWidth: 150, objectFit: 'contain' }} src={logoSrc} />
+              <Image style={{ maxHeight: 40, maxWidth: 120, objectFit: 'contain' }} src={logoSrc} />
             ) : (
               <Text style={styles.logoPlaceholder}>{cName}</Text>
             )}
@@ -327,137 +208,99 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
         </View>
 
         {/* Title */}
-        <Text style={styles.title}>INTERNSHIP OFFER LETTER</Text>
+        <Text style={styles.title}>Internship Offer Letter</Text>
 
         {/* Date */}
         <Text style={styles.date}>Date: {currentDate}</Text>
 
         {/* Recipient */}
         <View style={styles.recipient}>
-          <Text style={styles.recipientName}>[{intern.full_name}]</Text>
-          {intern.city && <Text style={styles.recipientCity}>{intern.city}</Text>}
+          <Text style={styles.recipientName}>{intern.full_name}</Text>
+          {intern.city && <Text style={styles.recipientDetails}>{intern.city}</Text>}
         </View>
 
-        {/* Body Intro */}
+        {/* Body */}
         <View style={styles.body}>
           <Text style={styles.paragraph}>
-            Dear [{intern.full_name}],
+            Dear <Text style={styles.boldText}>{intern.full_name}</Text>,
           </Text>
           <Text style={styles.paragraph}>
-            We are pleased to offer you an internship position as a <Text style={styles.boldText}>[{intern.domain}] Intern</Text> at {cName}. We were highly impressed by your academic record and technical skill level.
+            We are pleased to offer you an internship position as a <Text style={styles.boldText}>{intern.domain} Intern</Text> at <Text style={styles.boldText}>{cName}</Text>.
+            We were highly impressed by your academic record and technical skill level.
           </Text>
           <Text style={styles.paragraph}>
             This internship is designed to give you hands-on experience in software development and industry best practices. Below are the key details and terms of your internship:
           </Text>
-        </View>
 
-        {/* Internship Details Table */}
-        <View style={styles.tableContainer}>
-          <View style={styles.tableHeader}>
-            <Text style={styles.tableHeaderText}>INTERNSHIP DETAILS</Text>
-          </View>
-          <View style={styles.tableRowStriped}>
-            <Text style={styles.tableLabel}>Program</Text>
-            <Text style={styles.tableValue}>{intern.domain} Internship Program 2026</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableLabel}>Duration</Text>
-            <Text style={styles.tableValue}><Text style={styles.boldText}>{formattedStartDate}</Text> to <Text style={styles.boldText}>{formattedEndDate}</Text> (2 Months)</Text>
-          </View>
-          <View style={styles.tableRowStriped}>
-            <Text style={styles.tableLabel}>Mode</Text>
-            <Text style={styles.tableValue}>Remote</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableLabel}>Projects</Text>
-            <Text style={styles.tableValue}>4 real world projects</Text>
-          </View>
-          <View style={styles.tableRowStriped}>
-            <Text style={styles.tableLabel}>Compensation</Text>
-            <Text style={styles.tableValue}>Unpaid — Certificate + Experience</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableLabel}>Reg. No</Text>
-            <View style={{ borderWidth: 1, borderColor: '#93C5FD', padding: 2, paddingHorizontal: 4, borderRadius: 2 }}>
-              <Text style={{ color: '#2563EB', fontWeight: 'bold' }}>[{intern.registration_number}]</Text>
+          {/* Terms Table */}
+          <View style={styles.termsTable}>
+            <View style={styles.tableRow}>
+              <Text style={styles.tableLabel}>Role</Text>
+              <Text style={styles.tableValue}>{intern.domain} Intern</Text>
+            </View>
+            <View style={styles.tableRow}>
+              <Text style={styles.tableLabel}>Start Date</Text>
+              <Text style={styles.tableValue}>{formatDate(joiningDate)}</Text>
+            </View>
+            <View style={styles.tableRow}>
+              <Text style={styles.tableLabel}>Duration</Text>
+              <Text style={styles.tableValue}>2 Months (Remote)</Text>
+            </View>
+            <View style={styles.tableRow}>
+              <Text style={styles.tableLabel}>Compensation</Text>
+              <Text style={styles.tableValue}>Unpaid Internship</Text>
+            </View>
+            <View style={styles.tableRowLast}>
+              <Text style={styles.tableLabel}>Requirement</Text>
+              <Text style={styles.tableValue}>Successful project completion & code review for Certification.</Text>
             </View>
           </View>
+
+          <Text style={styles.paragraph}>
+            By accepting this offer, you agree to maintain the absolute confidentiality of all intellectual property, source code, and client details that you may have access to during this internship.
+          </Text>
+          <Text style={styles.paragraph}>
+            We look forward to working with you and hope this internship serves as a foundation for a successful software engineering career.
+          </Text>
         </View>
 
-        {/* Terms & Conditions */}
-        <View style={styles.termsBox}>
-          <Text style={styles.termsTitle}>TERMS & CONDITIONS</Text>
-          <View style={styles.bulletPoint}>
-            <Text style={styles.bulletDot}>•</Text>
-            <Text style={styles.bulletText}>This internship is unpaid and remote-based.</Text>
-          </View>
-          <View style={styles.bulletPoint}>
-            <Text style={styles.bulletDot}>•</Text>
-            <Text style={styles.bulletText}>Intern must complete all 4 assigned projects to receive certificate.</Text>
-          </View>
-          <View style={styles.bulletPoint}>
-            <Text style={styles.bulletDot}>•</Text>
-            <Text style={styles.bulletText}>{cName} reserves the right to terminate internship for misconduct.</Text>
-          </View>
-          <View style={styles.bulletPoint}>
-            <Text style={styles.bulletDot}>•</Text>
-            <Text style={styles.bulletText}>By accepting this offer, intern agrees to {cName}&apos;s code of conduct and policies.</Text>
-          </View>
-        </View>
+        {/* Closing */}
+        <Text>Sincerely,</Text>
 
-        {/* Acceptance Paragraph */}
-        <Text style={styles.acceptanceText}>
-          By accepting this offer letter, you confirm your commitment to the {cName} Summer Internship Program 2026 and agree to abide by all terms and conditions stated herein.
-        </Text>
-
-        <Text style={styles.closing}>Sincerely,</Text>
-
-        {/* Signatures Container */}
+        {/* Signatures */}
         <View style={styles.signatureContainer}>
-          {/* Left Side: Admin */}
           <View style={styles.signatureBox}>
             {signatureUrl ? (
               <Image style={styles.signatureImage} src={signatureUrl} />
             ) : (
-              <View style={styles.signatureLineEmpty} />
+              <View style={{ height: 40 }} />
             )}
-            <View style={styles.signatureDivider}>
-              <Text style={styles.signerName}>{adminName}</Text>
-              <Text style={styles.signerTitle}>{adminDesignation}</Text>
-              <Text style={styles.companyLink}>{cName} 🌐 ✍️</Text>
+            <View style={styles.signatureLine}>
+              <Text style={styles.boldText}>{adminName}</Text>
+              <Text style={styles.signerTitle}>{adminDesignation || 'Authorized Signatory'}</Text>
+              <Text style={styles.signerTitle}>{cName}</Text>
             </View>
           </View>
 
-          {/* Right Side: Intern */}
           <View style={styles.signatureBox}>
-            <View style={styles.signatureLineEmpty} />
-            <View style={styles.signatureDivider}>
-              <Text style={styles.signerTitle}>Intern Signature</Text>
-              <Text style={styles.signerName}>[{intern.full_name}]</Text>
-              <Text style={styles.signerTitle}>Date: ____________________</Text>
+            <View style={{ height: 40 }} />
+            <View style={styles.signatureLine}>
+              <Text style={styles.boldText}>Intern Signature</Text>
+              <Text style={styles.signerTitle}>Acknowledge & Accepted</Text>
+              <Text style={styles.signerTitle}>Date: _______________</Text>
             </View>
           </View>
         </View>
 
         {/* Footer */}
         <View style={styles.footer}>
-          {/* Footer Left */}
-          <View style={styles.footerLeft}>
-            <Text style={styles.footerLine}>{cWebsite.replace('https://', '').replace('http://', '')} | {cEmail}</Text>
-            <Text style={styles.footerText}>WhatsApp: {cPhone}</Text>
-            <Text style={styles.footerLink}>Verify: offerletter.cloudexify.site/verify</Text>
-            <Text style={styles.footerLine}>Document ID: {offerLetterNumber}</Text>
-            <Text style={styles.footerText}>© 2026 {cName}. All rights reserved.</Text>
+          <View>
+            <Text>{cName} Internship Program 2026</Text>
+            <Text>Document ID: {offerLetterNumber}</Text>
+            <Text>Verify at: {cWebsite.replace('https://', '')}/verify</Text>
           </View>
-
-          {/* Footer Right: QR Code */}
-          <View style={styles.footerRight}>
-            {qrCodeBase64 ? (
-              <Image style={styles.qrCode} src={qrCodeBase64} />
-            ) : (
-              <View style={[styles.qrCode, { backgroundColor: '#E2E8F0' }]} />
-            )}
-            <Text style={styles.scanText}>SCAN TO VERIFY</Text>
+          <View style={{ alignItems: 'flex-end' }}>
+            {qrCodeBase64 && <Image style={styles.qrCode} src={qrCodeBase64} />}
           </View>
         </View>
       </Page>

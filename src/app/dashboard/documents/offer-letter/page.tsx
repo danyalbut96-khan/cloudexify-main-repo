@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 function OfferLetterGenerator() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  
+
   // Params
   const urlInternId = searchParams.get('internId');
 
@@ -177,7 +177,7 @@ function OfferLetterGenerator() {
                 ))}
               </div>
             )}
-            
+
             {selectedIntern && (
               <div className="mt-3.5 bg-blue-50/50 border border-blue-100 rounded-xl p-3.5 text-xs text-blue-800 space-y-1">
                 <p className="font-bold flex items-center">
@@ -252,8 +252,8 @@ function OfferLetterGenerator() {
               </div>
               <div className="text-right text-[8px] text-slate-500 max-w-[50%]">
                 <p className="font-bold text-slate-900 text-[9px] mb-0.5">CloudExify</p>
-                <p>Plot 45-C, 24th Commercial St, Karachi</p>
-                <p>cloudexify.com | admin@cloudexify.com</p>
+                <p>Islamabad,Pakistan</p>
+                <p>cloudexify.site | hello@cloudexify.site</p>
               </div>
             </div>
 
@@ -266,7 +266,6 @@ function OfferLetterGenerator() {
             <p className="mb-4 text-slate-600">Date: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
             <div className="mb-5 space-y-0.5 text-slate-700">
               <p className="font-bold text-slate-900 text-[11px]">[{selectedIntern ? selectedIntern.full_name : 'Intern Name'}]</p>
-              <p className="text-[10px] text-slate-600">{selectedIntern && selectedIntern.city ? selectedIntern.city : 'Karachi, Pakistan'}</p>
             </div>
 
             {/* Letter Body */}
@@ -341,7 +340,7 @@ function OfferLetterGenerator() {
                 <div className="border-t border-slate-300 pt-1.5">
                   <p className="font-bold text-slate-900 text-[10px] mb-0.5">{selectedSignatory.full_name}</p>
                   <p className="text-[8px] text-slate-500 mb-0.5">{selectedSignatory.designation || 'Founder & CEO'}</p>
-                  <p className="text-[8px] text-blue-600">CloudExify 🌐 ✍️</p>
+                  <p className="text-[8px] text-blue-600">CloudExify</p>
                 </div>
               </div>
 
@@ -358,8 +357,8 @@ function OfferLetterGenerator() {
             {/* Footer Mockup */}
             <div className="absolute bottom-6 left-10 right-10 flex justify-between border-t-2 border-blue-500 pt-2.5">
               <div className="w-[75%] text-[8px] space-y-1">
-                <p className="font-bold text-slate-900">cloudexify.com | admin@cloudexify.com</p>
-                <p className="text-slate-500">WhatsApp: +92 3XX XXXXXXX</p>
+                <p className="font-bold text-slate-900">cloudexify.site | hello@cloudexify.site</p>
+                <p className="text-slate-500">WhatsApp: +92 341 1949277X</p>
                 <p className="text-blue-600">Verify: offerletter.cloudexify.site/verify</p>
                 <p className="font-bold text-slate-900">Document ID: CX-OL-2026-XXXX</p>
                 <p className="text-slate-500">© 2026 CloudExify. All rights reserved.</p>
