@@ -1,0 +1,545 @@
+registration_number,full_name,email,whatsapp,gender,university,semester,domain,skill_level,available_hours,referral_source
+CX-INT-2026-DS-0004,Asma Khalid,asmakhalid9489@gmail.com,3104175436,Female,"COMSATS UNIVERSITY ISLAMABAD,WAH CAMPUS",4,Data Science & AI Basics,Beginner,,LinkedIn
+CX-INT-2026-JAVA-0005,Muhammad Arsalan Zahid,pakarsalan13@gmail.com,3295472077,Male,"Comsats University Islamabad, Wah Campus",2,Java Programming,Intermediate,10,Friend / Referral
+CX-INT-2026-CPP-0006,Muhammad Bilal Abdullah,engrmbilalabdullah@gmail.com,0316-5750916,Male,Comsats university islamabad wah campus,4,C++ Programming,Advanced,10,WhatsApp group
+CX-INT-2026-DS-0007,muhammad muneeb,muhammadmuneebdev24@gmail.com,+92 3325282875,Male,"comsats university islamabad, wah",4,Data Science & AI Basics,Intermediate,10,LinkedIn
+CX-INT-2026-PY-0008,Muhammad Ali qamer,aliqamer071@gmail.com,3367052363,Male,Comsat university wah campus,4,Python Programming,Intermediate,20,WhatsApp group
+CX-INT-2026-PY-0009,Noor Ul Ain,noorulainmalik332@gmail.com,3325952974,Female,COMSATS university Islamabad wah campus,4,Python Programming,Intermediate,10,LinkedIn
+CX-INT-2026-PY-0010,Abdul Hannan,abdulhananstudio@gmail.com,3298745056,Male,Comsats University Islamabad,3,Python Programming,Intermediate,,WhatsApp group
+CX-INT-2026-PY-0011,Muqadas liaqat,lk8566256@gmail.com,3406792017,Female,Comsats university,2,Python Programming,Beginner,,WhatsApp group
+CX-INT-2026-PY-0012,Suhamma noor,suhaiman614@gmail.com,3180909022,Female,Government college university faisalabad,2,Python Programming,Beginner,,Friend / Referral
+CX-INT-2026-PY-0013,Manahil Noor,manahilnoor967@gmail.com,3465086839,Female,GCUF,2,Python Programming,Beginner,,Friend / Referral
+CX-INT-2026-CYB-0014,Muhammad Noman Ijaz,sardarnoman808@gmail.com,3461333668,Male,COMSATS Wah cantt campus,2,Cybersecurity Fundamentals,Beginner,10,WhatsApp group
+CX-INT-2026-DS-0015,Fiza Tariq,fizatariq9955@gmail.com,3181995584,Female,Comsats University Wah cantt,2,Data Science & AI Basics,Intermediate,10,WhatsApp group
+CX-INT-2026-JAVA-0016,Arooj Fatima,aroojfatima.af8@gmail.com,3364377332,Female,"COMSATS university Islamabad,Wah campus",2,Java Programming,Advanced,10,WhatsApp group
+CX-INT-2026-CPP-0017,Muhammad Alyan Abbasi,alyanabbasi003@gmail.com,3115021094,Male,"Comsats University Islamabad,Wah campus",2,C++ Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-PY-0018,Muhammad Waleed Nasir,mwaleedn12@gmail.com,9.23236E+11,Male,COMSATS UNIVERSITY ISLAMABAD,4,Data Science & AI Basics,Intermediate,20,WhatsApp group
+CX-INT-2026-DS-0019,Muhammad Shahzaib,shahzaib.malik5153@gmail.com,3414995153,Male,"Comsat University Islamabad,Wah Campus",2,Data Science & AI Basics,Beginner,,WhatsApp group
+CX-INT-2026-CPP-0020,Sana Kousar,sanakousar108@gmail.com,3140506203,Female,"COMSATS,Wah Campus",2,C++ Programming,Intermediate,,Friend / Referral
+CX-INT-2026-CYB-0021,Ayiaza Mudassar,ayiazamudassar@gmail.com,3701550252,Female,"COMSATS university Islamabad,Wah Campus",2,Cybersecurity Fundamentals,Beginner,,WhatsApp group
+CX-INT-2026-DS-0022,Aimal Khan,aiimallkhann@gmail.com,3417856243,Male,"COMSATS University Islamabad, Wah Campus",2,Data Science & AI Basics,Beginner,10,WhatsApp group
+CX-INT-2026-DS-0023,Maira Mahmood,maira.mahmood555@gmail.com,3335754190,Female,Comsats University Islamabad (Wah Campus),2,Data Science & AI Basics,Beginner,,WhatsApp group
+CX-INT-2026-DS-0024,Shahyan Abbas,Shahyanturi@gmail.com,3253956539,Male,Comsats university Islamabad wah campus,2,Data Science & AI Basics,Beginner,,LinkedIn
+CX-INT-2026-CYB-0025,Abdullah Sattar,abdullahsattar602@gmail.com,3345789552,Male,Comsats wah campus,2,Cybersecurity Fundamentals,Beginner,20,WhatsApp group
+CX-INT-2026-PY-0026,Sana nazeer,aneelashahzadi901@gmail.com,3298130383,Female,I'll start in june .,1,Python Programming,Beginner,,Friend / Referral
+CX-INT-2026-PY-0024,Muhammad Bilal,itxbilal444@gmail.com,3329371162,Male,International Islamic university Islamabad (IIUI),2,Python Programming,Beginner,10,Friend / Referral
+CX-INT-2026-PY-0025,Javeria kousar,a45340348@gmail.com,3283250520,Female,Iub,2,Python Programming,Beginner,,Friend / Referral
+CX-INT-2026-JAVA-0026,Syed Ahmed Ali,ahmedg322008@gmail.com,9.23065E+11,Male,"Comsats University Islamabad, Wah Campus",2,Java Programming,Beginner,,WhatsApp group
+CX-INT-2026-DS-0027,Darakhshan Mujtaba,darakhshan.mujtaba6@gmail.com,3261402308,Female,Salim Habib University,7,Data Science & AI Basics,Advanced,10,LinkedIn
+CX-INT-2026-DS-0028,Tehman Ali Khan,tmanniazii01@gmail.com,3187100732,Male,"Comsats university Islamabad,wah campus",2,Data Science & AI Basics,Beginner,20,WhatsApp group
+CX-INT-2026-CPP-0029,Shahmeer Zaheer,shahmeerzaheer801@gmail.com,3334982454,Male,Comsats University Islamabad,2,C++ Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-CPP-0030,Minahil Fawad,minahilfawad78@gmail.com,3159786900,Female,"Comsata University Islamabad, Wah Campus",2,C++ Programming,Intermediate,,WhatsApp group
+CX-INT-2026-PY-0031,Sana ejaz,sanaejaz4212@gmail.com,3196576607,Female,Comsats uni islamabad(wah campus),3,Python Programming,Beginner,,WhatsApp group
+CX-INT-2026-JAVA-0032,zainab noor,wah cant,3155815582,Female,COMSATS University Islamabad Wah campus,2,Java Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-JAVA-0033,Hamza Rizwan Sheikh,hamzarizwan162790@gmail.com,3472943602,Male,"COMSATS University Islamabad, Wah campus",2,Java Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-JAVA-0034,Hasnain Ali,alihasnain7663@gmail.com,3145122787,Male,"Comsats University Islamabad, Wah Campus",3,Java Programming,Intermediate,10,Friend / Referral
+CX-INT-2026-PY-0035,Saher Irfan,saherirfan07@gmail.com,3195828687,Female,Comsats university Islamabad,4,Python Programming,Advanced,10,WhatsApp group
+CX-INT-2026-CYB-0036,Raheen Ifham,raheenifham@gmail.com,3155732955,Female,COMSATS University of Islamabad (WAH Campus),4,Cybersecurity Fundamentals,Beginner,,WhatsApp group
+CX-INT-2026-DS-0037,Laiba Akram,laibaakram1429@gmail.com,3092789074,Female,Sindh Madressatul Islam University,8,Data Science & AI Basics,Advanced,20,LinkedIn
+CX-INT-2026-PY-0038,Muhammad Ahmed Zulfiqar,ahmedzulfiqar6473@gmail.com,3404302561,Male,"Comsats University Islamabad, Sahiwal Campus",5,Python Programming,Intermediate,20,LinkedIn
+CX-INT-2026-CPP-0039,Hafiz Muhammad Asad,malikasad3021@gmail.com,3356390181,Male,Comsats University Islamabad Wah Campus,2,Python Programming,Intermediate,20,WhatsApp group
+CX-INT-2026-DS-0040,HAMAD IQBAL,muhammadiqbalsadeeq@gmail.com,3154326371,Male,COMSATS UNIVERSITY WAH,4,Data Science & AI Basics,Intermediate,20,WhatsApp group
+CX-INT-2026-DS-0041,Muhammad Ismaeel,mrismaeel@outlook.com,3445428001,Male,COMSATS,6,Data Science & AI Basics,Advanced,10,WhatsApp group
+CX-INT-2026-DS-0042,Muqaddas Uroush,muqaddasuroush@gmail.com,3295103440,Female,COMSATS university,4,Data Science & AI Basics,Intermediate,10,WhatsApp group
+CX-INT-2026-CPP-0043,Momna Yousaf,momnayousaf296@gmail.com,0325 8737246,Female,"Comsats University Islamabad, Wah Campus",4,C++ Programming,Advanced,,WhatsApp group
+CX-INT-2026-CYB-0044,Hammad Ul Hassan,ulhassanh56@gmail,3139110988,Male,COMSATS UNIVERSITY ISLAMABAD WAH CAMPUS,4,Cybersecurity Fundamentals,Intermediate,10,WhatsApp group
+CX-INT-2026-PY-0045,Ayesha Akhtar,aishafaria81@gmail.com,3230261245,Female,"COMSATS University, Wah Campus",4,Python Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-JAVA-0046,Abdulahad,ahadsheikh7676@gmail.com,3211164857,Male,Gift university,5,Java Programming,Advanced,,Friend / Referral
+CX-INT-2026-PY-0047,Laiba Javed,laibaj948@gmail.com,3314355145,Female,"COMSATS University Islamabad,Wah Campus",3,Python Programming,Beginner,10,WhatsApp group
+CX-INT-2026-CYB-0048,Jawad Ahmad,ijawadahmadcs@gmail.com,3105997585,Male,Comsats University Islamabad Wah Campus,4,Cybersecurity Fundamentals,Intermediate,20,WhatsApp group
+CX-INT-2026-PY-0049,Wasiullah Sahito,wasi1237585@gmail.com,3334698244,Male,Szabist Hyderabad,8,Python Programming,Intermediate,,LinkedIn
+CX-INT-2026-DS-0050,Abdullah Saghir,abdullahsaghir464@gmail.com,3297760414,Male,Comsat university Islamabad,3,Data Science & AI Basics,Intermediate,10,WhatsApp group
+CX-INT-2026-CPP-0051,Arooj Fatima,itsfatimaarooj.034@gmail.com,3364377332,Female,COMSATS university Islamabad Wah campus,2,C++ Programming,Intermediate,,Friend / Referral
+CX-INT-2026-CYB-0052,HUMAYUN KHAWAR,humayunsahi47@gmail.com,3216266046,Male,COMSATS university wah campus,2,Cybersecurity Fundamentals,Beginner,10,WhatsApp group
+CX-INT-2026-CPP-0053,Muhammad Rehan Siddiqui,rehansiddiqui505@gmail.com,3325250105,Male,"Comsats University Islamabad, Wah Campus",2,C++ Programming,Beginner,10,WhatsApp group
+CX-INT-2026-PY-0054,Hurab Anwar,hurabanwar3@gmail.com,3154286894,Female,University Of Wah,2,Python Programming,Beginner,,WhatsApp group
+CX-INT-2026-DS-0055,Urooj Fatima,uroojfatima2865367@gmail.com,3301253893,Female,Comsats University Islamabad Wah Campus,4,Data Science & AI Basics,Beginner,10,Friend / Referral
+CX-INT-2026-DS-0056,Amna Amir,amna00amir@gmail.com,3125861116,Female,"Comsats university Islamabad,Wah Campus",4,Data Science & AI Basics,Beginner,,LinkedIn
+CX-INT-2026-PY-0057,samiullah,samiullaharain636@gmail.com,3033678791,Male,KIET,7,Python Programming,Intermediate,10,LinkedIn
+CX-INT-2026-JAVA-0058,Ishmal Azam,ishmalazam5@gmail.com,0318 0521166,Female,"COMSATS university Islamabad, wah campus",2,Java Programming,Intermediate,,Friend / Referral
+CX-INT-2026-DS-0059,M Tayyab Jamal,tayyabjamal.chk@gmail.com,3140893707,Male,"comsats university islamabad, wah campus",4,Data Science & AI Basics,Intermediate,20,WhatsApp group
+CX-INT-2026-DS-0060,Huzaifa Hassan,huzaifahassan54321@gmail.com,3445090669,Male,comsats university islamabad wah campus,4,Data Science & AI Basics,Intermediate,20,WhatsApp group
+CX-INT-2026-DS-0061,Noor Nawaz,noornawaz31032@gmail.com,3355831032,Male,University of Wah,2,Data Science & AI Basics,Beginner,,WhatsApp group
+CX-INT-2026-CYB-0062,Muskan,muskananjum97012@gmail.com,9449015386,Female,Maharani cluster university,6,Cybersecurity Fundamentals,Beginner,10,Friend / Referral
+CX-INT-2026-PY-0063,Fatima asghar,fatimaasghar793@gmail.com,9.23015E+11,Female,Comsats Univeristy Islamabad,4,Python Programming,Intermediate,,Friend / Referral
+CX-INT-2026-DS-0064,Syed Rehan Bukhari,dewanrehan06@gmail.com,3027325355,Male,The Islamia University of Bahawalpur,7,Data Science & AI Basics,Beginner,20,LinkedIn
+CX-INT-2026-DS-0065,Irfan Arshad,irfanarshad698@gmail.com,3087676228,Male,Islamia University bahawalpur,8,Data Science & AI Basics,Beginner,10,LinkedIn
+CX-INT-2026-CYB-0066,Muhammad Faisal Rahman,fmfaisalrahman@gmail.com,3166440513,Male,Air University,4,Cybersecurity Fundamentals,Advanced,10,Facebook
+CX-INT-2026-JAVA-0067,Maryam bibi,maniakhan278@gmail.com,3135162178,Female,Comsats university Islamabad wah campus,2,Java Programming,Intermediate,20,WhatsApp group
+CX-INT-2026-CPP-0068,Rose wanjiru,kariukirose065@gmail.com,110687141,Female,Pc kinyanjui,2,C++ Programming,Intermediate,20,LinkedIn
+CX-INT-2026-CPP-0069,MUHAMMAD FAHAD,nightcore7289@gmail.com,3185120992,Male,Bahria University Islamabad Campus,4,C++ Programming,Intermediate,,Friend / Referral
+CX-INT-2026-DS-0070,Syeda Sufiya,syedasufiya2005@gmail.com,9964208205,Female,Maharani cluster university,6,Data Science & AI Basics,Beginner,,Friend / Referral
+CX-INT-2026-DS-0071,Rabin Pal,mr.rabin000@gmail.com,9002866137,Male,"Maulana Abul Kalam Azad University of Technology, West Bengal",8,Data Science & AI Basics,Intermediate,10,LinkedIn
+CX-INT-2026-PY-0072,Umm e Amen Ibrar,janneyawan@gmail.com,3405381042,Female,"Comsats Uni Islamabad,Wah campus",4,Python Programming,Intermediate,20,WhatsApp group
+CX-INT-2026-DS-0073,MUHAMMAD UMER QAISRANI,bqaisrani957@gmail.com,3276864403,Male,COMSATS UNIVERSITY ISLAMABAD,6,Data Science & AI Basics,Beginner,,WhatsApp group
+CX-INT-2026-DS-0074,Bhoomika saxena,bhoomikasaxena805@gmail.com,88401 82261,Female,Dr. A.P.J. Abdul Kalam Technical University,7,Data Science & AI Basics,Intermediate,10,LinkedIn
+CX-INT-2026-JAVA-0075,Amna Anwar,rajputamna452@gmail.com,0333-5646520,Female,"COMSATS UNIVERSITY Islamabad,Wah campus",2,Java Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-JAVA-0076,Iqra Anwar,iqrahh.56@gmail.com,0316-5289568,Female,"COMSATS UNIVERSITY Islamabad, Wah campus",2,Java Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-CYB-0077,Farrukh Haseeb Chudhriy,chh05856@gmail.com,9.23456E+11,Male,"Comsats University Islamabad, Wah Campus",4,Cybersecurity Fundamentals,Beginner,20,WhatsApp group
+CX-INT-2026-DS-0078,Muhammad Ali Saqib,alisaqib7481@gmail.com,9.23146E+11,Male,COMSATS wah,4,Data Science & AI Basics,Advanced,,Friend / Referral
+CX-INT-2026-DS-0079,Muhammad Murtaza Ahmed,ahmedmurtaza910@gmail.com,9.23182E+11,Male,COMSATS Wah,4,Data Science & AI Basics,Advanced,,Friend / Referral
+CX-INT-2026-JAVA-0080,Salman Farooq,salmanfarooq715@gmail.com,3485308356,Male,Comsats University Islamabad Wah Campus,4,Java Programming,Intermediate,10,LinkedIn
+CX-INT-2026-CYB-0081,Malik Abdullah Wasih,abdullah.wasih05@gmail.com,9.23099E+11,Male,"Comsats University Islamabad, Wah Cantt, Taxila",4,Cybersecurity Fundamentals,Beginner,10,WhatsApp group
+CX-INT-2026-DS-0082,Ibad Ahmed,ibada0410@gmail.com,3323285685,Male,"Comsats University Islamabad, Wah Campus",4,Data Science & AI Basics,Intermediate,10,Friend / Referral
+CX-INT-2026-JAVA-0083,Syed Haider Ali,syedhaiderkazmi2007@gmail.com,3455419644,Male,"CUI , Wah Campus",2,Java Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-JAVA-0084,Roshanay Rasool,rosh.anayyy2007@gmail.com,3141988801,Female,COMSATS University Islamabad,2,Java Programming,Intermediate,20,Friend / Referral
+CX-INT-2026-DS-0085,Alisha Fatima,alishafatima.work@gmail.com,3010510070,Female,"COMSATS university Islamabad, Wah campus",6,Data Science & AI Basics,Intermediate,10,LinkedIn
+CX-INT-2026-CPP-0086,Muhammad Zarrar,zarrarrajput1010@gmail.com,3017908609,Male,Szabist Islmabad,3,C++ Programming,Intermediate,20,LinkedIn
+CX-INT-2026-CYB-0087,Atiq Iqbal,codprog096@gmail.com,3468754441,Male,Agriculture University of Peshawar,8,Cybersecurity Fundamentals,Intermediate,20,LinkedIn
+CX-INT-2026-DS-0088,Dawood Alexander,dawood.alex04@gmail.com,3369777145,Male,"Bahria University Islamabad, E8 Campus",4,Data Science & AI Basics,Beginner,,Friend / Referral
+CX-INT-2026-PY-0089,Shadab khan,mskshadabmsk@gmail.com,3030900666,Male,Comsats university Islamabad wah campus,2,Python Programming,Intermediate,,Friend / Referral
+CX-INT-2026-PY-0090,Muhammad Anas,muhammadanasharoon.official@gmail.com,3125556310,Male,"COMSATS University Islamabad, Wah Campus",2,Python Programming,Beginner,10,Friend / Referral
+CX-INT-2026-PY-0091,Muhammad Qasim,qasim.tanveer81755@gmail.com,9.23125E+11,Male,Shifa Tameer-E-Millat University,7,Full Stack Development,Advanced,10,LinkedIn
+CX-INT-2026-PY-0092,Shrishti gupta,guptashrishti254@gmail.com,7905701284,Female,Sr institute of management and technology,7,Python Programming,Intermediate,,LinkedIn
+CX-INT-2026-CPP-0093,Muhammad Nabeel,insyncnabeel101@gmail.com,3195961257,Male,FAST-NUCES,3,C++ Programming,Advanced,10,Friend / Referral
+CX-INT-2026-JAVA-0094,Summaya yousaf,summayayousaf1@gmail.com,3276392029,Female,National University of Modern languages NUML Rawalpindi,2,Java Programming,Advanced,,LinkedIn
+CX-INT-2026-DS-0095,Raj Soni,rajsoni93061@gmail.com,8604696544,Male,AKTU,7,Data Science & AI Basics,Beginner,,from ad
+CX-INT-2026-PY-0096,Muhammad zunair,mzunair1200@gmail.com,3484621687,Male,COMSATS wah,4,Python Programming,Advanced,10,LinkedIn
+CX-INT-2026-DS-0097,Hafsa Bukhtiar chishti,itxhafsachishti256@gmail.com,3117497977,Female,COMSATS UNIVERSITY ISLAMABAD (SAHIWAL CAMPUS),5,Data Science & AI Basics,Intermediate,20,Friend / Referral
+CX-INT-2026-PY-0098,Muhammad Hobaib,enghobaib@gmail.com,3159655713,Male,Comsats university islamabad,7,Python Programming,Intermediate,20,LinkedIn
+CX-INT-2026-PY-0099,Muhammad Taha Adnan,mtahadnan@gmail.com,3338471646,Male,Comsats wah Campus,2,Python Programming,Beginner,10,Friend / Referral
+CX-INT-2026-JAVA-0100,Elma Shah,elmashah77@gmail.com,3068808111,Female,COMSATS university Islamabad,2,Java Programming,Intermediate,,WhatsApp group
+CX-INT-2026-CYB-0101,Aiza Shahzad,aizashahzad068@gmail.com,0336 5775565,Female,COMSATS University Islamabad Wah Campus,4,Cybersecurity Fundamentals,Beginner,10,WhatsApp group
+CX-INT-2026-DS-0102,Iqra,iqralarik11@gmail.com,0316-3309720,Female,Szabist,5,Data Science & AI Basics,Intermediate,10,LinkedIn
+CX-INT-2026-DS-0103,Muhammad Faizan,khattakad0@gmail.com,3452204231,Male,The university of agriculture peshawer,5,Data Science & AI Basics,Beginner,20,LinkedIn
+CX-INT-2026-PY-0104,Muhammad Sufyan,sufyanawan371@gmail.com,3165818915,Male,HITEC,1,Python Programming,Beginner,20,WhatsApp group
+CX-INT-2026-DS-0105,Muhammad Abdullah Awan,abdullahawan0043@gmail.com,3079371104,Male,University Of Haripur,6,Data Science & AI Basics,Beginner,10,WhatsApp group
+CX-INT-2026-PY-0106,Muhammad Muneeb Haider,muneebhaider396@gmail.com,3125413373,Male,Air university,4,Python Programming,Beginner,,WhatsApp group
+CX-INT-2026-CYB-0107,Aahilarslan,aahilarslan7@gmail.com,3314563795,Male,NCBA,8,Cybersecurity Fundamentals,Intermediate,20,LinkedIn
+CX-INT-2026-CYB-0108,Daniyal Arsalan,daniyalarsalan58@gmail.com,3379496820,Male,Comsats Wah Campus,4,Cybersecurity Fundamentals,Beginner,,WhatsApp group
+CX-INT-2026-CYB-0109,Hamza Faryad,hamzafaryad657@gmail.com,3057310558,Male,Comsats university Islamabad,3,Cybersecurity Fundamentals,Beginner,10,Friend / Referral
+CX-INT-2026-PY-0110,Muhammad Farhan,fsohail985@gmail.com,3239183493,Male,COMSAT UNIVERSITY ISLAMAMBAD WAH CAMPUS,2,Python Programming,Intermediate,10,Friend / Referral
+CX-INT-2026-CPP-0111,Zunaira Nadeem,zunairaraza58@gmail.com,0323 9980663,Female,Comsats university Islamabad,5,Cybersecurity Fundamentals,Beginner,20,Friend / Referral
+CX-INT-2026-PY-0112,Sudais Jamal,sudaisj435@gmail.com,9.23143E+11,Male,University of Engineering And Technology Mardan,6,Python Programming,Intermediate,20,LinkedIn
+CX-INT-2026-PY-0113,Ahmed Bilal,ab4114290@gmail.com,3265084408,Male,Federal Urdu university,4,Python Programming,Beginner,,LinkedIn
+CX-INT-2026-CYB-0114,Abirami S,abiramikevin@gmail.com,8056193803,Female,A.V.C College of Engineering,7,Cybersecurity Fundamentals,Intermediate,10,LinkedIn
+CX-INT-2026-CYB-0116,Mahnoor Arshad Qureshi,mahnoorarshadqureshi@gmail.com,3218466574,Female,Lahore Garrison University,8,Cybersecurity Fundamentals,Advanced,20,LinkedIn
+CX-INT-2026-DS-0117,Iraj Minhas,irajminhas2020@gmail.com,3278559054,Female,University of the Punjab,6,Data Science & AI Basics,Intermediate,10,LinkedIn
+CX-INT-2026-PY-0117,Maryam Tasneem,mariamkhalid8490@gmail.com,3035921763,Female,Comsats university,2,Python Programming,Intermediate,,WhatsApp group
+CX-INT-2026-PY-0118,Farukh Mumtaz,farukhofficial555@gmail.com,9.23145E+11,Male,COMSATS UNIVERSITY ISLAMABAD | WAH Campus,4,Python Programming,Intermediate,20,LinkedIn
+CX-INT-2026-PY-0119,JAWERIA NAWAZ,jawerianawaz19@gmail.com,3329084587,Female,COMSATS University Islamabad Wah Campus,2,Python Programming,Beginner,10,Friend / Referral
+CX-INT-2026-DS-0120,Sana Fayyaz,sanamalik71527@gmail.com,3246300334,Female,Superior university,5,Data Science & AI Basics,Beginner,,LinkedIn
+CX-INT-2026-CYB-0121,Muhammad Faizan,faizanikram57@gmail.com,3218895366,Male,Lahore Garrison University,8,Cybersecurity Fundamentals,Intermediate,20,Friend / Referral
+CX-INT-2026-DS-0122,Muhammad Ubaid Ur Rehman,m.ubaid.rehman04@gmail.com,3135026463,Male,"COMSATS University Islamabad, Wah Campus",6,Data Science & AI Basics,Beginner,20,LinkedIn
+CX-INT-2026-JAVA-0123,Mustafa Zafar,hetrasaphire@gmail.com,3199063038,Male,Comsats University Islamabad wah campus,4,Java Programming,Intermediate,10,Friend / Referral
+CX-INT-2026-PY-0124,Hafiz Raza e Mustafa,hafizrm786@gmail.com,3345139813,Male,Comsats university Islamabad,6,Python Programming,Intermediate,10,https://www.linkedin.com/in/hafiz-raza-e-mustafa-40381a365?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app
+CX-INT-2026-PY-0125,Danish khan,Danishkhanmardan30@gmail.com,3102005111,Male,University of engineering and technology Mardan,6,Python Programming,Advanced,10,LinkedIn
+CX-INT-2026-CYB-0126,Shaheer Hassan,jujutsushery@gmail.com,3220617931,Male,Lahore Garrison University,8,Cybersecurity Fundamentals,Intermediate,10,LinkedIn
+CX-INT-2026-CYB-0127,Anas Rehman,anasyaqoob05@gmail.com,3064565073,Male,University Of South Asia,3,Cybersecurity Fundamentals,Intermediate,10,LinkedIn
+CX-INT-2026-PY-0128,Syeda Bisma Amjad,syedabismaamjad@gmail.com,30303502189,Female,Comsats university,5,Python Programming,Intermediate,10,LinkedIn
+CX-INT-2026-PY-0129,Hamza Ali,raoh1924@gmail.com,3078881414,Male,Comsats University Islamabad Lahore Campus,5,Python Programming,Intermediate,20,LinkedIn
+CX-INT-2026-PY-0130,Muhammad Haris Khan,hariskhan8803@gmail.com,3495498515,Male,"Comsats University Islamabad , Wah Campus",6,Python Programming,Beginner,20,LinkedIn
+CX-INT-2026-GEN-0131,Yawar Mushtaq,yawarmushtaq383@gmail.com,3166630115,Male,Comsats Wah Campus,5,Full Stack Development,Beginner,10,LinkedIn
+CX-INT-2026-DS-0132,Faiz Mehmood,mehmoodfaiz47@gmaail.com,3167148826,Male,University Of South Asia,7,Data Science & AI Basics,Beginner,,LinkedIn
+CX-INT-2026-CYB-0133,Muhammad Maaz Afridi,maaz,3369471093,Male,The University of Agriculture Peshawar,5,Cybersecurity Fundamentals,Beginner,,LinkedIn
+CX-INT-2026-GEN-0134,Saba,sabaniaz281@gmail.com,3299615417,Female,UMT,4,Full Stack Development,Intermediate,,Friend / Referral
+CX-INT-2026-PY-0135,Muhammad Rashid Khan,rashid.khan1.dev@gmail.com,3359268647,Male,University of Mianwali,8,Python Programming,Intermediate,20,LinkedIn
+CX-INT-2026-DS-0136,Umna Shehzad,umnashehzad2005@gmail.com,0302 0766657,Female,"Bahria University, Islamabad",6,Data Science & AI Basics,Advanced,20,LinkedIn
+CX-INT-2026-DS-0137,Muhammad Bin Shayan,muhammadbinshayan999@gmail.com,9.23231E+11,Male,FAST NUCES,3,Data Science & AI Basics,Intermediate,10,LinkedIn
+CX-INT-2026-DS-0138,Umar Farooq,ranaumarminhas2000@gmail.com,3062749078,Male,COMSATS university Islamabad Lahore Campus,4,Data Science & AI Basics,Intermediate,20,LinkedIn
+CX-INT-2026-PY-0139,Muhammad Tayyab,miantayyab0804@gmail.com,3290585682,Male,Riphah international university,5,Python Programming,Intermediate,20,LinkedIn
+CX-INT-2026-JAVA-0140,Sudhir Tiwari,st168035@gmail.com,6260020171,Male,Gyan Ganga College of Technology,8,Java Programming,Advanced,10,LinkedIn
+CX-INT-2026-DS-0141,Ume Taqadus,umetaqadus@gmail.com,3453120943,Female,National University of Computer and Emerging Sciences (FAST-NUCES),8,Data Science & AI Basics,Intermediate,10,LinkedIn
+CX-INT-2026-GEN-0142,Vasanth A,kumarajith85666@gmail.com,6369930089,Male,"Periyar University, Salem",4,Full Stack Development,Intermediate,,LinkedIn
+CX-INT-2026-PY-0143,Jawaria Jawaid,javeriarajput075@gmail.com,3093669953,Female,Mehran University of Engineering and,7,Python Programming,Intermediate,10,LinkedIn
+CX-INT-2026-CPP-0144,Obaid Ullah,obaidullahkhalil7@gmail.com,3189396419,Male,NASTP Institute of Information Technology,2,C++ Programming,Advanced,10,LinkedIn
+CX-INT-2026-GEN-0145,Aleeza Noor,aleezanoor845@gmail.com,3151911603,Female,Air University Islamabad,4,Full Stack Development,Advanced,20,LinkedIn
+CX-INT-2026-PY-0146,Humaira Mushtaq,mushtaqhumairamushtaq@gmail.com,3236630779,Female,University of agricultural Faisalabad,6,Python Programming,Intermediate,10,LinkedIn
+CX-INT-2026-PY-0147,Aman Farid,amanfaridsamoo@gmail.com,3009258418,Male,Mehran University Of Engineering And Technology,3,Python Programming,Intermediate,10,LinkedIn
+CX-INT-2026-GEN-0148,Vishal Pandey,pandeyvishal3003@gmail.com,8799589989,Male,Veer narmad South University,6,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-PY-0149,Abdul Hadi Khan,a22882883@gmail.com,+92 03156629475,Male,Government college university Faisalabad,2,Python Programming,Intermediate,10,LinkedIn
+CX-INT-2026-GEN-0150,Mujahid Khan,mujahidkhan4222@gmail.com,3404212238,Male,University of Mianwali,8,Full Stack Development,Intermediate,20,LinkedIn
+CX-INT-2026-DS-0151,Amna Saeed,amnasaeed1231@gmail.com,0327 5027927,Female,"Comsats University Islamabad, Wah Cantt",8,Data Science & AI Basics,Advanced,10,LinkedIn
+CX-INT-2026-DS-0152,Arjun R,arjunrajadurai2006@gmail.com,8675188111,Male,Chettinad College Of Engineering And Technology,5,Data Science & AI Basics,Beginner,,LinkedIn
+CX-INT-2026-GEN-0153,Khizer Shah,khizershah493@gmail.com,3173555632,Male,The islamia university of bahawalpur,7,Full Stack Development,Advanced,20,LinkedIn
+CX-INT-2026-GEN-0154,Muhammad Awais,muhammadawaissiddiqui567@gmail.com,3008803041,Male,University Of Central Punjab,4,Full Stack Development,Beginner,20,LinkedIn
+CX-INT-2026-CPP-0155,amine labidi,aminelabidi206@gmail.com,21695989028,Male,INSAT,2,C++ Programming,Beginner,20,LinkedIn
+CX-INT-2026-CYB-0156,Muhammad Abdul Salam,muhammadabdulsalamkhosa@gmail.com,3356733888,Male,The Islamia University of Bahawalpur,7,Cybersecurity Fundamentals,Intermediate,20,LinkedIn
+CX-INT-2026-CPP-0157,Muhammad Asad,hafizmasad3021@gmail.com,3711907035,Male,Comsats University Islamabad,3,C++ Programming,Advanced,20,Friend / Referral
+CX-INT-2026-DS-0158,Talha Farrukh Awan,taliawanh6767@gmail.com,3701893960,Male,University of Haripur,7,Data Science & AI Basics,Intermediate,,Friend / Referral
+CX-INT-2026-PY-0159,Sara Kaleem,sarahkaleem270@gmail.com,3156628505,Female,University of Engineering and Technology Mardan,4,Python Programming,Intermediate,20,LinkedIn
+CX-INT-2026-PY-0160,Basit Ali,b909289@gmail.com,3705776869,Male,University of Haripur,6,Python Programming,Intermediate,20,Friend / Referral
+CX-INT-2026-DS-0161,Muhammad Saqib,muhammadsaqib4026@gmail.com,3211616603,Male,"COMSATS University Islamabad, Wah campus",5,Data Science & AI Basics,Beginner,10,LinkedIn
+CX-INT-2026-GEN-0162,Anosh Wajid,muhammad.wajidaabbasi@gmail.com,3405426891,Female,"Comsats Uni Islamabad, Wah campus",2,Full Stack Development,Intermediate,10,WhatsApp group
+CX-INT-2026-GEN-0163,Mehdi Ali,mehdi035559@gmail.com,3127627983,Male,The Islamia University of Bahawalpur,8,Full Stack Development,Intermediate,20,LinkedIn
+CX-INT-2026-JAVA-0164,Ayesha Malik,iqbalayesha599@gmail.com,3325259965,Female,Comsats,2,Java Programming,Intermediate,,Friend / Referral
+CX-INT-2026-GEN-0165,HABIB ULLAH,habibullah492005@gmail.com,3195949820,Male,"Comsats university Islamabad, Wah campus",6,Full Stack Development,Intermediate,20,LinkedIn
+CX-INT-2026-GEN-0166,Ahmar Subhan,ahmarsubhan2005@gmail.com,3159444415,Male,University of Central Punjab,4,Full Stack Development,Beginner,20,Friend / Referral
+CX-INT-2026-GEN-0167,Sameer Abdullah,sameerabdullah7788@gmail.com,3495999656,Male,Riphah international University,4,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-GEN-0168,Taimoor,h.m.taimoor007@gmail.com,3157044079,Male,University of central Punjab,5,Full Stack Development,Intermediate,20,WhatsApp group
+CX-INT-2026-GEN-0169,Ahmad Jawad,iahmadjawad.533@gmail.com,3067063209,Male,Comsats lahore,5,Full Stack Development,Advanced,10,LinkedIn
+CX-INT-2026-GEN-0170,Sumiya Saleem,hch243653@gmail.com,3092806784,Female,Riphah international college,4,Full Stack Development,Intermediate,,LinkedIn
+CX-INT-2026-GEN-0171,Ahmad Mustafa,sirahmadmustafa@gmail.com,3007809108,Male,Govt College,1,Full Stack Development,Advanced,20,LinkedIn
+CX-INT-2026-GEN-0172,Awais Farooq,awaisfarooq63100@gmail.com,9.23087E+11,Male,Islamia University Bahawalpur,8,Full Stack Development,Advanced,10,LinkedIn
+CX-INT-2026-CYB-0173,Malaika Asif,malaikaasif814@gmail.com,9.23296E+11,Female,Comsats university Islamabad,4,Cybersecurity Fundamentals,Beginner,10,LinkedIn
+CX-INT-2026-GEN-0174,Asif Jamal,asiffjamaal@gmail.com,3491717755,Male,Govt Civil Line College,2,Full Stack Development,Intermediate,10,Friend / Referral
+CX-INT-2026-GEN-0175,Fateha Mubarra,fatehamubarra@gmail.com,3040090285,Female,Comsats wah,2,Full Stack Development,Beginner,,WhatsApp group
+CX-INT-2026-GEN-0176,Omaima Siddiqui,siddiquiomaima1@gmail.com,3323463640,Female,Bahria University,5,Full Stack Development,Advanced,20,LinkedIn
+CX-INT-2026-GEN-0177,Hamza abbasi,hamza.abbasi3030@gmail.com,3309283902,Male,Quaid-e-azam university Islamabad,8,Full Stack Development,Advanced,20,LinkedIn
+CX-INT-2026-DS-0178,Hamna Siddiqui,hamnasiddiqui.15@gmail.com,+92 332 7310218,Female,Bahria University,5,Data Science & AI Basics,Intermediate,,LinkedIn
+CX-INT-2026-GEN-0179,Hafiza Fatima Tu Zahra,fatimaamarketinghub@gmail.com,3293963833,Female,University of Wah,4,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-GEN-0180,khuzaima mamoon,khuzaimamamoon766@gmail.com,3236874331,Male,Quaid eAzam University Islamabad,8,Full Stack Development,Beginner,20,LinkedIn
+CX-INT-2026-GEN-0181,Ayesha Nadee,ayeshanadeem2408@gmail.com,3249866918,Female,COMSATS University Islamabad,8,Full Stack Development,Advanced,10,LinkedIn
+CX-INT-2026-CPP-0182,Eman Abid,emanabid824@gmail.com,3475250850,Female,Comsats university islamabad wah cantt,8,C++ Programming,Intermediate,20,Friend / Referral
+CX-INT-2026-JAVA-0183,Fatima Khalil,fatimak.2905@gmail.com,3185963092,Female,Comsats wah,2,Java Programming,Advanced,10,WhatsApp group
+CX-INT-2026-GEN-0184,Noor Fatima,noorchudhry2121@gmail.com,3184775711,Female,COMSATS,5,Full Stack Development,Advanced,20,LinkedIn
+CX-INT-2026-GEN-0185,Eisha tur razia,eishabutt58@gmail.com,3439444629,Female,Comsats University Islamabad Wah campus,8,Full Stack Development,Beginner,,LinkedIn
+CX-INT-2026-GEN-0186,Fahad Munawar,fahadmunawar02@gmail.com,3175421049,Male,"Barani Institute of Information technology, Rawalpindi.",7,Full Stack Development,Intermediate,,LinkedIn
+CX-INT-2026-GEN-0187,Fariha Afaq,fariha.afaq56@gmail.com,3140862048,Female,COMSATS University Islamabad Abbottabad Campus,5,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-PY-0188,Muhammad Younis,muhammadyounis3488@gmail.com,3173562953,Male,Sindh Agriculture University Tandojam,6,Python Programming,Intermediate,10,LinkedIn
+CX-INT-2026-PY-0189,Muhammad Arslan Ali,muhammadarslan9515@gmail.com,3246771454,Male,Islamia university of Bahawalpur,5,Python Programming,Intermediate,,LinkedIn
+CX-INT-2026-CYB-0190,Samina khan,sami.yousufzai42@gmail.com,0322-0593184,Female,"Comsats university Islamabad, wah campus",8,Cybersecurity Fundamentals,Intermediate,10,LinkedIn
+CX-INT-2026-GEN-0191,Abdul Wahab,callmewahabb@gmail.com,3115855490,Male,COMSATS University Islamabad,6,Full Stack Development,Intermediate,20,LinkedIn
+CX-INT-2026-GEN-0192,Syed Numan Shah,numankips11@gmail.com,3023714441,Male,Comsats University Islamabad Wah Campus,6,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-CYB-0193,Mueez Safdar,moizsafdar296@gmail.com,3297969043,Male,"University of Agriculture, Faisalabad",6,Cybersecurity Fundamentals,Intermediate,,Friend / Referral
+CX-INT-2026-JAVA-0194,Rusha Manandhar,rusha.manandhar303@gmail.com,9813628889,Female,National College of Computer Studies,8,Java Programming,Beginner,10,LinkedIn
+CX-INT-2026-GEN-0195,Muzammil Hayat Minhas,muzzammilminhas5@gmail.com,3251869519,Male,"COMSATS University, Islamabad",6,Full Stack Development,Advanced,20,Friend / Referral
+CX-INT-2026-GEN-0196,Moiz Ur Rehman,Moi,3315782809,Male,Comsats university Islamabad Wah Campus,6,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-CYB-0197,Honey,honeyalwani60@gmail.com,9.23351E+11,Female,Hyderabad institute for technology and management sciences,3,Cybersecurity Fundamentals,Intermediate,10,LinkedIn
+CX-INT-2026-CPP-0198,Muhammad Awais,muhammadawaissiddiqui789@gmail.com,3008803041,Male,University Of Central Punjab,4,C++ Programming,Intermediate,10,LinkedIn
+CX-INT-2026-CPP-0199,Hajra Munir,hajramunir086@gmail.com,3040404804,Female,COMSATS Islamabad,5,C++ Programming,Intermediate,,LinkedIn
+CX-INT-2026-PY-0200,Dua e zainab,Dua,3253161707,Female,"Comsats university Islamabad ,wah campus",6,Python Programming,Advanced,10,LinkedIn
+CX-INT-2026-GEN-0201,Tehreem Shahbaz,teem51269@gmail.com,9.23345E+11,Female,Comsat university wah campus,2,Full Stack Development,Intermediate,10,Friend / Referral
+CX-INT-2026-GEN-0202,Obaid-Ur-Rehman,sheikhubaid163@gmail.com,3314813217,Male,National University of Modern Language Lahore,8,Full Stack Development,Advanced,20,LinkedIn
+CX-INT-2026-DS-0203,Muhammad Ahmad Hamim,iamshahzadahmad650@gmail.com,3057727046,Male,"COMSAT University Islamabad, Wah Cantt Campus",3,Data Science & AI Basics,Intermediate,,LinkedIn
+CX-INT-2026-CYB-0204,Muhammad Sajawal Riaz,sajawalch555@gmail.com,3258855255,Male,Virtual University Of Pakistan,8,Cybersecurity Fundamentals,Beginner,,LinkedIn
+CX-INT-2026-GEN-0205,Muhammad Junaid,junaiddevv@gmail.com,3155160301,Male,Comsats,4,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-DS-0206,Ali hussnain,alihusnainnaseer999@gmail.com,3269460067,Male,comsats,6,Data Science & AI Basics,Advanced,20,LinkedIn
+CX-INT-2026-GEN-0207,Rameen Arsalan,rameen.arsalan369@gmail.com,9.23341E+11,Female,NUST,8,Full Stack Development,Advanced,20,LinkedIn
+CX-INT-2026-GEN-0208,Ahsen Bilal,ranacnco17@gmail.com,3483904362,Male,"SZABIST, Islamabad",7,Full Stack Development,Advanced,10,LinkedIn
+CX-INT-2026-GEN-0209,Syed Israr Hussain,syedisrarhussain1512@gmail.com,3437919502,Male,COMSATS UNIVERSITY ISLAMABAD,7,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-GEN-0210,Mansoor Ahmad,i.mansoor313@gmail.com,9.23126E+11,Male,COMSATS University Islamabad Attock Campus,6,Full Stack Development,Intermediate,20,LinkedIn
+CX-INT-2026-GEN-0211,Muhammad Ilyas Adil,muhammadilyasadil15@gmail.com,3700916567,Male,Comsats university Wah Campus,6,Full Stack Development,Intermediate,,LinkedIn
+CX-INT-2026-GEN-0212,Ariba Amin,aribaamin36@gmail.com,9.23267E+11,Female,University of education Lahore,8,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-GEN-0213,Ayesha Rasheed,ayesharasheedkhan64@gmail.com,3304536031,Female,Government college and university Faislabad.,8,Full Stack Development,Advanced,,LinkedIn
+CX-INT-2026-PY-0214,Alisha Munir,alishamunir57@gmail.com,3705546536,Female,"COMSAT UNIVERSITY ISLAMABAD, Wah Campus",4,Python Programming,Advanced,10,WhatsApp group
+CX-INT-2026-DS-0215,Murk Sikandar,murkchanna26@gmail.com,3062821860,Female,university of sindh jamshoro pakistan,8,Data Science & AI Basics,Advanced,,LinkedIn
+CX-INT-2026-CYB-0216,Mehak Channa,mehakchanna04@mail.com,3231315293,Female,Sukkur IBA University,8,Cybersecurity Fundamentals,Beginner,10,LinkedIn
+CX-INT-2026-GEN-0217,Zainab Naseer,zainabnaseer580@gmail.com,3305092535,Female,Comsats University wah campus,5,Full Stack Development,Intermediate,,LinkedIn
+CX-INT-2026-DS-0218,loua klai,louaklai73@gmail.com,21699788043,Female,Insat : national institue of applied science and technology in tunisia,4,Data Science & AI Basics,Intermediate,20,LinkedIn
+CX-INT-2026-GEN-0219,Kinza Sadaqat,kinzasadaqat8@gmail.com,3096644425,Female,"Comsats University Islamabad, Sahiwal Campus",5,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-GEN-0220,Shayan Naveed Abbasi,sashayanabbasi@gmail.com,3285103469,Male,hr@areteapps.com,7,Full Stack Development,Advanced,,LinkedIn
+CX-INT-2026-GEN-0221,Syed Imad Iltaf,imadiltaf43@gmail.com,+92 3259019519,Male,"Comsats University Islamabad, Wah Campus",7,Full Stack Development,Intermediate,20,LinkedIn
+CX-INT-2026-PY-0222,MUHAMMAD REHAN KHALID,rehanrajpoot255@gmail.com,3155119655,Male,"Comsats University Islamabad, Wah Campus.",6,Python Programming,Intermediate,10,Friend / Referral
+CX-INT-2026-GEN-0223,Omer Shireen Muhammad,omer7sce@gmail.com,3257661921,Male,University of Karachi UBIT,4,Full Stack Development,Advanced,10,LinkedIn
+CX-INT-2026-GEN-0224,Muhammad Umer,mumer.se24@gmail.com,3110797273,Male,University of Gujrat,8,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-GEN-0225,Shubhranshu Tiwari,shubhranshutiwari9p@gmail.com,9369550802,Male,Noida Institute of Engineering and Technology,5,Full Stack Development,Intermediate,,LinkedIn
+CX-INT-2026-DS-0226,Atharva Avinash Gadge,atharvagadge07@gmail.com,9321892860,Male,Vivekanand Education Society's Institute of Technology,5,Data Science & AI Basics,Intermediate,,LinkedIn
+CX-INT-2026-DS-0227,ZOHAIB ABBAS,abbaszohaib940@gmail.com,3140996167,Male,COMSATS UNIVERSITY ISLAMABAD,6,Data Science & AI Basics,Intermediate,20,Friend / Referral
+CX-INT-2026-GEN-0228,Abdul Moiz Siddiqui,moizsiddiqui639@gmail.com,3369280536,Male,Comsats university Islamabad Attock campus,4,Full Stack Development,Beginner,10,LinkedIn
+CX-INT-2026-GEN-0229,Potnuru Pravallika,pravallikapotnuru18@gmail.com,9618864488,Female,Lendi Institute of Engineering and Technology,7,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-JAVA-0231,Muhammad Hashir Malik,malik.hashir1239@gmail.com,3260981834,Male,COMSATS university Islamabad,4,Java Programming,Intermediate,20,LinkedIn
+CX-INT-2026-PY-0232,Abdullah bin arif,Khabdullah184@gmail.com,3359144164,Male,"Comsats university Islamabad, wah campus",7,Python Programming,Intermediate,,Friend / Referral
+CX-INT-2026-DS-0234,Dost Muhammad,dostmuhammad9990@gmail.com,3186903637,Male,Comsats University,5,Data Science & AI Basics,Intermediate,20,LinkedIn
+CX-INT-2026-DS-0235,Muhammed Awais,rdxawais41@gmail.com,0327 5579590,Male,"comsats University Islamabad, Wah Campus",4,Data Science & AI Basics,Beginner,10,LinkedIn
+CX-INT-2026-GEN-0236,Eiman Hassan,eimanhasan2004@gmail.com,3111539315,Female,Comsats University Islambad Attock Campus,7,Full Stack Development,Advanced,10,LinkedIn
+CX-INT-2026-GEN-0237,Ayna husnat,aynahusnat19@gmail.com,3265125091,Female,"NCBA&E,Multan",8,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-PY-0238,Romeeza Rizwan,romeeza7@gmail.com,3485659263,Female,"Comsats university Islamabad, wah campus",4,Python Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-GEN-0239,Shizal batool,shizalbatool19@gmail.com,3055755343,Female,Comsats university wah campus,5,Full Stack Development,Intermediate,20,Friend / Referral
+CX-INT-2026-PY-0240,Faiq Mansoor,itxfaiqmanssor@gmail.com,3709131489,Male,COMSATS Institute of information technology wah cantt,4,Python Programming,Beginner,20,LinkedIn
+CX-INT-2026-PY-0241,Mohsin Ali,mohsinalirana222@gmail.com,3085175723,Male,"COMSATS University Islamabad, Wah Campus",6,Python Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-DS-0242,Bablu Kumar,bablukumar2232005@gmail.com,9122853318,Male,RTCIT,6,Data Science & AI Basics,Intermediate,,LinkedIn
+CX-INT-2026-JAVA-0243,Muhammad Jawad Ur Rahman,rahmanjawadur26@gmail.com,3360202815,Male,"COMSATS University Islamabad, Wah Campus",8,Java Programming,Intermediate,,LinkedIn
+CX-INT-2026-GEN-0244,Fere Rohini Dagdu,fererohini@gmail.com,9322071980,Female,Dr. Babasaheb Ambedkar Technology Loner,6,Full Stack Development,Intermediate,,LinkedIn
+CX-INT-2026-GEN-0245,Amina Salman,amina0000apple@gmail.com,3205741934,Female,"COMSATS University Islamabad,Wah Campus",3,Full Stack Development,Beginner,,WhatsApp group
+CX-INT-2026-CPP-0246,Shehreen Sarwar,shehreensoftwareengineer@gmail.com,3280267675,Female,COMSATS University Islamabad,6,C++ Programming,Intermediate,20,Friend / Referral
+CX-INT-2026-PY-0247,Muhammad Abdullah Awan,abdullahawan8283@gmail.com,0300 0577743,Male,"Comsats University Islamabad, Wah campus",6,Python Programming,Advanced,20,LinkedIn
+CX-INT-2026-PY-0248,Muhammad Waleed,waleedch7450@gmail.com,9.23056E+11,Male,Comsats University Islamabad,5,Python Programming,Beginner,10,LinkedIn
+CX-INT-2026-GEN-0249,Muhammad Sufiyan,sufyankhann678911@gmail.com,3055813662,Male,Comsats University Islamabad,4,Full Stack Development,Intermediate,,LinkedIn
+CX-INT-2026-CYB-0250,Sidra Maryam,sidramaryam666@gmail.com,+92 328 5784797,Female,University of Engineering and Technology Taxila,5,Cybersecurity Fundamentals,Intermediate,10,LinkedIn
+CX-INT-2026-PY-0251,Muhammad Sudais,sudaisdedu@gmail.com,9.23115E+11,Male,Arid Agriculture University Rawalpindi,3,Python Programming,Beginner,10,WhatsApp group
+CX-INT-2026-JAVA-0252,Abdul Samad Khalil,abdulsamadkhalil011@gmail.com,3367839939,Male,Comsats university Islamabad wah campus,3,Java Programming,Advanced,10,WhatsApp group
+CX-INT-2026-PY-0253,Tehreem Siddiqui,siddiquitahreem360@gmail.com,3482134578,Female,Comsats university Islamabad wah campus,2,Python Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-PY-0254,Mamoona Shafique,mamoonashafique17@gmail.com,0302-7419110,Female,National college of business administration and economics multan.,8,Python Programming,Intermediate,10,Friend / Referral
+CX-INT-2026-GEN-0255,Aayma Shahid,aaymashahid18@gmail.com,3184033724,Female,UMT,6,Full Stack Development,Advanced,20,LinkedIn
+CX-INT-2026-DS-0256,Muhammad Waqar Tahir,waqartahir480@gmail.com,3124608709,Male,Government College University Faisalabad,8,Data Science & AI Basics,Intermediate,10,LinkedIn
+CX-INT-2026-PY-0257,Sarah Bilal,sarahbilal361@gmail.com,3175914964,Female,Comsats University Islamabad Wah campus,2,Python Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-DS-0258,Ujala Safdar,ujalasafdar4@gmail.com,3011053229,Female,COMSATS University sahiwal,5,Data Science & AI Basics,Intermediate,10,LinkedIn
+CX-INT-2026-PY-0259,Dasun Dhananjaya,dasundananjaya2018@gmail.com,722834927,Male,Horizon Campus,3,Python Programming,Beginner,,LinkedIn
+CX-INT-2026-DS-0260,Muhammad Saad,meizsaad732@gmail.com,3185700669,Male,UET Taxila,6,Data Science & AI Basics,Advanced,20,WhatsApp group
+CX-INT-2026-GEN-0261,Muhammad Umer,mumer.se24@gmail.com,3110797273,Male,University of Gujrat,8,Full Stack Development,Intermediate,,LinkedIn
+CX-INT-2026-DS-0262,Laiba Fatima,laibafatimakang@gmail.com,3261725580,Female,National college of business and economics,8,Python Programming,Beginner,,Friend / Referral
+CX-INT-2026-PY-0263,Muhammad Usman Azeem,mirzausman50008@gmail.com,3051750008,Male,COMSATS UNIVERSITY ISLAMABAD (ISLAMABAD CAMPUS),3,Python Programming,Intermediate,10,LinkedIn
+CX-INT-2026-DS-0264,Awaiz Aziz,awaizaziz808@gmail.com,3116365668,Female,"COMSATS University Islamabad ,Sahiwal Campus",6,Data Science & AI Basics,Advanced,10,LinkedIn
+CX-INT-2026-DS-0265,Ayyana Tariq,ayyanatariq03@gmail.com,3118475332,Female,"COMSATS UNIVERSITY ISLAMABAD, SAHIWAL CAMPUS",6,Data Science & AI Basics,Advanced,20,Friend / Referral
+CX-INT-2026-DS-0266,Ayesha Tariq,aishatariq713@gmail.com,3040685935,Female,Comsats University Islamabad,7,Data Science & AI Basics,Intermediate,20,LinkedIn
+CX-INT-2026-JAVA-0267,Hammad Ur Rehman,hammadurrehman957@gmail.com,3110980957,Male,Comsats university Islamabad Wah campus,4,Java Programming,Intermediate,10,LinkedIn
+CX-INT-2026-DS-0268,Muhammad Rebal Rasheed,muhammadrebalrasheed972@gmail.com,3338735838,Male,Comsats University Islamabad,3,Data Science & AI Basics,Beginner,10,LinkedIn
+CX-INT-2026-GEN-0269,Hafsa Eiman,emaanshaguftabashirahmed@gmail.com,3355231969,Female,International Islamic University,6,Full Stack Development,Advanced,20,LinkedIn
+CX-INT-2026-PY-0270,Saman,itssaman303@gmail.com,9.23249E+11,Female,Comsats University Islamabad,4,Python Programming,Intermediate,10,LinkedIn
+CX-INT-2026-DS-0271,Daniya Abdul Razzaq,daniya788@icloud.com,055-683-9820,Female,University of Grater Manchester,3,Data Science & AI Basics,Intermediate,10,LinkedIn
+CX-INT-2026-DS-0272,Abdullah Zafar,abdullah3744377@gmail.com,3011264944,Male,"CUI, Wah",6,Data Science & AI Basics,Beginner,10,LinkedIn
+CX-INT-2026-DS-0273,Laiba Ghafoor,laibaghafoor00@gmail.com,3195466225,Female,Rawalpindi Women University,8,Data Science & AI Basics,Beginner,,LinkedIn
+CX-INT-2026-PY-0274,Tania,ziddir930@gmail.com,3160070539,Female,Municipal degree college,3,Data Science & AI Basics,Beginner,10,WhatsApp group
+CX-INT-2026-DS-0275,Wamiq Abdullah Nadeem,wamiqabdullah98@gmail.com,3105824501,Male,COMSATS University,5,Data Science & AI Basics,Intermediate,20,Friend / Referral
+CX-INT-2026-PY-0276,Meerab Ashfaq,meerabashfaq23@gmail.com,3318543310,Female,"COMSATS university Islamabad, Wah Campus",4,Python Programming,Beginner,,Friend / Referral
+CX-INT-2026-PY-0277,Muhammad Hassaan,mhassaan2.official@gmail.com,3037284151,Male,International Islamic University Islamabad,4,Python Programming,Intermediate,,LinkedIn
+CX-INT-2026-DS-0278,Tooba Tanveer,toobatanveer09@gmail.com,9.23326E+11,Female,COMSATS UNIVERSITY ISLAMABAD,7,Data Science & AI Basics,Intermediate,,LinkedIn
+CX-INT-2026-CYB-0279,Darshan Kumar,dkspanchani@gmail.com,3392422006,Male,SZABIST Karachi,4,Cybersecurity Fundamentals,Beginner,10,LinkedIn
+CX-INT-2026-CYB-0280,Geeta,geetasuther24@gmail.com,3212543439,Female,Iba karachi,5,Cybersecurity Fundamentals,Beginner,10,LinkedIn
+CX-INT-2026-GEN-0281,Yamna Kamal,yamnakamal19@gmail.com,3338911146,Female,Capital University of Science & Technology,3,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-CYB-0282,Muhammad shoaib Ahmed,shoaibmahsudd@gmail.com,3189908007,Male,Comsats university Islamabad Wah campus,5,Cybersecurity Fundamentals,Beginner,,WhatsApp group
+CX-INT-2026-CPP-0283,Saim sohail,s4im.exe@gmail.com,3269878434,Male,Comsats wah,4,C++ Programming,Intermediate,,WhatsApp group
+CX-INT-2026-PY-0285,Ayesha,gmayesha2004@gmail.com,3169344686,Female,Comsats University islmabad Attock campus,6,Python Programming,Advanced,10,LinkedIn
+CX-INT-2026-GEN-0286,Eman Abdullah,ek6945898@gmail.com,3038433741,Female,Comsats University Islamabad,2,Full Stack Development,Intermediate,20,WhatsApp group
+CX-INT-2026-DS-0287,Muhammad Muneeb,muneeebwaheed2006@gmail.com,3325282875,Male,Comsats university,5,Data Science & AI Basics,Intermediate,10,LinkedIn
+CX-INT-2026-PY-0288,Saeed Rehman,rehmansaeed1167@gmail.com,3249598654,Male,university of Gujrat,8,Python Programming,Beginner,10,Friend / Referral
+CX-INT-2026-DS-0289,ROOHULLAH,roohullah87388738@gmail.com,3340117005,Male,Comsats University Islamabad Wah Campus,4,Data Science & AI Basics,Beginner,10,Friend / Referral
+CX-INT-2026-CPP-0290,Muhammad Naveed,naveedpakhtoon893@gmail.com,3709725220,Male,University of agriculture dikhan,3,C++ Programming,Intermediate,,WhatsApp group
+CX-INT-2026-GEN-0291,Muhammad Bilal Shafique,bshafiq57@gmail.com,3144079741,Male,"Comsats University Islamabad, Wah Campus",5,Full Stack Development,Beginner,10,WhatsApp group
+CX-INT-2026-DS-0292,Muhammad Huzaifa Hassan,huzaifahassan54321@gmail.com,3445090669,Male,Comsats wah university,4,Data Science & AI Basics,Intermediate,10,WhatsApp group
+CX-INT-2026-DS-0293,Hashim Sohail,Hashimsohail29@gmail.com,92 311-8412127,Male,"Comsats University Islamabad, Wah Campus",5,Data Science & AI Basics,Beginner,10,WhatsApp group
+CX-INT-2026-DS-0294,Muhammad Hammad,hammadkhan21207@gmail.com,3499234031,Male,COMSATS UNIVERSITY ISLAMABAD WAH CAMPUS,7,Data Science & AI Basics,Advanced,10,WhatsApp group
+CX-INT-2026-CPP-0295,Radhiyeh Nasir,radhiyeh@gmail.com,3355147552,Female,Comsats,5,C++ Programming,Advanced,20,WhatsApp group
+CX-INT-2026-CYB-0296,Ayesha bibi,ayeshabibiofficial0011@gmail.com,3705204227,Female,COMSATS university Islamabad wah campus,5,Cybersecurity Fundamentals,Intermediate,,WhatsApp group
+CX-INT-2026-CYB-0297,Atta Ul Momin,momin98878@gmail.com,3312498398,Male,Gomal University d I Khan,8,Cybersecurity Fundamentals,Beginner,10,WhatsApp group
+CX-INT-2026-GEN-0298,Junaid Ali,junaidali22527@gmail.com,3273500036,Male,Gcuf,8,Full Stack Development,Advanced,10,Friend / Referral
+CX-INT-2026-CYB-0299,Muhammad Usman,musmanbabar7@gmail.com,3347856399,Male,"Comsats university Islamabad, wah campus",5,Cybersecurity Fundamentals,Beginner,10,WhatsApp group
+CX-INT-2026-JAVA-0300,Ammara manzoor,manzooramara866@gmail.com,3707618207,Female,COMSATS University wah campus,2,Java Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-GEN-0301,MUHAMMAD,muhammadbinsanaullah1122@gmail.com,3369342221,Male,Comsats university islamabad,5,Full Stack Development,Beginner,10,WhatsApp group
+CX-INT-2026-CYB-0302,Muhammad Imran,imranmahsood5@gmail.com,3315390459,Male,Tank gomal university,1,Cybersecurity Fundamentals,Intermediate,20,WhatsApp group
+CX-INT-2026-PY-0303,Muhammad Anees,m.anees7464@gmail.com,3135243062,Male,Comsats University Islamabad WAH Campus,3,Python Programming,Intermediate,,Friend / Referral
+CX-INT-2026-GEN-0304,Jaweria sarfraz,jaweriasarfrazahmad30@gmail.com,0344 6581063,Female,Arid Agriculture University,5,Full Stack Development,Beginner,10,LinkedIn
+CX-INT-2026-CYB-0305,Saqib Rahman,rahmansaqib981@gmail.com,3029024205,Male,Gomal university,8,Cybersecurity Fundamentals,Beginner,,WhatsApp group
+CX-INT-2026-CPP-0306,Javeria Haider,javeriahaider300@gmail.com,3215083638,Female,National University of Pakistan,2,C++ Programming,Intermediate,20,WhatsApp group
+CX-INT-2026-DS-0307,Muhammad Muneeb Liaqat,malikmuneeeb9@gmail.com,3343033302,Male,COMSATS university Islamabad wah campus,4,Data Science & AI Basics,Beginner,,Friend / Referral
+CX-INT-2026-GEN-0308,TufailAhmad,tufailmsd1223@gmail.com,3262154944,Male,University of Education Lahore Faisalabad Campus,3,Full Stack Development,Intermediate,10,WhatsApp group
+CX-INT-2026-DS-0309,Zain ul Abideen,zaynul.0abideen@gmail.com,3309716416,Male,Comsats university Islamabad Wah campus,2,Data Science & AI Basics,Beginner,10,WhatsApp group
+CX-INT-2026-GEN-0310,Muhammad ayaz,ayazkhanpkr1@gmail.com,92 3038293215,Male,university of education lahore,3,Full Stack Development,Intermediate,10,Friend / Referral
+CX-INT-2026-CPP-0311,Muhammad Yasir,ysmsd123@gmail.com,3354832845,Male,Govt College Of Management and Science,3,C++ Programming,Beginner,20,WhatsApp group
+CX-INT-2026-CYB-0312,Shahid ahmad,shahidbjr1040@gmail.com,3269797223,Male,GPGC KHAR,1,Cybersecurity Fundamentals,Intermediate,10,WhatsApp group
+CX-INT-2026-CYB-0313,Ibad Jahangir,ibadjahangir8100@gmail.com,3481000845,Male,Bahudin zakriya university Multan,5,Cybersecurity Fundamentals,Beginner,10,WhatsApp group
+CX-INT-2026-CYB-0314,SOHAIL KHAN,sohailmmd06@gmail.com,3089288455,Male,Govt degree college Ekka Ghund,2,Cybersecurity Fundamentals,Beginner,10,WhatsApp group
+CX-INT-2026-DS-0315,Muhammed Areeb Bukhari,areebshah998@gmail.com,3120699830,Male,BZU,8,Data Science & AI Basics,Beginner,,WhatsApp group
+CX-INT-2026-CYB-0316,Muhammad Shahzaib,mshahzaibnadeem07@gmail.com,3033551031,Male,Bahudin Zakaria university of Multan,5,Cybersecurity Fundamentals,Intermediate,10,WhatsApp group
+CX-INT-2026-CYB-0317,Rafia Tehreem,rafiatehreem617@gmail.com,3437029617,Female,Bzu Multan,3,Cybersecurity Fundamentals,Beginner,10,WhatsApp group
+CX-INT-2026-CPP-0318,Muhammad Hashim,m.hashmi3k@gmail.com,3363636812,Male,University of Swat,2,C++ Programming,Beginner,20,LinkedIn
+CX-INT-2026-DS-0319,Adil khan,adilkhan5544071@gmail.com,3028860126,Male,University of malakand,2,Data Science & AI Basics,Intermediate,,WhatsApp group
+CX-INT-2026-DS-0320,Najumulsehar,sonos4849@gmail.com,3004003981,Female,Bahuddin Zakaria university,8,Data Science & AI Basics,Intermediate,,WhatsApp group
+CX-INT-2026-GEN-0321,Muhammad Mohsin Ramzan,mmohsing111000@gmail.com,3409811094,Male,COMSATS university Islamabad (Wah Campus),1,Full Stack Development,Beginner,20,WhatsApp group
+CX-INT-2026-DS-0322,Rabia Malik,bsmath2020e18@gmail.com,3200917182,Female,Bahauddin Zakariya University Multan,8,Data Science & AI Basics,Beginner,10,WhatsApp group
+CX-INT-2026-PY-0323,Abdul qayum,aq303121@gmail.com,3332702310,Male,Punjab University,1,Python Programming,Beginner,,WhatsApp group
+CX-INT-2026-CYB-0324,Umarhayat,umarhayatafridi21201@gmail.com,3065582046,Male,Uet Peshawar,1,Cybersecurity Fundamentals,Beginner,,Friend / Referral
+CX-INT-2026-CPP-0325,Arman Ullah,armanwitty6120@gmail.com,3347731012,Male,No,1,C++ Programming,Intermediate,,Friend / Referral
+CX-INT-2026-GEN-0327,Shahab khan,shahabbjr74@gmail.com,3299363663,Male,University Of Malakand,2,Full Stack Development,Beginner,,WhatsApp group
+CX-INT-2026-DS-0328,Allah Noor,allahnoorkhan239@gmail.com,3336964437,Male,UET peshawer,1,Data Science & AI Basics,Beginner,,WhatsApp group
+CX-INT-2026-DS-0329,Muhammad Yaseen,yaseenkhanbj12345@gmail.com,3275276775,Male,Malakand University,4,Data Science & AI Basics,Beginner,20,WhatsApp group
+CX-INT-2026-DS-0330,Rao Muhammad Muzammil,raomuhammadmuzammil32@gmail.com,0370-7013520,Male,Bahauddin Zakariya University Multan,8,Data Science & AI Basics,Beginner,,WhatsApp group
+CX-INT-2026-DS-0331,Areesha Fatima,areesha.fatima51272@gmail.com,3319847363,Female,"Comsats University Islamabad, Wah Campus",3,Data Science & AI Basics,Beginner,20,University
+CX-INT-2026-JAVA-0332,Muhammad Abdullah Zafar,abdullah.nyrr@gmail.com,3231677504,Male,University of Wah,2,Java Programming,Intermediate,20,WhatsApp group
+CX-INT-2026-GEN-0333,Rameen Muzzammil,rameenmuzzammil3@gmail.com,3418809881,Prefer not to say,COMSATS,3,Full Stack Development,Beginner,,WhatsApp group
+CX-INT-2026-PY-0334,Muhammad Shoaib,shoaibe.s59@gmail.com,3285496818,Male,BZU Multan,4,Python Programming,Beginner,10,WhatsApp group
+CX-INT-2026-DS-0335,SHAHAB U DIN,afridishahab421@gmail.com,3345784034,Male,Panjab University,1,Data Science & AI Basics,Beginner,,WhatsApp group
+CX-INT-2026-GEN-0336,Alishba Arooj,alishbaarooj4343@gmail.com,3184445110,Female,CUI Wah,5,Full Stack Development,Intermediate,,WhatsApp group
+CX-INT-2026-PY-0337,Ubaid Ullah,uk001329@gmail.com,3250946075,Male,City university,1,Python Programming,Beginner,20,WhatsApp group
+CX-INT-2026-PY-0338,Hasnain khan,hasnainkhan160031@gmail.com,3198360344,Male,Malakand,1,Python Programming,Beginner,,WhatsApp group
+CX-INT-2026-DS-0339,Usama khan,usamashams4477@gmail.com,3210092224,Male,No university,1,Data Science & AI Basics,Intermediate,,WhatsApp group
+CX-INT-2026-JAVA-0341,NASIR khan,nk8688925@gmail.com,3159941689,Male,COMSAT university,5,Java Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-GEN-0342,Moavia Ali,prog45591@gmail.com,3155855473,Male,Comsats university Islamabad wah campus,1,Full Stack Development,Beginner,10,WhatsApp group
+CX-INT-2026-PY-0343,Ammara Imran,amaramalyk15@gmail.com,3140522137,Female,"Comsats university , wah campus",1,Python Programming,Beginner,10,WhatsApp group
+CX-INT-2026-CYB-0344,Turab Khan,gaomal3737@gmail.com,3444517132,Male,Thal university,1,Cybersecurity Fundamentals,Beginner,,WhatsApp group
+CX-INT-2026-GEN-0345,Mehran Rasool,mehranrasool.sp24@gmail.com,3289552955,Male,Comsat University Wah Campus,5,Full Stack Development,Beginner,,WhatsApp group
+CX-INT-2026-PY-0346,Shabnam burki,shabnamburki18@gmail.com,3411727365,Female,Tank campus,1,Python Programming,Beginner,10,WhatsApp group
+CX-INT-2026-CPP-0347,Minahil Nizam Chaudhry,manahilnizam40@gmail.com,3171176043,Female,COMSATS University Islamabad,1,C++ Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-PY-0348,Maaz khan,maazkhanislamian4238@gmail.com,3259534400,Male,Uni of Punjab,1,Python Programming,Beginner,10,WhatsApp group
+CX-INT-2026-PY-0349,Sana Malik,saannaamaaliikk@gmail.com,3715047454,Female,"Comsats University Islamabad,Wah Campus",5,Python Programming,Advanced,10,WhatsApp group
+CX-INT-2026-PY-0350,Amna Shafique,amnashafique036@gmail.com,3139007920,Female,COMSATS university,1,Python Programming,Beginner,20,WhatsApp group
+CX-INT-2026-GEN-0351,Arshad khan,arshadkhamarshadkhan86@gmail.com,3028860595,Male,Arshad khan,1,Full Stack Development,Beginner,10,Friend / Referral
+CX-INT-2026-DS-0352,Muhammad Saqib Khan,Psasaqib774@gmail.com,3355526993,Male,Gomal University (Tank Campus),1,Data Science & AI Basics,Beginner,,WhatsApp group
+CX-INT-2026-DS-0353,Haseeb Asad,asadhaseeb904@gmail.com,3165625323,Male,Comsats,1,Data Science & AI Basics,Intermediate,,LinkedIn
+CX-INT-2026-PY-0354,Sirra Ganesh,ganeshsirra19@gmail.com,9948398865,Male,Mahaveer institute of science and technology,8,Python Programming,Intermediate,10,LinkedIn
+CX-INT-2026-JAVA-0355,Syed Moeez Ahmed Gilani,syedmoeezahmed2020@gmail.com,3185227475,Male,Comsats,4,Java Programming,Advanced,10,Friend / Referral
+CX-INT-2026-PY-0356,Sadiq Ullah,Sadiqullahbj77@gamil.com,3099288921,Male,University of education Lahore,1,Python Programming,Beginner,10,WhatsApp group
+CX-INT-2026-GEN-0357,Syeda Aaiman Bukhari,syedaaaimanbukhari03@gmail.com,3085140576,Female,Comsats University Islamabad Wah Campus,3,Full Stack Development,Beginner,20,WhatsApp group
+CX-INT-2026-CPP-0358,Danish Nadeem,ndanish139@gmail.com,3359598855,Male,Comsats Islamabad,5,C++ Programming,Intermediate,10,LinkedIn
+CX-INT-2026-CPP-0359,Ahmed Ali Asif,aa2337815@gmail.com,3125179217,Male,COMSATS UNIVERSITY ISLAMABAD,4,C++ Programming,Intermediate,10,Friend / Referral
+CX-INT-2026-DS-0360,Mohsin Nadeem,Solelymohsin@outlook.com,3148763336,Male,COMSATS UNIVERSITY ISLAMABAD,7,Data Science & AI Basics,Advanced,20,LinkedIn
+CX-INT-2026-CPP-0361,Shahid Ali,asadali567oh@gmail.com,3313291151,Male,Comsats University Islamabad wah Campus,4,C++ Programming,Intermediate,,LinkedIn
+CX-INT-2026-PY-0362,Syeda Rida Fatima,sy.rida.fatima.909@gmail.com,0315-4040473,Female,Comsats University,1,Python Programming,Intermediate,10,University
+CX-INT-2026-CYB-0363,Ayesha Saleem,sadiasaleem4563@gmail.com,3295203929,Female,Hamdard university Islamabad Campus,5,Cybersecurity Fundamentals,Intermediate,10,LinkedIn
+CX-INT-2026-CPP-0364,Nitalia Zafar,nitaliazafar1@gmail.com,3099993633,Female,"Comsats University Islamabad,Wah Campus",1,C++ Programming,Advanced,20,WhatsApp group
+CX-INT-2026-JAVA-0365,Ihtisham ullah,ullahihtisham203@gmail.com,3302568262,Male,Comsats University Wahcantt campus,3,Java Programming,Intermediate,20,LinkedIn
+CX-INT-2026-DS-0366,Yasir shah,yasirshahyasir777@gmail.com,3140800200,Male,Baha uddin Zaria university Multan Pakistan,5,Data Science & AI Basics,Beginner,10,WhatsApp group
+CX-INT-2026-CYB-0367,Iqra Ramzan,zainabdullahali59@gmail.com,3228337199,Female,BZU Multan,2,Cybersecurity Fundamentals,Beginner,,WhatsApp group
+CX-INT-2026-PY-0368,Muhammad Anas Saeed,anasgujjar00475@gmail.com,3007633475,Male,"Comsat university, wah campus",1,Python Programming,Beginner,10,WhatsApp group
+CX-INT-2026-CYB-0369,Sultan Aziiz,eidmuhammad09j@gmail.com,3409892944,Male,Fsc student result awaiting,3,Cybersecurity Fundamentals,Beginner,10,Friend / Referral
+CX-INT-2026-CPP-0370,Sameer niaz,sssss.sssss744319@gmail.com,3291306795,Male,Comsats university Wah campus,1,C++ Programming,Intermediate,20,WhatsApp group
+CX-INT-2026-CYB-0371,Zia ullah,ziaullahzia2030@gmail.com,3075931893,Male,Not enrolled  yet complet fsc awaiting admissions,1,Cybersecurity Fundamentals,Beginner,10,WhatsApp group
+CX-INT-2026-PY-0372,Muhammad Asif,asifmehsud65@gmail.com,9.23324E+11,Male,UET Lahore,1,Python Programming,Beginner,,WhatsApp group
+CX-INT-2026-CPP-0373,Muhammad Anas,m.anaskhan881@gmail.com,3139753025,Male,Imsciences Peshawar,3,C++ Programming,Advanced,10,WhatsApp group
+CX-INT-2026-DS-0374,Jahanzaib khan,janzabkhan3636@gmail.com,3363621578,Male,UET,1,Data Science & AI Basics,Beginner,,WhatsApp group
+CX-INT-2026-GEN-0375,Amna sattar,amnasattar216@gmail.com,3367748466,Female,Bahuldin zakriya university Multan,2,Full Stack Development,Intermediate,,WhatsApp group
+CX-INT-2026-GEN-0376,Noshad Hussain,mr.noshad.hussain@gmail.com,3255892658,Male,COMSATS University Islamabad Wah Campus,5,Full Stack Development,Intermediate,10,WhatsApp group
+CX-INT-2026-PY-0377,Mehreen sultana,Pluviophilemonstax@gmail.com,3078117748,Female,BZU,3,Python Programming,Beginner,10,WhatsApp group
+CX-INT-2026-PY-0378,Hafiz Hassam Ali Abdul Rehman,hassamalimirza0809@gmail.com,+92 3155039225,Male,"COMSTATS University Islamabad, Wah Campus",4,Python Programming,Intermediate,20,WhatsApp group
+CX-INT-2026-DS-0379,Muhammad Zafar Sameer,zs913.653@gmail.com,3215256530,Male,Government College University Faisalabad,8,Data Science & AI Basics,Beginner,,WhatsApp group
+CX-INT-2026-PY-0380,Hamza Ali,hmzs16703@gmail.com,3115602695,Male,University of Haripur,8,Python Programming,Intermediate,,LinkedIn
+CX-INT-2026-JAVA-0382,Mustafa,gga35864@gmail.com,3706413125,Male,"COMSATS University Islamabad, Wah Campus",4,Java Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-DS-0383,Arbal Shakeel,arbalshakeel@gmail.com,3705486675,Female,COMSATS WAH,3,Data Science & AI Basics,Beginner,10,WhatsApp group
+CX-INT-2026-CYB-0384,Farhan Shehzad,farhanshahzad12123@gmail.com,3455804136,Male,Iqra uni,2,Cybersecurity Fundamentals,Intermediate,10,WhatsApp group
+CX-INT-2026-GEN-0385,Fatima Ameer,fatimaameer378@gmail.com,3196324591,Female,Bahuddin Zakaria University Multan,5,Full Stack Development,Beginner,10,WhatsApp group
+CX-INT-2026-CYB-0386,Ismail sardar,ismailbsardar@gmail.com,3179555949,Male,Comsats wah,3,Cybersecurity Fundamentals,Beginner,,WhatsApp group
+CX-INT-2026-DS-0387,Zahoor Ahmad,zhramd47@gmail.com,3340613372,Male,Nill,1,Data Science & AI Basics,Beginner,,WhatsApp group
+CX-INT-2026-GEN-0388,KHADIJA YOUSUF,khadijayousuf33@gmail.com,3135111507,Female,Comsats University Islamabad,6,Full Stack Development,Advanced,20,Friend / Referral
+CX-INT-2026-PY-0389,Aimen Fiaz,aimenfayyaz60@gmail.com,3215117138,Female,Comsats,3,Python Programming,Beginner,,WhatsApp group
+CX-INT-2026-GEN-0390,Umer Rasheed,umerrasheed739@gmail.com,3485791339,Male,National University of Modern Languages (NUML),7,Full Stack Development,Intermediate,20,LinkedIn
+CX-INT-2026-DS-0391,Oneb Ur Rehman,Oneburrehman0341@gmail.com,3011810606,Male,Government College University Faisalabad,8,Data Science & AI Basics,Beginner,,WhatsApp group
+CX-INT-2026-CYB-0392,Muskaan Sohaib Malik,Mal,3079420722,Female,Comstats university Islamabad,4,Cybersecurity Fundamentals,Beginner,,WhatsApp group
+CX-INT-2026-GEN-0393,Muhammad Husnain,muhammadhasnain3031@gmail.com,9.23E+11,Male,University of Sargodha,8,Full Stack Development,Advanced,20,LinkedIn
+CX-INT-2026-DS-0394,Mahir Ullah,makingafridi@gmail.com,3491502437,Male,None,1,Data Science & AI Basics,Beginner,,WhatsApp group
+CX-INT-2026-GEN-0395,Abdullah Mehmood,abdullahmehmood68@outlook.com,3009553503,Male,Capital university of science and technology,5,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-CYB-0395,Rehmat ullah,xyz363232@gmail.com,3363232078,Male,University of peshawar,8,Cybersecurity Fundamentals,Beginner,20,Friend / Referral
+CX-INT-2026-CYB-0396,Muhammad Zahid,salar9999900@gmail.com,3361814948,Male,Government high secondary school Sam,1,Cybersecurity Fundamentals,Beginner,20,WhatsApp group
+CX-INT-2026-GEN-0397,Muhammad Abdullah,abdullahmmm181@gmail.com,3214766509,Male,COMSATS University Islamabad,5,Full Stack Development,Beginner,20,WhatsApp group
+CX-INT-2026-PY-0398,Imrankhan,imrankhankundi805@gmail.com,3051939342,Male,Gomal university,2,Python Programming,Beginner,,Friend / Referral
+CX-INT-2026-PY-0399,Muhammad Shayan Khan,mshayankhani191@gmail.com,3360319419,Male,Gomal university dera Ismail Khan,3,Python Programming,Beginner,20,Friend / Referral
+CX-INT-2026-CYB-0400,Muhammad Munir,muhammadmunir01k@gmail.com,3461182511,Male,Gomal university,3,Cybersecurity Fundamentals,Intermediate,,WhatsApp group
+CX-INT-2026-DS-0401,Chaudary Subhani,chaudarysubhani06@gmail.com,+92 320 5704213,Male,Comsats,3,Data Science & AI Basics,Beginner,20,WhatsApp group
+CX-INT-2026-DS-0402,Muhammad Ismail Anwar,ismailkharoti117629@gmail.com,3340303864,Male,Gomal university,2,Data Science & AI Basics,Beginner,10,WhatsApp group
+CX-INT-2026-PY-0403,Ahmad Mehsud,riskymehsud7@gmail.com,3400955321,Male,Gomal University,7,Python Programming,Beginner,20,WhatsApp group
+CX-INT-2026-CYB-0404,Abdul Wahid,abdwahidkhan777@gmail.com,3422494907,Male,Gomal university,8,Cybersecurity Fundamentals,Beginner,,WhatsApp group
+CX-INT-2026-PY-0405,Nasir Mehmood,nasir.ics11@gmail.com,3021907278,Male,Commerce College Dera Ismail Khan,1,Python Programming,Intermediate,,WhatsApp group
+CX-INT-2026-GEN-0406,Islamuddin,ikbhittani69@gmail.com,3409733391,Male,Gomal university Dera Ismail Khan,5,Full Stack Development,Intermediate,20,WhatsApp group
+CX-INT-2026-GEN-0407,Bushra Haider,bushrahaider648@gmail.com,3375572648,Female,Comsarts University Islamabad Wah Campus,4,Full Stack Development,Intermediate,,LinkedIn
+CX-INT-2026-PY-0408,Muhammad Adnan,adnanmehsud89@gmail.com,3495260255,Male,Gomal University,5,Python Programming,Advanced,20,WhatsApp group
+CX-INT-2026-CYB-0409,Alishba Zaib,alishbazaib285@gmail.com,3249563280,Female,National University Of Modern Languages (NUML) Islamabad,7,Cybersecurity Fundamentals,Intermediate,,LinkedIn
+CX-INT-2026-GEN-0410,Rizwan ullah,princespathan577@gmail.com,3449070095,Male,government college of management sciences,1,Full Stack Development,Intermediate,20,WhatsApp group
+CX-INT-2026-CYB-0411,Muhammad Faizan,muhammadfaizankhan1122338899@gmail.com,3325936115,Male,University of technology nowshera,2,Cybersecurity Fundamentals,Beginner,20,WhatsApp group
+CX-INT-2026-DS-0412,Atia tuz Zahra Zahrvi,azzahrvi@gmail.com,3320007751,Female,COMSATS  university  Campus sahiwal,6,Data Science & AI Basics,Intermediate,10,Friend / Referral
+CX-INT-2026-CYB-0413,Abdul Samad,abdul542005samad@gmail.com,9.23197E+11,Male,university of technology nowshera,2,Cybersecurity Fundamentals,Intermediate,10,Friend / Referral
+CX-INT-2026-PY-0414,Rizwan Khan,qudrata206@gmail.com,3449070095,Male,Government degree no 2 class 12nd year subjects computer science,1,Python Programming,Intermediate,20,WhatsApp group
+CX-INT-2026-PY-0415,Nida Mahsood,nidamahsood@gmail.com,3489630994,Female,Virtual university,2,Python Programming,Beginner,20,Friend / Referral
+CX-INT-2026-DS-0416,Sadia mehsood,sadiamehsud88@gmail.com,3109806975,Female,Virtual university,1,Data Science & AI Basics,Beginner,,Friend / Referral
+CX-INT-2026-DS-0417,Mishaal Naveed,mishaalnaveed1@gmail.com,9.23361E+11,Female,COMSATS University Islamabad Wah campus,3,Data Science & AI Basics,Beginner,20,WhatsApp group
+CX-INT-2026-JAVA-0418,Mamoon Azam Khattak,mamoonazamkhattak12@gmail.com,3344040638,Male,University Of Engineering And Technology Peshawar,2,Java Programming,Beginner,10,LinkedIn
+CX-INT-2026-DS-0419,Muhammad junaid,lootbest015@gmail.com,3450308151,Male,Gomal university of Dikhan,1,Data Science & AI Basics,Intermediate,10,WhatsApp group
+CX-INT-2026-GEN-0420,Waseem Ahmad,wa0031538@gmail.com,3475980084,Male,Govt degree college 1 DIK,1,Full Stack Development,Beginner,10,WhatsApp group
+CX-INT-2026-DS-0421,Abdul Rehman,imab0360@gmail.com,3426570896,Male,Bahaudin Zakriya University Multan,7,Data Science & AI Basics,Beginner,,WhatsApp group
+CX-INT-2026-GEN-0422,Mustabshira Nasir,fa23-bcs-063@cuiatk.edu.pk,3028948502,Female,"Comsats University Islamabad, Attock campus",6,Full Stack Development,Advanced,,LinkedIn
+CX-INT-2026-PY-0423,Umar Khitab,umarkhitabmsd0@gmail.com,3059098027,Male,Gomal university,4,Python Programming,Intermediate,20,WhatsApp group
+CX-INT-2026-JAVA-0424,Tanveer Ahmad,tanveerabbas5615@gmail.com,3477411487,Male,Gov. Degree college number 1 D.I.KHAN (GOMAL UNIVERSITY),5,Java Programming,Beginner,20,WhatsApp group
+CX-INT-2026-JAVA-0425,Maqsood Ahmad,maqsoodabbas5615@gmail.com,3477411487,Male,Gov. Degree college number 1 (GOMAL UNIVERSITY),8,Cybersecurity Fundamentals,Beginner,20,WhatsApp group
+CX-INT-2026-JAVA-0426,Muhammad Abdullah Hussain,abdullahhussain292005@gmail.com,3351444602,Male,Foundation University Islamabad,4,Java Programming,Intermediate,10,LinkedIn
+CX-INT-2026-GEN-0427,Muhammad Zahir,zahirmsd252@gmail.com,3355470801,Male,Gomal university Dera Ismail khan,7,Full Stack Development,Intermediate,10,WhatsApp group
+CX-INT-2026-GEN-0428,Ahmad Arsalan,arsalan.bscs@gmail.com,3028891967,Male,Agriculture University Dera Ismail Khan,2,Full Stack Development,Beginner,,WhatsApp group
+CX-INT-2026-GEN-0429,Mehreen mehsud,oolalaabc@gmail.com,3367757117,Female,Virtual university,1,Full Stack Development,Beginner,,Friend / Referral
+CX-INT-2026-CPP-0430,Arsalan Alam,arslanalam4718@gmail.com,3405596963,Male,"Comsats university Islamabad,Lahore campus",4,C++ Programming,Intermediate,20,LinkedIn
+CX-INT-2026-DS-0432,Muhammad shoaib,jan3488855@gmail.com,3340867691,Male,Qurtuba university,8,Data Science & AI Basics,Intermediate,10,WhatsApp group
+CX-INT-2026-CYB-0433,Safiullah,safiullahbjr180@gmail.com,3010996280,Male,University of malakand,3,Cybersecurity Fundamentals,Beginner,20,WhatsApp group
+CX-INT-2026-GEN-0434,Aqsa,aqsaakram1316@gmail.com,3166033129,Female,"COMSATS University Of Information And Technology Islamabad, Sahiwal Campus",6,Full Stack Development,Intermediate,20,LinkedIn
+CX-INT-2026-PY-0435,Aqsa Saher,aqsasaher5995@gmail.com,3166330743,Female,"Comsats university Islamabad, sahiwal campus",6,Python Programming,Intermediate,,LinkedIn
+CX-INT-2026-CPP-0436,Rafiullah,Hangu,3258617840,Male,Kohat university os science and technology Hangu campus,4,C++ Programming,Beginner,,WhatsApp group
+CX-INT-2026-GEN-0437,Abdulmalik,abdulmalik032212@gmail.com,3221241827,Male,Kohat university of science and technology,5,Full Stack Development,Intermediate,10,WhatsApp group
+CX-INT-2026-PY-0438,Muhammad ullah,mohammadullah3786@gmail.com,3318603786,Male,KUST university hangu campus,8,Python Programming,Intermediate,,WhatsApp group
+CX-INT-2026-PY-0439,Muhammad Sudais,sudwazir66@gmail.com,3165852066,Male,kohat University of science and technology hangu campus,4,Python Programming,Beginner,20,Friend / Referral
+CX-INT-2026-CYB-0440,Ateed Rehmat,At,3283312310,Male,SIR SYED UNIVERSITY OF ENGINEERING AND TECHNOLOGY KARACHI,6,Cybersecurity Fundamentals,Intermediate,10,Instagram
+CX-INT-2026-PY-0441,Ziaullah,ziaullahorakxai@gmail.com,3323999887,Male,Kohat university of science and technology,4,Python Programming,Beginner,10,WhatsApp group
+CX-INT-2026-CPP-0442,Alishba Fatima,alishba169588@gmail.com,3202440069,Female,Nastp institute of information technology NIIT,2,C++ Programming,Intermediate,,LinkedIn
+CX-INT-2026-CYB-0443,Umar Inayat,umarinayatshah47@email.com,3709779559,Male,"Shuhada-E-Army Public School University Of Technology, Nowshera",2,Cybersecurity Fundamentals,Beginner,20,Friend / Referral
+CX-INT-2026-PY-0444,Ayesha Nazz,abubabak7@gmail.com,3421062301,Female,Virtual university,2,Python Programming,Beginner,20,Friend / Referral
+CX-INT-2026-GEN-0445,Raja Haris,raja13579g@gmail.com,+92 3170509197,Male,Comsats,8,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-DS-0446,Muhammad Omama Khalil,muhammadomamakhalil@gmail.com,3405442582,Male,"COMSATs University Ismalabad, Wah Campus",8,Data Science & AI Basics,Intermediate,10,LinkedIn
+CX-INT-2026-CYB-0447,Muhammad Haseeb Farooq,muhammadhaseebfarooq3@gmail.com,3199132782,Male,Air University Islamabad,1,Cybersecurity Fundamentals,Beginner,,LinkedIn
+CX-INT-2026-DS-0448,Rehmat shah,srehmat736@gmail.com,0331-7965489,Male,Kohat University of Science and technology Hangu campus,8,Data Science & AI Basics,Beginner,,WhatsApp group
+CX-INT-2026-GEN-0449,Tenzin Dolkar Lama,tenzindolkar170@gmail.com,977 - 9749213229,Female,Herald College,4,Full Stack Development,Beginner,20,LinkedIn
+CX-INT-2026-PY-0450,Sheryar Ahmad,sheryarahmad46607@gmail.com,3338408710,Male,Gomal University,8,Python Programming,Beginner,20,WhatsApp group
+CX-INT-2026-CYB-0451,Muhammad Aslam,aslamkhanafridi285@gmail.com,3325794967,Male,Kohat university of science and technology,4,Cybersecurity Fundamentals,Beginner,,WhatsApp group
+CX-INT-2026-CPP-0452,Habib Ur Rehman,hu932450@gmail.com,3379390945,Male,HITEC University Taxila Cantt,2,C++ Programming,Intermediate,10,Friend / Referral
+CX-INT-2026-GEN-0453,Imbisat Mahmood,imbisatmahmood05@gmail.com,3190403750,Female,COMSATS University Islamabad,7,Full Stack Development,Advanced,,LinkedIn
+CX-INT-2026-CPP-0454,Amir Hamza,hamzamehsudd@gmail.com,0333-6093593,Male,Szabist islamabad,3,C++ Programming,Intermediate,,Friend / Referral
+CX-INT-2026-DS-0455,Hussain Shah,huwaise55@gmail.com,3351901036,Male,KUST Hangu campus,8,Data Science & AI Basics,Beginner,,WhatsApp group
+CX-INT-2026-PY-0456,Waleed sattar,waleedsattar15@gmail.com,3044355155,Male,University of education,6,Python Programming,Intermediate,,WhatsApp group
+CX-INT-2026-DS-0457,Farwa khan,farwakhan20006@gmail.com,3154909166,Female,University of technology nowshera,3,Data Science & AI Basics,Intermediate,,WhatsApp group
+CX-INT-2026-PY-0458,Rao Abdul Rehman Ashraf,abdulrehmanrao184@gmail.com,3141769585,Male,Bzu,7,Python Programming,Beginner,,WhatsApp group
+CX-INT-2026-PY-0459,Sathiya js,jssathiya012@gmail.com,8870730447,Female,Nandha engineering college Autonomous,3,Python Programming,Beginner,,LinkedIn
+CX-INT-2026-PY-0461,Santhiya G,santhiya.ghs@gmail.com,8667493949,Female,Nandha Engineering college,3,Python Programming,Beginner,,Friend / Referral
+CX-INT-2026-GEN-0462,Bilal,Bilalaurangzeb001@gmail.com,3325339448,Male,COMSATS University Islamabad,7,Full Stack Development,Intermediate,20,LinkedIn
+CX-INT-2026-PY-0463,RATHISHALINI R,rathishalini2008@gmail.com,8870301314,Female,Nandha engineering college,3,Python Programming,Beginner,,LinkedIn
+CX-INT-2026-JAVA-0464,Naseem ullah,Qazi pump Hangu,3336206834,Male,Hangu campus,4,Java Programming,Beginner,,WhatsApp group
+CX-INT-2026-PY-0465,SOBIKA A,sobianandhan25@gmail.com,7305914060,Male,NANDHA ENGINEERING COLLEGE (AUTONOMOUS),3,Python Programming,Beginner,,LinkedIn
+CX-INT-2026-PY-0467,Varshini.R.S,varshini082026@gmail.com,8825692176,Female,Nandha Engineering College,3,Python Programming,Beginner,,LinkedIn
+CX-INT-2026-JAVA-0468,Aqsa Aslam,aqsaaslam182005@gmail.com,3249336486,Female,Comsats University Islamabad Wah Campus,6,Java Programming,Intermediate,10,LinkedIn
+CX-INT-2026-CPP-0469,Ayesha Sahar,ayeshasahar931@gmail.com,3029611139,Female,Comsats University Islamabad,4,C++ Programming,Advanced,10,LinkedIn
+CX-INT-2026-GEN-0470,Karamat Ullah,karamatkundi1221@gmail.com,3449507916,Male,Gomal University,7,Full Stack Development,Advanced,10,Friend / Referral
+CX-INT-2026-GEN-0471,Maryam Sajjad,mary57sajjad@gmail.com,3155608283,Female,Comsats University Islamabad Wah Campus,6,Full Stack Development,Advanced,20,WhatsApp group
+CX-INT-2026-DS-0472,Umar Saadat,umarsaadat10@gmail.com,3355872044,Male,Comsats University Islamabad Wah Campus,4,Data Science & AI Basics,Intermediate,,Friend / Referral
+CX-INT-2026-PY-0473,Kainat Tahir,kainattahir01@gmail.com,3285787106,Female,Comsats University Islamabad wah campus,6,Python Programming,Intermediate,,Friend / Referral
+CX-INT-2026-DS-0474,Muhammad Waseem Farooq,waseemf813@gmail.com,3195682795,Male,"Comsats University Islamabad, Wah Campus",4,Data Science & AI Basics,Intermediate,10,Friend / Referral
+CX-INT-2026-DS-0475,Haresh kumar,hareshkumarwadhrani642@gmail.com,3252417636,Male,Comsats university Islamabad Wah campus,5,Data Science & AI Basics,Beginner,20,LinkedIn
+CX-INT-2026-PY-0476,Gul Kaif Fatima,gulkaif98@gmail.com,3487510306,Female,GCUF,7,Python Programming,Intermediate,10,LinkedIn
+CX-INT-2026-GEN-0477,Javeria Tariq,javeriatariq323@gmail.com,9.23429E+11,Female,Government college university Faisalabad,7,Full Stack Development,Advanced,10,LinkedIn
+CX-INT-2026-DS-0474,Ranhoti Bandaralage Janadhi Chamudini Jayalath,janadhichamudini572@gmail.com,715532572,Female,"NSBM Green University ,SriLanka",3,Data Science & AI Basics,Beginner,10,LinkedIn
+CX-INT-2026-GEN-0475,Sharjeel Ahmed,sharjeeljutt115@gmail.com,3183657007,Male,Government College university Hyderabad,8,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-PY-0476,Zia Ur Rehman,ziazf61140@gmail.com,9.23319E+11,Male,Abasyn university Islamabad pak,7,Python Programming,Beginner,20,LinkedIn
+CX-INT-2026-JAVA-0478,Ayesha Sattar,garanashinwari@gmail.com,3275275436,Female,"COMSATS University Wah, Campus",2,Java Programming,Intermediate,,WhatsApp group
+CX-INT-2026-PY-0479,Maaz sultan,sultanmaaz0900@gmail.com,3315074838,Male,Gomal university,7,Python Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-CPP-0480,Muhammad Haseeb Gull,mehaseebpro@gmail.com,9.2336E+11,Male,University of Central Punjab,4,C++ Programming,Intermediate,10,LinkedIn
+CX-INT-2026-GEN-0481,Asiya khan,asiyakhan2az@gmail.com,‎⁨‪+92 329 9575879‬⁩,Female,Comsats University Islamabad Attock Campus,6,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-PY-0482,Amina Ashraf,aminaashraf6789@gmail.com,3181640026,Female,Comsats University Islamabad,4,Python Programming,Beginner,,LinkedIn
+CX-INT-2026-GEN-0483,Umm-e-Aimen,ummeaimen.8663@gmail.com,3175366272,Female,Comstas University Islamabad Attock Campus,6,Full Stack Development,Intermediate,20,Friend / Referral
+CX-INT-2026-PY-0484,Anosh Niazi,anooshyniazi01@gmail.com,3700998238,Female,"COMSATS, Wah Campus",3,Python Programming,Intermediate,10,LinkedIn
+CX-INT-2026-GEN-0485,Abiha,abihagulam9045@gmail.com,3296950476,Female,University of Engineering and Technology Narowal campus,4,Full Stack Development,Beginner,,Google search
+CX-INT-2026-CPP-0486,Umer,umerhayat2444@gmail.com,3095537995,Male,Comsat wah campus,3,C++ Programming,Intermediate,10,Friend / Referral
+CX-INT-2026-GEN-0487,Aqsa,Muhallah Jawad colony narowal,3027880081,Female,University of engineering and technology lahore,4,Full Stack Development,Beginner,,LinkedIn
+CX-INT-2026-GEN-0488,Saira Sehar,abdullahnisar2012@gmail.com,3061105175,Female,"University of Central Punjab, Multan",6,Full Stack Development,Advanced,10,LinkedIn
+CX-INT-2026-PY-0489,Maham Pervaiz,studious629@gmail.com,3275926273,Female,"University of Engineering and Technology,Lahore",4,Python Programming,Intermediate,10,Friend / Referral
+CX-INT-2026-GEN-0490,Muhammad Taha Nadeem,tahanadeem478@gmail.com,3319653654,Male,CUST (Capital University of Science and Technology),6,Full Stack Development,Intermediate,10,LinkedIn
+CX-INT-2026-CYB-0491,Muhammad Haroon,muhammadharoonswtd@gmail.com,3338591365,Male,Government degree college no 1 DIK,6,Cybersecurity Fundamentals,Intermediate,20,WhatsApp group
+CX-INT-2026-PY-0492,Umar Nabeel,umarnabeel553@gmail.com,3279313077,Male,SHAHEED BENIZAR BHUTTO UNIVERSITY CAMPUS NASHRO FROZE,1,Python Programming,Beginner,20,WhatsApp group
+CX-INT-2026-GEN-0493,Khizra sana,khizrasana10@gmail.com,3258667210,Female,University of Home economics Lahore,6,Full Stack Development,Intermediate,,LinkedIn
+CX-INT-2026-GEN-0494,Qazi Hammad ur Rehman Nadeem,qazih5812@gmail.com,3185218521,Male,Comsats university islamabad wah campus,6,Full Stack Development,Advanced,20,LinkedIn
+CX-INT-2026-DS-0495,Anayat Ullah,aukhan870@gmail.com,3420369536,Male,Comsats University Islamabad,8,Data Science & AI Basics,Intermediate,20,Friend / Referral
+CX-INT-2026-GEN-0496,Zuha Rafiq,zoharafiq89@gmail.com,3208459579,Female,"University of home Economics, Lahore",6,Full Stack Development,Intermediate,,LinkedIn
+CX-INT-2026-GEN-0497,Fatima Irfan,fatimairfan4446@gmail.com,3297464992,Female,University of Home Economics,6,Full Stack Development,Beginner,,LinkedIn
+CX-INT-2026-DS-0498,Noor Fatima,skyxsparky@gmail.com,+92 340-0833918,Female,University of Agriculture Faisalabad,5,Data Science & AI Basics,Intermediate,10,Friend / Referral
+CX-INT-2026-GEN-0499,Sadia Butt,sadiabutts60002596@gmail.com,3155826024,Female,"COMSATS, Wah Campus",3,Full Stack Development,Beginner,,LinkedIn
+CX-INT-2026-JAVA-0500,Khadija Mehmood,khadijamehmood05@gmail.com,3089244090,Female,"International Islamic University, Islamabad",6,Java Programming,Advanced,10,LinkedIn
+CX-INT-2026-CYB-0501,Malik Shahwaiz Ali,mobeenkhan90khan@gmail.com,3125823154,Male,Comsat University Wah Campus,4,Cybersecurity Fundamentals,Intermediate,10,WhatsApp group
+CX-INT-2026-CYB-0502,Ahsan ali khan,Ahsan117ali6khan@gmail.com,3408201213,Male,Comsats wah,4,Cybersecurity Fundamentals,Beginner,20,Friend / Referral
+CX-INT-2026-GEN-0503,Abdul rafey arif,abdulrafeyarif@gmail.com,3277222666,Male,Comsats wah,4,Full Stack Development,Beginner,20,WhatsApp group
+CX-INT-2026-GEN-0504,Aitezaz Sikandar Khan,aitezazsikandar@gmail.com,3070888643,Male,University of Peshawar,8,Full Stack Development,Advanced,10,LinkedIn
+CX-INT-2026-GEN-0505,Umm e Habiba,syedaummehabiba52@gmail.com,3373199997,Female,"Comsats University Islamabad,wah campus",6,Full Stack Development,Intermediate,10,Friend / Referral
+CX-INT-2026-JAVA-0506,Syed Ali Sher Kazmi,sher90674@gmail.com,9.2347E+11,Male,National University Of Modern Languages,3,Java Programming,Intermediate,10,Friend / Referral
+CX-INT-2026-DS-0507,Muhammad Ahmad Kamran,ahmadkc190@gmail.com,3185454345,Male,"Iqra University, Islamabad",6,Data Science & AI Basics,Intermediate,10,Facebook
+CX-INT-2026-CYB-0508,Mohamed Ashraf Mohamed Ahmed,mamafh05@gmail.com,2.01153E+11,Male,ARAB ACADEMY FOR SCIENCE & TECHNOLOGY & MARITIME,7,Cybersecurity Fundamentals,Beginner,20,LinkedIn
+CX-INT-2026-CPP-0509,Mudassir Hayat,mudassirhayatkhattak891@gmail.com,3449825791,Male,KKKUK,2,C++ Programming,Beginner,,Friend / Referral
+CX-INT-2026-GEN-0510,Rozalia Sheraz,rozsheraz@gmail.com,3103333806,Female,"Information Technology University, Lahore",6,Full Stack Development,Intermediate,20,Friend / Referral
+CX-INT-2026-JAVA-0511,Aatika Emaan,imn98115@gmail.com,+92 334 9661711,Female,University Of Modern Languages,2,Java Programming,Intermediate,,Friend / Referral
+CX-INT-2026-PY-0512,Mubashir khan,mubashirkha2344@gmail.com,3139802062,Male,University of okara,4,Python Programming,Intermediate,10,WhatsApp group
+CX-INT-2026-JAVA-0513,Muhabat Ali,muhabataliprince@gmail.com,3418386400,Male,"Comsats University,wah campus",3,Java Programming,Beginner,10,Friend / Referral
+CX-INT-2026-PY-0514,Muhammad Shahzad,m9880491@gmail.com,3211486315,Male,Gomal University DI Khan,2,Python Programming,Beginner,,WhatsApp group
+CX-INT-2026-DS-0515,Muhammad Younas,Codewithyounas@gmail.com,9.23017E+11,Male,The Islamia University of Bahawalpur,4,Data Science & AI Basics,Intermediate,20,LinkedIn
+CX-INT-2026-JAVA-0516,Asma Zafar,shahshahahmad20@gmail.com,3300622269,Female,Shaheed benazir gov girl uni commerce college Peshawar,7,Java Programming,Intermediate,,LinkedIn
+CX-INT-2026-DS-0517,Muhammad Abdullah,abdullahm13562@gmail.com,3139963202,Male,Uet peshawar,8,Data Science & AI Basics,Beginner,20,WhatsApp group
+CX-INT-2026-GEN-0518,Harshitha,harshithaagamam@gmail.com,8318602869,Female,YSR Engineering College of YVU,7,Full Stack Development,Intermediate,,Chat gpt
+CX-INT-2026-DS-0519,Shamza Malik,shamzamalik227@gmail.com,3055601114,Female,COMSATS Wah Campus,6,Data Science & AI Basics,Beginner,,LinkedIn
+CX-INT-2026-DS-0520,Abdul Haseeb,haseebsays123@gmail.com,3444741603,Male,Capital university of science and technology,6,Data Science & AI Basics,Intermediate,10,Friend / Referral
+CX-INT-2026-GEN-0521,Abdul Rehman,janjuaabdulrehman446@gmail.com,3194664532,Male,CUST ISLAMABAD,6,Full Stack Development,Beginner,20,LinkedIn
+CX-INT-2026-GEN-0522,Muhammad Qasim Zahoor,qasimzahoor923@gmail.com,3185286646,Male,Capital university of science and technology,6,Full Stack Development,Intermediate,,Facebook
+CX-INT-2026-JAVA-0523,Raja Mustafa Arfat,rajamustafabro@gmail.com,3325666133,Male,Cust,6,Java Programming,Intermediate,20,LinkedIn
+CX-INT-2026-DS-0524,syed haseeb badshah,syedhaseebbadshah81@gmail.com,3189454884,Male,cust,6,Data Science & AI Basics,Beginner,10,Friend / Referral
+CX-INT-2026-CYB-0525,Javeria khan,jiya04229@gmail.com,3181534556,Female,University of Technology Nowshera,2,Cybersecurity Fundamentals,Beginner,10,WhatsApp group
+CX-INT-2026-CPP-0526,Uzaam Ahmed Kayani,uzaamkayani@gmail.com,3135511479,Male,COMSATS UNIVERSITY ISLAMABAD,5,C++ Programming,Advanced,20,Friend / Referral
+CX-INT-2026-PY-0527,Sawaira Hamid,sawairahamid594@gmail.com,3295979371,Female,Capital University of Science and Technology,6,Python Programming,Intermediate,10,Friend / Referral
+CX-INT-2026-CYB-0528,Aliza Javed,alizajaved194@gamil.com,3207639539,Female,University of Engineering and technology,5,Cybersecurity Fundamentals,Intermediate,,LinkedIn
+CX-INT-2026-GEN-0529,Mohammad Aneeq,aneeq.tariq02@gmail.com,3342228392,Male,FAST NUCES,8,Full Stack Development,Advanced,20,LinkedIn
+CX-INT-2026-GEN-0530,Maryam Yaseen,maryamyaseen205@gmail.com,3275766296,Female,"Comsats University Islamabad, Attock Campus",7,Full Stack Development,Intermediate,,Friend / Referral
+CX-INT-2026-DS-0531,Ashir ali,ashirsatti5555@gmail.com,3495568808,Male,Cust,7,Data Science & AI Basics,Beginner,,LinkedIn
+CX-INT-2026-GEN-0532,Aneeba Hassan,aneebahassan123@gmail.com,3149312595,Female,Comsats University Islamabad,6,Full Stack Development,Intermediate,10,Friend / Referral
+CX-INT-2026-GEN-0533,Ahsan Jamil,ahsanjamil583@gmail.com,3078997581,Male,Comsats university islamabad attock campus,7,Full Stack Development,Advanced,10,LinkedIn
+CX-INT-2026-PY-0534,Ahsan Sajjad,asajjad827@gmail.com,3111668249,Male,Capital University of Science and technology,8,Python Programming,Intermediate,10,LinkedIn
+CX-INT-2026-DS-0535,Fahad Bin Shafi,fbsk14301@gmail.com,3433910258,Male,COMSATS University Islamabad Wah Campus,6,Data Science & AI Basics,Intermediate,10,Friend / Referral
+CX-INT-2026-GEN-0536,Muhammad Immad,ceoimmad@gmail.com,3347445544,Male,City University of Science and Information Technology,7,Full Stack Development,Advanced,20,Chatgpt
+CX-INT-2026-GEN-0537,M Ahsan saleem,23-se-098@student.hitecuni.edu.pk,3220548105,Male,Hitec university taxila,6,Full Stack Development,Beginner,20,Friend / Referral
+CX-INT-2026-CYB-0538,Abdullah Khan,iamabdullahkhan06@gmail.com,3059502435,Male,Comsats University Islamabad,4,Cybersecurity Fundamentals,Intermediate,,Friend / Referral
+CX-INT-2026-PY-0539,Muhammad Ibrahim,ibrahim.mi108@gmail.com,3195259220,Male,Hitec university taxila,6,Python Programming,Intermediate,,WhatsApp group
+CX-INT-2026-GEN-0540,Ayesha Zulfiqar,ishazulfiqar92@gmail.com,3196787185,Female,Comsats university Islamabad sahiwal campus,5,Java Programming,Intermediate,20,LinkedIn
+CX-INT-2026-JAVA-0541,Hamza Masood,mh1801184@gmail.com,3344850512,Male,Hitec University,6,Java Programming,Advanced,20,Friend / Referral
+,Fawad Khan,fawadkhan3624202@gmail.com,3424795225,Male,University of technology nowshera,4,Cybersecurity Fundamentals,Beginner,10,Instagram
+,Sundas Bibi,sundasm348@gmail.com,3170480258,Female,Comsats university Islamabad attock campus,4,Full Stack Development,Intermediate,20,LinkedIn
+,Yasmin Ahmed Saad ElDeen Ahmed,ya491138@gamil.com,1033893404,Female,Beni Suef,8,Full Stack Development,Advanced,10,LinkedIn
+,Maryam Arshad,maryam.arshad530@gmail.com,3265620994,Female,Rawalpindi Women University,6,Data Science & AI Basics,Intermediate,,LinkedIn
+,Imran Ali Shah,imranali17305@gmail.com,3145560236,Male,"Comsats university Islamabad, wah campus",4,C++ Programming,Advanced,,LinkedIn
+,Sunita Jaiswal,sj414435@gmail.com,9918528638,Female,JSS academy of technical education Noida,4,Java Programming,Intermediate,,WhatsApp group
+,M Abdullah Riaz,mabdullahriaz867@gmail.com,3709136258,Male,University of Kamalia,3,Data Science & AI Basics,Beginner,10,LinkedIn
+,Prevesh Maryam,maryamprevesh@gmail.com,3146415200,Female,"COMSATS university Islamabad, Wah Campus",6,Data Science & AI Basics,Intermediate,10,LinkedIn
