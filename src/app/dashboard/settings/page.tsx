@@ -562,6 +562,7 @@ export default function SettingsPage() {
 
           {/* TAB 2: Personal Profile Settings */}
           {activeTab === 'profile' && (
+            <>
             <Card className="border border-slate-100 p-6">
               <h3 className="text-sm font-black text-slate-800 border-b border-slate-100 pb-3 mb-5 flex items-center">
                 <User className="h-4.5 w-4.5 mr-2 text-blue-500" />
@@ -688,7 +689,7 @@ export default function SettingsPage() {
             </Card>
 
             {/* Delete Account Danger Zone */}
-            <Card className="border border-rose-100 p-6 bg-rose-50/30">
+            <Card className="border border-rose-100 p-6 bg-rose-50/30 mt-5">
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-3">
                   <div className="p-2.5 bg-rose-100 rounded-xl">
@@ -711,9 +712,8 @@ export default function SettingsPage() {
                 </button>
               </div>
             </Card>
+            </>
           )}
-
-
           {/* TAB 3: Connected Google Sheets */}
           {activeTab === 'sheets' && (
             <Card className="border border-slate-100 p-6">
