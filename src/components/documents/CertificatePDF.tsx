@@ -127,7 +127,39 @@ const styles = StyleSheet.create({
     right: 20,
     fontSize: 7,
     color: '#94A3B8',
-  }
+  },
+  // QR code section — bottom right corner
+  qrSection: {
+    position: 'absolute',
+    bottom: 15,
+    right: 90,
+    alignItems: 'center',
+  },
+  qrImage: {
+    width: 60,
+    height: 60,
+  },
+  qrLabel: {
+    fontSize: 5,
+    color: '#64748B',
+    textAlign: 'center',
+    marginTop: 2,
+  },
+  qrUrl: {
+    fontSize: 4,
+    color: '#94A3B8',
+    textAlign: 'center',
+  },
+  // Verification footer
+  verificationFooter: {
+    position: 'absolute',
+    bottom: 5,
+    left: 20,
+    right: 20,
+    fontSize: 6,
+    color: '#CBD5E1',
+    textAlign: 'center',
+  },
 });
 
 interface CertificateProps {
@@ -137,6 +169,8 @@ interface CertificateProps {
   adminDesignation?: string | null;
   signatureUrl?: string | null;
   completionDate: string;
+  logoBase64?: string | null;
+  qrCodeBase64?: string | null;
 }
 
 export const CertificatePDF: React.FC<CertificateProps> = ({
@@ -146,16 +180,21 @@ export const CertificatePDF: React.FC<CertificateProps> = ({
   adminDesignation,
   signatureUrl,
   completionDate,
+  logoBase64,
+  qrCodeBase64,
 }) => {
+  const logoSrc = companySettings.company_logo_url || logoBase64 || null;
+  const verificationUrl = `https://cloudexify.com/verify/${intern.registration_number}`;
+
   return (
     <Document>
       <Page size="A4" orientation="landscape" style={styles.page}>
         <View style={styles.borderContainer}>
           <View style={styles.innerBorder} />
 
-          {/* Logo / Branding */}
-          {companySettings.company_logo_url ? (
-            <Image style={{ maxHeight: 45, maxWidth: 140, objectFit: 'contain', marginBottom: 5 }} src={companySettings.company_logo_url} />
+          {/* Logo / Branding — FIX 9: centered at top, max 160px wide */}
+          {logoSrc ? (
+            <Image style={{ maxHeight: 50, maxWidth: 160, objectFit: 'contain', marginBottom: 5 }} src={logoSrc} />
           ) : (
             <Text style={styles.logo}>{companySettings.company_name.toUpperCase()}</Text>
           )}
@@ -190,7 +229,7 @@ export const CertificatePDF: React.FC<CertificateProps> = ({
             </View>
 
             <View style={styles.metaBox}>
-              {/* Optional Gold Seal representation or branding */}
+              {/* Gold Seal */}
               <View style={{ width: 40, height: 40, borderRadius: 20, borderWidth: 1.5, borderColor: '#D4AF37', backgroundColor: '#FFFDF0', alignItems: 'center', justifyContent: 'center', marginBottom: 5 }}>
                 <Text style={{ fontSize: 6, fontWeight: 'bold', color: '#D4AF37' }}>CX</Text>
                 <Text style={{ fontSize: 4, color: '#D4AF37' }}>SEAL</Text>
@@ -211,9 +250,27 @@ export const CertificatePDF: React.FC<CertificateProps> = ({
             </View>
           </View>
 
-          {/* Bottom Labels */}
+          {/* Certificate ID — bottom left */}
           <Text style={styles.certId}>Certificate ID: {intern.registration_number}</Text>
-          <Text style={styles.companyWebsite}>{companySettings.company_website}</Text>
+
+          {/* FIX 6: QR Code — bottom right */}
+          {qrCodeBase64 && (
+            <View style={styles.qrSection}>
+              <Image style={styles.qrImage} src={qrCodeBase64} />
+              <Text style={styles.qrLabel}>Scan to verify certificate</Text>
+              <Text style={styles.qrUrl}>{verificationUrl}</Text>
+            </View>
+          )}
+
+          {/* Company website — bottom right (pushed left when QR exists) */}
+          {!qrCodeBase64 && (
+            <Text style={styles.companyWebsite}>{companySettings.company_website}</Text>
+          )}
+
+          {/* FIX 7: Verification footer */}
+          <Text style={styles.verificationFooter}>
+            This document can be verified at cloudexify.com/verify/{intern.registration_number}
+          </Text>
         </View>
       </Page>
     </Document>

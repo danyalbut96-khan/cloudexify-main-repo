@@ -155,6 +155,7 @@ interface OfferLetterProps {
   adminDesignation?: string | null;
   signatureUrl?: string | null;
   joiningDate: string;
+  logoBase64?: string | null;
 }
 
 export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
@@ -164,6 +165,7 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
   adminDesignation,
   signatureUrl,
   joiningDate,
+  logoBase64,
 }) => {
   const currentDate = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
@@ -171,14 +173,17 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
     day: 'numeric',
   });
 
+  // Determine logo source: prefer uploaded URL, then local base64, then nothing
+  const logoSrc = companySettings.company_logo_url || logoBase64 || null;
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.headerContainer}>
           <View>
-            {companySettings.company_logo_url ? (
-              <Image style={{ maxHeight: 40, maxWidth: 120, objectFit: 'contain' }} src={companySettings.company_logo_url} />
+            {logoSrc ? (
+              <Image style={{ maxHeight: 40, maxWidth: 120, objectFit: 'contain' }} src={logoSrc} />
             ) : (
               <Text style={styles.logoPlaceholder}>{companySettings.company_name}</Text>
             )}
@@ -196,10 +201,9 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
         {/* Date */}
         <Text style={styles.date}>Date: {currentDate}</Text>
 
-        {/* Recipient */}
+        {/* Recipient — FIX 5: Only show name and personal email. University line removed. */}
         <View style={styles.recipient}>
           <Text style={styles.recipientName}>{intern.full_name}</Text>
-          <Text style={styles.recipientDetails}>University: {intern.university || '-'}</Text>
           <Text style={styles.recipientDetails}>Email: {intern.email}</Text>
         </View>
 

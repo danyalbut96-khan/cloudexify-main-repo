@@ -121,9 +121,19 @@ export interface CompanySettings {
   updated_at: string;
 }
 
+export interface AdminProfile {
+  admin_id: string;
+  display_name: string;
+  avatar_url?: string | null;
+  signature_url?: string | null;
+  designation?: string | null;
+  updated_at: string;
+}
+
 export interface AdminSignature {
   email: string;
   full_name: string;
   signature_url?: string | null;
+  designation?: string | null;
   updated_at: string;
 }
