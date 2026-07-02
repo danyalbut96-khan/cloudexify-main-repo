@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getAdminClient } from '@/lib/supabase/server'
 import { isRateLimited } from '@/lib/utils'
 import { logAction } from '@/lib/server-utils'
 import { pdf } from '@react-pdf/renderer'
@@ -7,6 +7,7 @@ import React from 'react'
 import { OfferLetterPDF } from '@/components/documents/OfferLetterPDF'
 import { readFileSync } from 'fs'
 import { join } from 'path'
+import QRCode from 'qrcode'
 
 /** Read the logo from /public/logo.png and encode as base64 data URI for server-side PDF rendering */
 function getLogoBase64(): string | null {
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
 
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
+  if (!user || !user.email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -63,21 +64,52 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Company settings not found' }, { status: 500 })
     }
 
-    // 3. Fetch Admin Signature Profile
-    const { data: signatureData } = await supabase
+    // 3. Fetch Admin Signature Profile (using adminClient to ensure we can read all profiles)
+    const adminClient = getAdminClient()
+    const { data: adminProfileData } = await adminClient
+      .from('admin_profiles')
+      .select('*')
+      .eq('admin_id', user.id) // Get logged-in admin's profile, fallback to signature lookup below
+      .maybeSingle()
+
+    const { data: signatureData } = await adminClient
       .from('admin_signatures')
       .select('*')
       .eq('email', adminEmail)
       .maybeSingle()
 
-    const adminName = signatureData?.full_name || 'Authorized Signatory'
-    const signatureUrl = signatureData?.signature_url || null
-    const adminDesignation = signatureData?.designation || null
+    const adminName = adminProfileData?.display_name || signatureData?.full_name || 'Authorized Signatory'
+    const signatureUrl = adminProfileData?.signature_url || signatureData?.signature_url || null
+    const adminDesignation = adminProfileData?.designation || signatureData?.designation || 'Founder & CEO'
 
-    // 4. Read logo from /public/logo.png as base64 for PDF rendering (FIX 9)
+    // 4. Generate unique offer letter number based on count
+    const { count } = await adminClient
+      .from('intern_documents')
+      .select('*', { count: 'exact', head: true })
+      .eq('offer_letter_generated', true)
+    
+    const seqCount = (count || 0) + 1
+    const year = new Date().getFullYear()
+    const offerLetterNumber = `CX-OL-${year}-${String(seqCount).padStart(4, '0')}`
+
+    // 5. Generate QR Code
+    const verificationUrl = `https://offerletter.cloudexify.site/verify/${offerLetterNumber}`
+    let qrCodeBase64: string | null = null
+    try {
+      const qrBuffer = await QRCode.toBuffer(verificationUrl, {
+        errorCorrectionLevel: 'M',
+        width: 180,
+        margin: 1,
+      })
+      qrCodeBase64 = `data:image/png;base64,${qrBuffer.toString('base64')}`
+    } catch (qrErr) {
+      console.error('QR code generation failed:', qrErr)
+    }
+
+    // 6. Read logo from /public/logo.png as base64 for PDF rendering
     const logoBase64 = getLogoBase64()
 
-    // 5. Render PDF to Buffer
+    // 7. Render PDF to Buffer
     const docElement = React.createElement(OfferLetterPDF, {
       intern,
       companySettings,
@@ -86,32 +118,56 @@ export async function GET(request: NextRequest) {
       signatureUrl,
       joiningDate,
       logoBase64,
+      offerLetterNumber,
+      qrCodeBase64
     })
 
     const pdfBuffer = await pdf(docElement as any).toBuffer()
 
-    // 6. Update Intern Document generated status
-    const { error: docUpdateError } = await supabase
+    const generatedAt = new Date().toISOString()
+
+    // 8. Update Intern Document generated status
+    const { error: docUpdateError } = await adminClient
       .from('intern_documents')
       .upsert({
         intern_id: internId,
         offer_letter_generated: true,
-        offer_letter_date: new Date().toISOString()
+        offer_letter_date: generatedAt,
+        offer_letter_number: offerLetterNumber,
+        offer_letter_generated_at: generatedAt,
+        offer_letter_generated_by: user.email
       }, { onConflict: 'intern_id' })
 
     if (docUpdateError) {
       console.error('Failed to update intern document record:', docUpdateError)
     }
 
-    // 7. Record in Audit Logs
+    // 9. Save Verification Record
+    const { error: verifyError } = await adminClient
+      .from('document_verifications')
+      .insert({
+        document_type: 'offer_letter',
+        document_number: offerLetterNumber,
+        intern_id: internId,
+        intern_name: intern.full_name,
+        intern_domain: intern.domain,
+        generated_at: generatedAt,
+        generated_by: user.email
+      })
+
+    if (verifyError) {
+      console.error('Failed to save document verification record:', verifyError)
+    }
+
+    // 10. Record in Audit Logs
     await logAction(
-      user.email!,
-      `Generated Internship Offer Letter for intern ${intern.full_name} (${intern.registration_number})`,
+      user.email,
+      `Generated Internship Offer Letter for intern ${intern.full_name} (${offerLetterNumber})`,
       'documents',
       intern.id
     )
 
-    // 8. Return Stream response
+    // 11. Return Stream response
     return new NextResponse(pdfBuffer as any, {
       headers: {
         'Content-Type': 'application/pdf',

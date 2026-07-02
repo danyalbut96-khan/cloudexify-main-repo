@@ -246,100 +246,130 @@ function OfferLetterGenerator() {
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Live Document Preview</p>
           <div className="bg-white border border-slate-100 shadow-[0_4px_16px_rgba(0,0,0,0.03)] rounded-2xl p-10 min-h-[640px] text-[10px] text-slate-600 leading-relaxed font-sans relative aspect-[1/1.41] select-none text-slate-700">
             {/* Letterhead Logo Header */}
-            <div className="flex justify-between items-center border-b border-slate-100 pb-5 mb-8">
+            <div className="flex justify-between items-start mb-10">
               <div>
                 <p className="text-xl font-bold tracking-tight text-blue-600">CloudExify.</p>
               </div>
-              <div className="text-right text-[7px] text-slate-400">
-                <p className="font-bold text-slate-700">CloudExify</p>
-                <p>Plot 45-C, 24th Commercial St, Karachi, Pakistan</p>
-                <p>https://cloudexify.com | admin@cloudexify.com</p>
+              <div className="text-right text-[8px] text-slate-500 max-w-[50%]">
+                <p className="font-bold text-slate-900 text-[9px] mb-0.5">CloudExify</p>
+                <p>Plot 45-C, 24th Commercial St, Karachi</p>
+                <p>cloudexify.com | admin@cloudexify.com</p>
               </div>
             </div>
 
             {/* Document Title */}
-            <h3 className="text-center text-sm font-bold text-slate-900 uppercase tracking-widest mb-6">
-              Internship Offer Letter
+            <h3 className="text-center text-sm font-bold text-slate-900 uppercase tracking-[0.2em] mb-7">
+              INTERNSHIP OFFER LETTER
             </h3>
 
             {/* Recipient meta */}
-            <p className="mb-4 text-slate-500 font-semibold">Date: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-            <div className="mb-6 space-y-0.5 text-slate-700">
-              <p className="font-bold text-slate-900 text-xs">{selectedIntern ? selectedIntern.full_name : '[Intern Name]'}</p>
-              <p>University: {selectedIntern ? (selectedIntern.university || '-') : '[University]'}</p>
-              <p>Email: {selectedIntern ? selectedIntern.email : '[Intern Email]'}</p>
+            <p className="mb-4 text-slate-600">Date: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <div className="mb-5 space-y-0.5 text-slate-700">
+              <p className="font-bold text-slate-900 text-[11px]">[{selectedIntern ? selectedIntern.full_name : 'Intern Name'}]</p>
+              <p className="text-[10px] text-slate-600">{selectedIntern && selectedIntern.city ? selectedIntern.city : 'Karachi, Pakistan'}</p>
             </div>
 
             {/* Letter Body */}
-            <div className="space-y-3.5 text-justify">
-              <p>Dear {selectedIntern ? selectedIntern.full_name : '[Intern]'},</p>
+            <div className="space-y-3.5 text-justify text-[10px]">
+              <p>Dear [{selectedIntern ? selectedIntern.full_name : 'Intern'}],</p>
               <p>
-                We are pleased to offer you an internship position as a <span className="font-bold text-slate-900">{selectedIntern ? selectedIntern.domain : '[Domain]'} Intern</span> at CloudExify. We were highly impressed by your academic record and technical skill level.
+                We are pleased to offer you an internship position as a <span className="font-bold text-slate-900">[{selectedIntern ? selectedIntern.domain : 'Domain'}] Intern</span> at CloudExify. We were highly impressed by your academic record and technical skill level.
               </p>
               <p>
                 This internship is designed to give you hands-on experience in software development and industry best practices. Below are the key details and terms of your internship:
               </p>
 
               {/* Table details mockup */}
-              <div className="border border-slate-100 rounded-lg overflow-hidden my-3 divide-y divide-slate-100">
-                <div className="flex px-4 py-2 bg-slate-50/50">
-                  <span className="w-1/3 font-bold text-slate-900">Role</span>
-                  <span className="w-2/3">{selectedIntern ? selectedIntern.domain : '[Domain]'} Intern</span>
+              <div className="border border-slate-200 rounded-md overflow-hidden my-4">
+                <div className="bg-blue-500 px-3 py-2">
+                  <p className="text-white text-[10px] font-bold uppercase tracking-wider">INTERNSHIP DETAILS</p>
                 </div>
-                <div className="flex px-4 py-2">
-                  <span className="w-1/3 font-bold text-slate-900">Start Date</span>
-                  <span className="w-2/3">{formatDate(joiningDate)}</span>
+                <div className="flex px-3 py-2 bg-slate-50 border-b border-slate-200">
+                  <span className="w-[30%] font-bold text-blue-600 text-[9px]">Program</span>
+                  <span className="w-[70%] text-[9px] text-slate-700">{selectedIntern ? selectedIntern.domain : 'Domain'} Internship Program 2026</span>
                 </div>
-                <div className="flex px-4 py-2 bg-slate-50/50">
-                  <span className="w-1/3 font-bold text-slate-900">Duration</span>
-                  <span className="w-2/3">2 Months (Remote)</span>
+                <div className="flex px-3 py-2 border-b border-slate-200">
+                  <span className="w-[30%] font-bold text-blue-600 text-[9px]">Duration</span>
+                  <span className="w-[70%] text-[9px] text-slate-700"><span className="font-bold text-slate-900">{formatDate(joiningDate)}</span> to <span className="font-bold text-slate-900">End Date</span> (2 Months)</span>
                 </div>
-                <div className="flex px-4 py-2">
-                  <span className="w-1/3 font-bold text-slate-900">Compensation</span>
-                  <span className="w-2/3">Unpaid Internship</span>
+                <div className="flex px-3 py-2 bg-slate-50 border-b border-slate-200">
+                  <span className="w-[30%] font-bold text-blue-600 text-[9px]">Mode</span>
+                  <span className="w-[70%] text-[9px] text-slate-700">Remote</span>
+                </div>
+                <div className="flex px-3 py-2 border-b border-slate-200">
+                  <span className="w-[30%] font-bold text-blue-600 text-[9px]">Projects</span>
+                  <span className="w-[70%] text-[9px] text-slate-700">4 real world projects</span>
+                </div>
+                <div className="flex px-3 py-2 bg-slate-50 border-b border-slate-200">
+                  <span className="w-[30%] font-bold text-blue-600 text-[9px]">Compensation</span>
+                  <span className="w-[70%] text-[9px] text-slate-700">Unpaid — Certificate + Experience</span>
+                </div>
+                <div className="flex items-center px-3 py-2">
+                  <span className="w-[30%] font-bold text-blue-600 text-[9px]">Reg. No</span>
+                  <span className="text-[9px] font-bold text-blue-600 border border-blue-200 bg-blue-50 px-1.5 py-0.5 rounded">[{selectedIntern ? selectedIntern.registration_number : 'CX-XXXX'}]</span>
                 </div>
               </div>
 
-              <p>
-                By accepting this offer, you agree to maintain the absolute confidentiality of all intellectual property, source code, and client details that you may have access to during this internship.
-              </p>
-              <p>
-                We look forward to working with you and hope this internship serves as a foundation for a successful software engineering career.
+              {/* Terms Box */}
+              <div className="bg-slate-50 border border-slate-200 rounded-md p-3 mb-4">
+                <p className="font-bold text-slate-900 text-[10px] mb-2">TERMS & CONDITIONS</p>
+                <ul className="space-y-1 pl-2 text-[9px] text-slate-600 list-disc list-outside ml-2">
+                  <li>This internship is unpaid and remote-based.</li>
+                  <li>Intern must complete all 4 assigned projects to receive certificate.</li>
+                  <li>CloudExify reserves the right to terminate internship for misconduct.</li>
+                  <li>By accepting this offer, intern agrees to CloudExify's code of conduct and policies.</li>
+                </ul>
+              </div>
+
+              {/* Acceptance Paragraph */}
+              <p className="italic text-slate-500 mb-6 text-[9.5px]">
+                By accepting this offer letter, you confirm your commitment to the CloudExify Summer Internship Program 2026 and agree to abide by all terms and conditions stated herein.
               </p>
             </div>
 
-            <p className="mt-6">Sincerely,</p>
+            <p className="mb-8">Sincerely,</p>
 
             {/* Signature mockup */}
-            <div className="flex justify-between items-end mt-6">
-              <div className="w-[45%] text-left">
+            <div className="flex justify-between mt-2">
+              <div className="w-[45%]">
                 {selectedSignatory.signature_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={selectedSignatory.signature_url} className="h-10 object-contain mb-1.5 opacity-90" alt="signature" />
+                  <img src={selectedSignatory.signature_url} className="h-10 object-contain mb-1" alt="signature" />
                 ) : (
-                  <div className="h-10" />
+                  <div className="h-11" />
                 )}
                 <div className="border-t border-slate-300 pt-1.5">
-                  <p className="font-bold text-slate-900">{selectedSignatory.full_name}</p>
-                  <p className="text-[7.5px] text-slate-400">Managing Director / Founder</p>
-                  <p className="text-[7.5px] text-slate-400">CloudExify</p>
+                  <p className="font-bold text-slate-900 text-[10px] mb-0.5">{selectedSignatory.full_name}</p>
+                  <p className="text-[8px] text-slate-500 mb-0.5">{selectedSignatory.designation || 'Founder & CEO'}</p>
+                  <p className="text-[8px] text-blue-600">CloudExify 🌐 ✍️</p>
                 </div>
               </div>
 
-              <div className="w-[45%] text-left">
-                <div className="h-10" />
+              <div className="w-[45%]">
+                <div className="h-11" />
                 <div className="border-t border-slate-300 pt-1.5">
-                  <p className="font-bold text-slate-900">Intern Signature</p>
-                  <p className="text-[7.5px] text-slate-400">Acknowledge & Accepted</p>
-                  <p className="text-[7.5px] text-slate-400">Date: _______________</p>
+                  <p className="text-[8px] text-slate-500 mb-0.5">Intern Signature</p>
+                  <p className="font-bold text-slate-900 text-[10px] mb-0.5">[{selectedIntern ? selectedIntern.full_name : 'Intern Name'}]</p>
+                  <p className="text-[8px] text-slate-500">Date: ____________________</p>
                 </div>
               </div>
             </div>
 
-            {/* Footer ID */}
-            <div className="absolute bottom-5 left-10 right-10 flex justify-between border-t border-slate-50 pt-2 text-[6.5px] text-slate-400">
-              <p>CloudExify Internship Program 2025</p>
-              <p>ID: {selectedIntern ? selectedIntern.registration_number : '[Registration Number]'}</p>
+            {/* Footer Mockup */}
+            <div className="absolute bottom-6 left-10 right-10 flex justify-between border-t-2 border-blue-500 pt-2.5">
+              <div className="w-[75%] text-[8px] space-y-1">
+                <p className="font-bold text-slate-900">cloudexify.com | admin@cloudexify.com</p>
+                <p className="text-slate-500">WhatsApp: +92 3XX XXXXXXX</p>
+                <p className="text-blue-600">Verify: offerletter.cloudexify.site/verify</p>
+                <p className="font-bold text-slate-900">Document ID: CX-OL-2026-XXXX</p>
+                <p className="text-slate-500">© 2026 CloudExify. All rights reserved.</p>
+              </div>
+              <div className="w-[25%] flex flex-col items-end justify-start pt-1">
+                <div className="w-12 h-12 bg-slate-200 border border-slate-300 flex items-center justify-center mb-1">
+                  <span className="text-[6px] text-slate-400 font-bold">QR CODE</span>
+                </div>
+                <p className="text-[6px] text-blue-600 font-bold tracking-widest uppercase">SCAN TO VERIFY</p>
+              </div>
             </div>
           </div>
         </div>

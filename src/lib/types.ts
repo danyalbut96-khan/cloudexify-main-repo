@@ -19,6 +19,7 @@ export interface Intern {
   skill_level?: 'Beginner' | 'Intermediate' | 'Advanced';
   available_hours?: number;
   referral_source?: string;
+  city?: string;
   created_at: string;
   intern_documents?: InternDocuments;
 }
@@ -28,12 +29,33 @@ export interface InternDocuments {
   intern_id: string;
   offer_letter_generated: boolean;
   offer_letter_date?: string;
+  offer_letter_number?: string;
+  offer_letter_generated_at?: string;
+  offer_letter_generated_by?: string;
   certificate_generated: boolean;
   certificate_date?: string;
   experience_certificate_generated: boolean;
   experience_certificate_date?: string;
   recommendation_letter_generated: boolean;
   recommendation_letter_date?: string;
+}
+
+export type DocumentType =
+  | 'offer_letter'
+  | 'certificate'
+  | 'experience_certificate'
+  | 'recommendation_letter';
+
+export interface DocumentVerification {
+  id: string;
+  document_type: DocumentType;
+  document_number: string;
+  intern_id: string;
+  intern_name: string;
+  intern_domain: string;
+  generated_at: string;
+  generated_by: string;
+  offer_letter_url?: string;
 }
 
 export interface Employee {
@@ -76,7 +98,7 @@ export interface Proposal {
   scope_of_work?: string;
   timeline?: string;
   estimated_cost: number;
-  sent_by: string; // admin email
+  sent_by: string;
   sent_date?: string;
   status: 'draft' | 'sent' | 'accepted' | 'rejected';
   created_at: string;
@@ -96,7 +118,7 @@ export interface Invoice {
   invoice_number: string;
   line_items: InvoiceLineItem[];
   amount_pkr: number;
-  generated_by: string; // admin email
+  generated_by: string;
   generated_date: string;
   status: 'unpaid' | 'paid';
   created_at: string;
@@ -117,6 +139,7 @@ export interface CompanySettings {
   company_address: string;
   company_website: string;
   company_email: string;
+  company_phone?: string;
   company_logo_url?: string | null;
   updated_at: string;
 }
