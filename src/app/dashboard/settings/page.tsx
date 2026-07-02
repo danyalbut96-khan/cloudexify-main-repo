@@ -52,6 +52,7 @@ export default function SettingsPage() {
   const [avatarUrl, setAvatarUrl] = useState('');
   const [signatureUrl, setSignatureUrl] = useState('');
   const [adminEmail, setAdminEmail] = useState('');
+  const [designation, setDesignation] = useState('');
 
   // Sheets Connections State
   const [sheetConnections, setSheetConnections] = useState<any[]>([]);
@@ -91,6 +92,7 @@ export default function SettingsPage() {
         setDisplayName(data.adminProfile.display_name || '');
         setAvatarUrl(data.adminProfile.avatar_url || '');
         setSignatureUrl(data.adminProfile.signature_url || '');
+        setDesignation(data.adminProfile.designation || '');
       }
 
       setSheetConnections(data.sheetConnections || []);
@@ -153,7 +155,8 @@ export default function SettingsPage() {
           type: 'profile',
           display_name: displayName,
           avatar_url: avatarUrl,
-          signature_url: signatureUrl
+          signature_url: signatureUrl,
+          designation: designation
         })
       });
 
@@ -565,6 +568,21 @@ export default function SettingsPage() {
                         placeholder="e.g. Soban Khan"
                         className="block w-full px-3.5 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                       />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Signatory Designation</label>
+                      <select
+                        required
+                        value={designation}
+                        onChange={(e) => setDesignation(e.target.value)}
+                        className="block w-full px-3.5 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                      >
+                        <option value="">Select Designation</option>
+                        <option value="CEO & Founder">CEO (Founder)</option>
+                        <option value="CTO & Co-Founder">CTO (Co-Founder)</option>
+                        <option value="Chairman & Co-Founder">Chairman (Co-Founder)</option>
+                      </select>
                     </div>
 
                     {/* Signature Stamp Upload Container */}

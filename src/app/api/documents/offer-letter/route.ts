@@ -59,12 +59,14 @@ export async function GET(request: NextRequest) {
 
     const adminName = signatureData?.full_name || 'Authorized Signatory'
     const signatureUrl = signatureData?.signature_url || null
+    const adminDesignation = signatureData?.designation || null
 
     // 4. Render PDF to Buffer
     const docElement = React.createElement(OfferLetterPDF, {
       intern,
       companySettings,
       adminName,
+      adminDesignation,
       signatureUrl,
       joiningDate
     })
