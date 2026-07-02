@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Search, Download, Calendar, ShieldCheck, UserCheck, Star, Sparkles } from 'lucide-react';
 import { PageWrapper } from '@/components/ui/PageWrapper';
@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/Badge';
 import { formatDate } from '@/lib/utils';
 import toast from 'react-hot-toast';
 
-export default function ExperienceCertificatePage() {
+function ExperienceCertificateGenerator() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const urlInternId = searchParams.get('internId');
@@ -277,7 +277,7 @@ export default function ExperienceCertificatePage() {
         {/* Right Preview */}
         <div className="lg:col-span-7 space-y-2">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Live Document Preview</p>
-          <div className="bg-white border border-slate-100 shadow-[0_4px_16px_rgba(0,0,0,0.03)] rounded-2xl p-10 min-h-[640px] text-[10px] text-slate-600 leading-relaxed font-sans relative aspect-[1/1.41] select-none">
+          <div className="bg-white border border-slate-100 shadow-[0_4px_16px_rgba(0,0,0,0.03)] rounded-2xl p-10 min-h-[640px] text-[10px] text-slate-600 leading-relaxed font-sans relative aspect-[1/1.41] select-none text-slate-700">
             {/* Letterhead Logo Header */}
             <div className="flex justify-between items-center border-b border-slate-100 pb-5 mb-8">
               <div>
@@ -323,6 +323,7 @@ export default function ExperienceCertificatePage() {
             {/* Signatures */}
             <div className="mt-12 w-[45%] text-left">
               {selectedSignatory.signature_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img src={selectedSignatory.signature_url} className="h-10 object-contain mb-1.5 opacity-90" alt="signature" />
               ) : (
                 <div className="h-10" />
@@ -343,5 +344,19 @@ export default function ExperienceCertificatePage() {
         </div>
       </div>
     </PageWrapper>
+  );
+}
+
+export default function ExperienceCertificatePage() {
+  return (
+    <Suspense fallback={
+      <PageWrapper title="Experience Certificate Generator">
+        <div className="animate-pulse flex items-center justify-center min-h-[300px] text-slate-400">
+          Loading Experience Certificate Generator...
+        </div>
+      </PageWrapper>
+    }>
+      <ExperienceCertificateGenerator />
+    </Suspense>
   );
 }

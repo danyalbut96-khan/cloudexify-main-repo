@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
     const pdfBuffer = await pdf(docElement as any).toBuffer()
 
     // 5. Return Stream response
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(pdfBuffer as any, {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="Proposal_${proposal.proposal_title.replace(/\s+/g, '_')}.pdf"`,

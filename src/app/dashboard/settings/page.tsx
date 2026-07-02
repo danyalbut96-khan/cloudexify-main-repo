@@ -273,6 +273,7 @@ export default function SettingsPage() {
               <div className="mt-2.5 flex items-center space-x-5">
                 <div className="h-16 w-36 rounded-xl border border-slate-200 border-dashed bg-slate-50 flex items-center justify-center relative overflow-hidden">
                   {signatureUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img src={signatureUrl} className="h-full w-full object-contain p-2" alt="signature" />
                   ) : (
                     <div className="text-slate-400 flex flex-col items-center">

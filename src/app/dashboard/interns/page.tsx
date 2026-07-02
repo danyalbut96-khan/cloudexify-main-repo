@@ -48,6 +48,7 @@ export default function InternsPage() {
       fetchInterns();
     }, 300);
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, domain, semester, offerStatus, certStatus]);
 
   // Export to CSV

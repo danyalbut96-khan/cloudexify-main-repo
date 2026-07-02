@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Search, Download, Calendar, ShieldCheck, UserCheck, Award } from 'lucide-react';
 import { PageWrapper } from '@/components/ui/PageWrapper';
@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/Badge';
 import { formatDate } from '@/lib/utils';
 import toast from 'react-hot-toast';
 
-export default function CertificatePage() {
+function CertificateGenerator() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const urlInternId = searchParams.get('internId');
@@ -237,7 +237,7 @@ export default function CertificatePage() {
         {/* Right Preview */}
         <div className="lg:col-span-8 space-y-2">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Live Certificate Preview</p>
-          <div className="bg-white border-8 border-slate-900 rounded-2xl p-8 min-h-[460px] text-[9px] text-slate-600 leading-relaxed font-sans relative aspect-[1.41/1] flex flex-col justify-center items-center select-none shadow-lg">
+          <div className="bg-white border-8 border-slate-900 rounded-2xl p-8 min-h-[460px] text-[9px] text-slate-600 leading-relaxed font-sans relative aspect-[1.41/1] flex flex-col justify-center items-center select-none shadow-lg text-slate-700">
             {/* Inner Gold Border */}
             <div className="absolute inset-2 border border-amber-500/60 pointer-events-none" />
 
@@ -277,6 +277,7 @@ export default function CertificatePage() {
 
               <div className="text-center w-[30%]">
                 {selectedSignatory.signature_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img src={selectedSignatory.signature_url} className="h-8 object-contain mb-1 mx-auto" alt="signature" />
                 ) : (
                   <div className="h-8" />
@@ -297,5 +298,19 @@ export default function CertificatePage() {
         </div>
       </div>
     </PageWrapper>
+  );
+}
+
+export default function CertificatePage() {
+  return (
+    <Suspense fallback={
+      <PageWrapper title="Certificate Generator">
+        <div className="animate-pulse flex items-center justify-center min-h-[300px] text-slate-400">
+          Loading Certificate Generator...
+        </div>
+      </PageWrapper>
+    }>
+      <CertificateGenerator />
+    </Suspense>
   );
 }

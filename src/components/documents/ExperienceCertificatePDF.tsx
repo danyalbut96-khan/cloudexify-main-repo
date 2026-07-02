@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import { Intern, CompanySettings } from '@/lib/types';
@@ -21,7 +22,7 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   companyInfo: {
-    alignItems: 'right',
+    alignItems: 'flex-end',
   },
   companyName: {
     fontSize: 18,

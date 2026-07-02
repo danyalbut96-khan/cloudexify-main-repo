@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import { Proposal, CompanySettings } from '@/lib/types';
@@ -25,7 +26,7 @@ const styles = StyleSheet.create({
     color: '#2563EB',
   },
   companyDetails: {
-    alignItems: 'right',
+    alignItems: 'flex-end',
   },
   title: {
     fontSize: 16,

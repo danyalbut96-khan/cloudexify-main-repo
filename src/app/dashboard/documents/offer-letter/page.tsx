@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Search, FileText, Download, UserCheck, Calendar, ShieldCheck } from 'lucide-react';
 import { PageWrapper } from '@/components/ui/PageWrapper';
@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/Badge';
 import { formatDate } from '@/lib/utils';
 import toast from 'react-hot-toast';
 
-export default function OfferLetterPage() {
+function OfferLetterGenerator() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -244,7 +244,7 @@ export default function OfferLetterPage() {
         {/* Right Side: High Fidelity CSS Real-time Preview */}
         <div className="lg:col-span-7 space-y-2">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Live Document Preview</p>
-          <div className="bg-white border border-slate-100 shadow-[0_4px_16px_rgba(0,0,0,0.03)] rounded-2xl p-10 min-h-[640px] text-[10px] text-slate-600 leading-relaxed font-sans relative aspect-[1/1.41] select-none">
+          <div className="bg-white border border-slate-100 shadow-[0_4px_16px_rgba(0,0,0,0.03)] rounded-2xl p-10 min-h-[640px] text-[10px] text-slate-600 leading-relaxed font-sans relative aspect-[1/1.41] select-none text-slate-700">
             {/* Letterhead Logo Header */}
             <div className="flex justify-between items-center border-b border-slate-100 pb-5 mb-8">
               <div>
@@ -314,6 +314,7 @@ export default function OfferLetterPage() {
             <div className="flex justify-between items-end mt-6">
               <div className="w-[45%] text-left">
                 {selectedSignatory.signature_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img src={selectedSignatory.signature_url} className="h-10 object-contain mb-1.5 opacity-90" alt="signature" />
                 ) : (
                   <div className="h-10" />
@@ -344,5 +345,19 @@ export default function OfferLetterPage() {
         </div>
       </div>
     </PageWrapper>
+  );
+}
+
+export default function OfferLetterPage() {
+  return (
+    <Suspense fallback={
+      <PageWrapper title="Offer Letter Generator">
+        <div className="animate-pulse flex items-center justify-center min-h-[300px] text-slate-400">
+          Loading Offer Letter Generator...
+        </div>
+      </PageWrapper>
+    }>
+      <OfferLetterGenerator />
+    </Suspense>
   );
 }

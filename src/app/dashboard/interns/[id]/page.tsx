@@ -45,6 +45,7 @@ export default function InternProfilePage({ params }: { params: { id: string } }
 
   useEffect(() => {
     fetchInternDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 
   const handleDownload = async (docType: string) => {

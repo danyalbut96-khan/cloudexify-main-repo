@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Search, Download, Calendar, ShieldCheck, UserCheck, FileText } from 'lucide-react';
+import { Search, Download, Calendar, ShieldCheck, UserCheck, MessageSquare } from 'lucide-react';
 import { PageWrapper } from '@/components/ui/PageWrapper';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/Badge';
 import { formatDate } from '@/lib/utils';
 import toast from 'react-hot-toast';
 
-export default function RecommendationLetterPage() {
+function RecommendationLetterGenerator() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const urlInternId = searchParams.get('internId');
@@ -20,7 +20,9 @@ export default function RecommendationLetterPage() {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [selectedIntern, setSelectedIntern] = useState<any>(null);
   const [completionDate, setCompletionDate] = useState(new Date().toISOString().split('T')[0]);
-  const [customText, setCustomText] = useState('');
+  const [customText, setCustomText] = useState(
+    'During the internship, they exhibited exceptional leadership skills and built a robust serverless database connector that optimized API load speeds by 30%.'
+  );
   const [adminEmail, setAdminEmail] = useState('');
   const [allAdmins, setAllAdmins] = useState<any[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -100,15 +102,15 @@ export default function RecommendationLetterPage() {
     }
 
     setIsGenerating(true);
-    const renderToast = toast.loading('Generating Recommendation Letter...');
+    const renderToast = toast.loading('Generating Letter...');
 
     try {
       const params = new URLSearchParams({
         internId: selectedIntern.id,
         completionDate,
         adminEmail,
+        customText
       });
-      if (customText) params.append('customText', customText);
       const endpoint = `/api/documents/recommendation-letter?${params.toString()}`;
       
       const response = await fetch(endpoint);
@@ -125,7 +127,7 @@ export default function RecommendationLetterPage() {
 
       toast.success('Recommendation Letter downloaded successfully!', { id: renderToast });
     } catch (err: any) {
-      toast.error(err.message || 'Error generating Recommendation Letter', { id: renderToast });
+      toast.error(err.message || 'Error generating Letter', { id: renderToast });
     } finally {
       setIsGenerating(false);
     }
@@ -135,8 +137,6 @@ export default function RecommendationLetterPage() {
     full_name: 'Authorized Signatory',
     signature_url: null
   };
-
-  const startDate = new Date(new Date(completionDate).getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
   return (
     <PageWrapper title="Recommendation Letter Generator">
@@ -194,12 +194,12 @@ export default function RecommendationLetterPage() {
           </div>
 
           <div>
-            <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">2. Letter Customization</h2>
+            <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">2. Evaluation Parameters</h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-500 mb-1 flex items-center">
                   <Calendar className="h-3.5 w-3.5 mr-1" />
-                  Completion Date
+                  Reference Letter Date
                 </label>
                 <input
                   type="date"
@@ -211,15 +211,15 @@ export default function RecommendationLetterPage() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-500 mb-1 flex items-center">
-                  <FileText className="h-3.5 w-3.5 mr-1" />
-                  Custom Recommendation Content (Optional)
+                  <MessageSquare className="h-3.5 w-3.5 mr-1" />
+                  Custom Commendation Text
                 </label>
                 <textarea
                   value={customText}
                   onChange={(e) => setCustomText(e.target.value)}
                   rows={4}
                   className="block w-full px-3 py-2 text-sm border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white placeholder-slate-400"
-                  placeholder="Leave empty for standard recommendation letter body..."
+                  placeholder="Detail custom positive accomplishments or key skills demonstrated..."
                 />
               </div>
 
@@ -258,9 +258,9 @@ export default function RecommendationLetterPage() {
 
         {/* Right Preview */}
         <div className="lg:col-span-7 space-y-2">
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Live Document Preview</p>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Live Letter Preview</p>
           <div className="bg-white border border-slate-100 shadow-[0_4px_16px_rgba(0,0,0,0.03)] rounded-2xl p-10 min-h-[640px] text-[10px] text-slate-600 leading-relaxed font-sans relative aspect-[1/1.41] select-none text-slate-700">
-            {/* Letterhead Logo Header */}
+            {/* Logo header */}
             <div className="flex justify-between items-center border-b border-slate-100 pb-5 mb-8">
               <div>
                 <p className="text-xl font-bold tracking-tight text-blue-600">CloudExify.</p>
@@ -272,40 +272,38 @@ export default function RecommendationLetterPage() {
               </div>
             </div>
 
-            {/* Date */}
-            <p className="mb-4 text-slate-500 font-semibold">Date: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            {/* Title */}
+            <h3 className="text-center text-sm font-bold text-slate-900 uppercase tracking-widest mb-6">
+              Letter of Recommendation
+            </h3>
 
-            {/* Salutation */}
-            <h3 className="text-slate-900 font-bold text-xs uppercase mb-5">TO WHOM IT MAY CONCERN</h3>
+            {/* Recipient */}
+            <p className="mb-4 text-slate-500 font-semibold">Date: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p className="mb-6 font-bold text-slate-900 text-xs">To Whom It May Concern,</p>
 
             {/* Body */}
-            <div className="space-y-3.5 text-justify text-slate-700">
+            <div className="space-y-4 text-justify text-slate-700">
               <p>
-                It is my pleasure to write this letter of recommendation for <span className="font-bold text-slate-900">{selectedIntern ? selectedIntern.full_name : '[Intern Name]'}</span>, who recently completed a 2-month internship as a <span className="font-bold text-slate-900">{selectedIntern ? selectedIntern.domain : '[Domain]'} Intern</span> at CloudExify. The internship took place from <span className="font-bold text-slate-900">{formatDate(startDate)}</span> to <span className="font-bold text-slate-900">{formatDate(completionDate)}</span>.
+                It is a pleasure to write this letter of recommendation for <span className="font-bold text-slate-900">{selectedIntern ? selectedIntern.full_name : '[Intern Name]'}</span>, who completed a 2-month internship as a <span className="font-bold text-slate-900">{selectedIntern ? selectedIntern.domain : '[Domain]'} Intern</span> at CloudExify.
               </p>
-
-              {customText ? (
-                <p className="text-slate-700">{customText}</p>
-              ) : (
-                <>
-                  <p>
-                    During this tenure, <span className="font-bold text-slate-900">{selectedIntern ? selectedIntern.full_name : '[Intern Name]'}</span> demonstrated an exceptional work ethic and a deep understanding of software engineering concepts. They were actively involved in analyzing application requirements, implementing modular features, and cooperating with peer engineers on remote projects.
-                  </p>
-                  <p>
-                    They consistently proved to be highly analytical and details-oriented, resolving programming challenges with structured, clean logic. Their ability to quickly adapt to our stack and understand complex features was commendable. Beyond their technical skills, they have strong communication skills and collaborate effectively as a team player.
-                  </p>
-                  <p>
-                    We believe {selectedIntern ? selectedIntern.full_name : '[Intern Name]'} has great potential as a developer and will be a valuable asset to any technical team. I recommend them without reservation and wish them all the success in their career.
-                  </p>
-                </>
-              )}
+              <p>
+                During the course of the internship, {selectedIntern ? selectedIntern.full_name : 'the intern'} worked on engineering tasks under the supervision of senior developers. They consistently proved to be motivated, proactive, and committed to coding standards.
+              </p>
+              <p>
+                {customText}
+              </p>
+              <p>
+                {selectedIntern ? selectedIntern.full_name : 'The intern'} has also demonstrated good communication capabilities and collaborative spirit, integrating well with the remote developer community. We have no doubt they will be an asset to any software engineering group they join.
+              </p>
+              <p>
+                Therefore, we recommend them for future software development roles or academic programs and wish them success.
+              </p>
             </div>
 
-            <p className="mt-8">Sincerely,</p>
-
             {/* Signatures */}
-            <div className="mt-6 w-[45%] text-left">
+            <div className="mt-12 w-[45%] text-left">
               {selectedSignatory.signature_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img src={selectedSignatory.signature_url} className="h-10 object-contain mb-1.5 opacity-90" alt="signature" />
               ) : (
                 <div className="h-10" />
@@ -320,11 +318,25 @@ export default function RecommendationLetterPage() {
             {/* Footer */}
             <div className="absolute bottom-5 left-10 right-10 flex justify-between border-t border-slate-50 pt-2 text-[6.5px] text-slate-400">
               <p>CloudExify Software Development</p>
-              <p>Verification ID: {selectedIntern ? selectedIntern.registration_number : '[Registration Number]'}</p>
+              <p>ID: {selectedIntern ? selectedIntern.registration_number : '[Registration Number]'}</p>
             </div>
           </div>
         </div>
       </div>
     </PageWrapper>
+  );
+}
+
+export default function RecommendationLetterPage() {
+  return (
+    <Suspense fallback={
+      <PageWrapper title="Recommendation Letter Generator">
+        <div className="animate-pulse flex items-center justify-center min-h-[300px] text-slate-400">
+          Loading Recommendation Letter Generator...
+        </div>
+      </PageWrapper>
+    }>
+      <RecommendationLetterGenerator />
+    </Suspense>
   );
 }

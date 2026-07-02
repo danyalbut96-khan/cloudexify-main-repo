@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
     )
 
     // 7. Return Stream response
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(pdfBuffer as any, {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="Recommendation_Letter_${intern.registration_number}.pdf"`,
