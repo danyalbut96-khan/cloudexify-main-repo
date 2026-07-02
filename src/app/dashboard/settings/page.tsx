@@ -574,6 +574,7 @@ export default function SettingsPage() {
                 <div className="w-full md:w-56 flex flex-col items-center border-r border-slate-100 pr-0 md:pr-8">
                   <div className="h-28 w-28 rounded-full border-4 border-slate-100 bg-slate-50 shadow-md relative overflow-hidden flex items-center justify-center">
                     {avatarUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img src={avatarUrl} alt="Avatar Preview" className="h-full w-full object-cover" />
                     ) : (
                       <User className="h-14 w-14 text-slate-300 animate-pulse" />
@@ -638,6 +639,7 @@ export default function SettingsPage() {
                       <div className="border-2 border-dashed border-slate-200 rounded-xl p-4 bg-slate-50/50 flex flex-col items-center justify-center min-h-[140px] relative">
                         {signatureUrl ? (
                           <div className="flex flex-col items-center">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={signatureUrl} alt="Signature Preview" className="max-h-24 max-w-full object-contain mb-3" />
                             <div className="flex space-x-2">
                               <label className="cursor-pointer px-3 py-1 border border-slate-200 rounded-lg text-[10px] font-semibold bg-white hover:bg-slate-50 text-slate-600 transition-colors">

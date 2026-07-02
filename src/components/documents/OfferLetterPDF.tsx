@@ -401,7 +401,7 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
           </View>
           <View style={styles.bulletPoint}>
             <Text style={styles.bulletDot}>•</Text>
-            <Text style={styles.bulletText}>By accepting this offer, intern agrees to {cName}'s code of conduct and policies.</Text>
+            <Text style={styles.bulletText}>By accepting this offer, intern agrees to {cName}&apos;s code of conduct and policies.</Text>
           </View>
         </View>
 

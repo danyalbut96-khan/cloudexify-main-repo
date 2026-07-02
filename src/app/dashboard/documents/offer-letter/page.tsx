@@ -317,7 +317,7 @@ function OfferLetterGenerator() {
                   <li>This internship is unpaid and remote-based.</li>
                   <li>Intern must complete all 4 assigned projects to receive certificate.</li>
                   <li>CloudExify reserves the right to terminate internship for misconduct.</li>
-                  <li>By accepting this offer, intern agrees to CloudExify's code of conduct and policies.</li>
+                  <li>By accepting this offer, intern agrees to CloudExify&apos;s code of conduct and policies.</li>
                 </ul>
               </div>
 

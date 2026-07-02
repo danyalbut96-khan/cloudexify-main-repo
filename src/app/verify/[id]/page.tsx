@@ -47,6 +47,7 @@ export default async function VerifyDocumentPage({ params }: { params: { id: str
       {/* Brand Header */}
       <div className="mb-8 text-center">
         {companySettings?.company_logo_url || true ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img 
             src={companySettings?.company_logo_url || '/logo.png'} 
             alt="Company Logo" 
