@@ -112,8 +112,11 @@ export async function GET(request: NextRequest) {
             }
           }
         } else {
-          maxSerialNum++
-          const registrationNumber = `CX-INT-2025-${String(maxSerialNum).padStart(3, '0')}`
+          let registrationNumber = row.registration_number
+          if (!registrationNumber) {
+            maxSerialNum++
+            registrationNumber = `CX-INT-2025-${String(maxSerialNum).padStart(3, '0')}`
+          }
           return {
             isUpdate: false,
             payload: {

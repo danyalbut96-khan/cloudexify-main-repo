@@ -36,6 +36,7 @@ export interface ParsedSheetRow {
   skill_level?: string;
   available_hours?: number;
   referral_source?: string;
+  registration_number?: string;
   [key: string]: any;
 }
 
@@ -98,6 +99,19 @@ export async function fetchAndParseSheet(url: string): Promise<ParsedSheetRow[]>
             item[key] = String(val).trim();
           }
         }
+      }
+
+      // Scan all cells in the row to find the registration number (handles staircase layout)
+      let regNumber: string | undefined = undefined;
+      for (let j = 0; j < row.length; j++) {
+        const valStr = String(row[j] || '').trim();
+        if (/CX-INT-2025-/i.test(valStr)) {
+          regNumber = valStr;
+          break;
+        }
+      }
+      if (regNumber) {
+        item.registration_number = regNumber;
       }
 
       if (item.email && item.full_name) {

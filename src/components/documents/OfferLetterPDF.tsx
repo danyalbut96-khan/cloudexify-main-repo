@@ -209,7 +209,7 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
             Dear <Text style={styles.boldText}>{intern.full_name}</Text>,
           </Text>
           <Text style={styles.paragraph}>
-            We are pleased to offer you an internship position as a <Text style={styles.boldText}>{intern.domain} Intern</Text> at <Text style={styles.boldText}>{companySettings.company_name}</Text>. 
+            We are pleased to offer you an internship position as a <Text style={styles.boldText}>{intern.domain} Intern</Text> at <Text style={styles.boldText}>{companySettings.company_name}</Text>.
             We were highly impressed by your academic record and technical skill level.
           </Text>
           <Text style={styles.paragraph}>
@@ -261,7 +261,7 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
             )}
             <View style={styles.signatureLine}>
               <Text style={styles.boldText}>{adminName}</Text>
-              <Text style={styles.signerTitle}>{adminDesignation || 'Managing Director / Founder'}</Text>
+              <Text style={styles.signerTitle}>{adminDesignation}</Text>
               <Text style={styles.signerTitle}>{companySettings.company_name}</Text>
             </View>
           </View>
