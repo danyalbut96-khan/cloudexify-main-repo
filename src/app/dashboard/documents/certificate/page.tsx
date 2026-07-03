@@ -24,6 +24,9 @@ function CertificateGenerator() {
   const [allAdmins, setAllAdmins] = useState<any[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [previewCertId, setPreviewCertId] = useState('');
+  const [companyLogoUrl, setCompanyLogoUrl] = useState('');
+  const [companyName, setCompanyName] = useState('CloudExify');
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -36,6 +39,10 @@ function CertificateGenerator() {
             setAdminEmail(data.adminSignature.email);
           } else if (data.allSignatures?.length > 0) {
             setAdminEmail(data.allSignatures[0].email);
+          }
+          if (data.companySettings) {
+            setCompanyLogoUrl(data.companySettings.company_logo_url || '');
+            setCompanyName(data.companySettings.company_name || 'CloudExify');
           }
         }
       } catch (err) {
@@ -61,6 +68,13 @@ function CertificateGenerator() {
       fetchIntern();
     }
   }, [urlInternId]);
+
+  // Generate random preview certificate number
+  useEffect(() => {
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    const year = new Date().getFullYear();
+    setPreviewCertId(`CX-CERT-${year}-${randomNum}`);
+  }, [selectedIntern]);
 
   const handleSearch = async (val: string) => {
     setSearchQuery(val);
@@ -241,7 +255,25 @@ function CertificateGenerator() {
             {/* Inner Gold Border */}
             <div className="absolute inset-2 border border-amber-500/60 pointer-events-none" />
 
-            <h1 className="text-xl font-bold tracking-widest text-blue-600 uppercase mb-1">CloudExify.</h1>
+            {companyLogoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={companyLogoUrl} className="h-8 object-contain mb-1" alt="logo" />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img 
+                src="/logo.png" 
+                className="h-8 object-contain mb-1" 
+                alt="logo" 
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  const textLogo = document.getElementById('preview-cert-text-logo');
+                  if (textLogo) textLogo.style.display = 'block';
+                }}
+              />
+            )}
+            <h1 id="preview-cert-text-logo" className="text-xl font-bold tracking-widest text-blue-600 uppercase mb-1" style={{ display: 'none' }}>
+              {companyName}.
+            </h1>
             <p className="text-[7px] text-slate-400 uppercase tracking-widest mb-6">Software Development Company</p>
 
             <h2 className="text-xl font-black text-slate-900 uppercase tracking-widest mb-2">Certificate of Completion</h2>
@@ -289,10 +321,13 @@ function CertificateGenerator() {
 
             {/* Absolute Tags */}
             <p className="absolute bottom-4 left-6 text-[6px] text-slate-400">
-              Certificate ID: {selectedIntern ? selectedIntern.registration_number : '[Registration Number]'}
+              Certificate ID: {previewCertId}
+            </p>
+            <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[5.5px] text-[#9ab3d0] text-center w-max">
+              This document can be verified at admin.cloudexify.site/verify/{previewCertId}
             </p>
             <p className="absolute bottom-4 right-6 text-[6px] text-slate-400">
-              Verification: https://cloudexify.com
+              Scan to verify
             </p>
           </div>
         </div>

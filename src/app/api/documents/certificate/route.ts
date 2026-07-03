@@ -78,8 +78,12 @@ export async function GET(request: NextRequest) {
     // 4. Read logo from /public/logo.png as base64 for PDF rendering
     const logoBase64 = getLogoBase64()
 
-    // 5. Generate QR code as base64 PNG (FIX 6)
-    const verificationUrl = `https://admin.cloudexify.site/verify/${intern.registration_number}`
+    // 5. Generate Random Certificate Number & QR Code
+    const randomNum = Math.floor(1000 + Math.random() * 9000)
+    const year = new Date().getFullYear()
+    const certificateNumber = `CX-CERT-${year}-${randomNum}`
+
+    const verificationUrl = `https://admin.cloudexify.site/verify/${certificateNumber}`
     let qrCodeBase64: string | null = null
     try {
       const qrBuffer = await QRCode.toBuffer(verificationUrl, {
@@ -90,7 +94,6 @@ export async function GET(request: NextRequest) {
       qrCodeBase64 = `data:image/png;base64,${qrBuffer.toString('base64')}`
     } catch (qrErr) {
       console.error('QR code generation failed:', qrErr)
-      // Non-fatal — certificate will render without QR
     }
 
     // 6. Render PDF to Buffer
@@ -103,9 +106,11 @@ export async function GET(request: NextRequest) {
       completionDate,
       logoBase64,
       qrCodeBase64,
+      certificateNumber,
     })
 
     const pdfBuffer = await pdf(docElement as any).toBuffer()
+    const generatedAt = new Date().toISOString()
 
     // 7. Update Intern Document generated status
     const { error: docUpdateError } = await supabase
@@ -113,17 +118,34 @@ export async function GET(request: NextRequest) {
       .upsert({
         intern_id: internId,
         certificate_generated: true,
-        certificate_date: new Date().toISOString()
+        certificate_date: generatedAt
       }, { onConflict: 'intern_id' })
 
     if (docUpdateError) {
       console.error('Failed to update intern document record:', docUpdateError)
     }
 
-    // 8. Record in Audit Logs
+    // 8. Save Verification Record
+    const { error: verifyError } = await supabase
+      .from('document_verifications')
+      .insert({
+        document_type: 'certificate',
+        document_number: certificateNumber,
+        intern_id: internId,
+        intern_name: intern.full_name,
+        intern_domain: intern.domain,
+        generated_at: generatedAt,
+        generated_by: user.email
+      })
+
+    if (verifyError) {
+      console.error('Failed to save document verification record:', verifyError)
+    }
+
+    // 9. Record in Audit Logs
     await logAction(
       user.email!,
-      `Generated Internship Completion Certificate for intern ${intern.full_name} (${intern.registration_number})`,
+      `Generated Internship Completion Certificate for intern ${intern.full_name} (${certificateNumber})`,
       'documents',
       intern.id
     )

@@ -101,6 +101,18 @@ const styles = StyleSheet.create({
     borderTopColor: '#94A3B8',
     paddingTop: 5,
     alignItems: 'center',
+    height: 32, // Fixed height to align horizontal lines
+  },
+  contactInfo: {
+    position: 'absolute',
+    top: 15,
+    right: 20,
+    alignItems: 'flex-end',
+  },
+  contactText: {
+    fontSize: 7,
+    color: '#64748B',
+    lineHeight: 1.2,
   },
   metaLabel: {
     fontSize: 7,
@@ -171,6 +183,7 @@ interface CertificateProps {
   completionDate: string;
   logoBase64?: string | null;
   qrCodeBase64?: string | null;
+  certificateNumber: string;
 }
 
 export const CertificatePDF: React.FC<CertificateProps> = ({
@@ -182,9 +195,10 @@ export const CertificatePDF: React.FC<CertificateProps> = ({
   completionDate,
   logoBase64,
   qrCodeBase64,
+  certificateNumber,
 }) => {
   const logoSrc = companySettings.company_logo_url || logoBase64 || null;
-  const verificationUrl = `https://admin.cloudexify.site/verify/${intern.registration_number}`;
+  const verificationUrl = `https://admin.cloudexify.site/verify/${certificateNumber}`;
 
   return (
     <Document>
@@ -192,11 +206,17 @@ export const CertificatePDF: React.FC<CertificateProps> = ({
         <View style={styles.borderContainer}>
           <View style={styles.innerBorder} />
 
+          {/* Contact Info — top right */}
+          <View style={styles.contactInfo}>
+            <Text style={styles.contactText}>{companySettings.company_email}</Text>
+            <Text style={styles.contactText}>{companySettings.company_website.replace('https://', '').replace('http://', '')}</Text>
+          </View>
+
           {/* Logo / Branding — FIX 9: centered at top, max 160px wide */}
           {logoSrc ? (
-            <Image style={{ maxHeight: 50, maxWidth: 160, objectFit: 'contain', marginBottom: 2 }} src={logoSrc} />
+            <Image style={{ maxHeight: 60, maxWidth: 160, objectFit: 'contain', marginTop: -15, marginBottom: 2 }} src={logoSrc} />
           ) : (
-            <Text style={styles.logo}>{companySettings.company_name.toUpperCase()}</Text>
+            <Text style={[styles.logo, { marginTop: -15 }]}>{companySettings.company_name.toUpperCase()}</Text>
           )}
           <Text style={styles.subtitle}>Software Development Company</Text>
 
@@ -222,6 +242,7 @@ export const CertificatePDF: React.FC<CertificateProps> = ({
           {/* Footer Metadata & Signatures */}
           <View style={styles.metaContainer}>
             <View style={styles.metaBox}>
+              <View style={{ height: 35 }} /> {/* Spacer to align with signature image! */}
               <Text style={styles.metaVal}>{formatDate(completionDate)}</Text>
               <View style={styles.signatureLine}>
                 <Text style={styles.metaLabel}>Date of Issue</Text>
@@ -251,7 +272,7 @@ export const CertificatePDF: React.FC<CertificateProps> = ({
           </View>
 
           {/* Certificate ID — bottom left */}
-          <Text style={styles.certId}>Certificate ID: {intern.registration_number}</Text>
+          <Text style={styles.certId}>Certificate ID: {certificateNumber}</Text>
 
           {/* FIX 6: QR Code — bottom right */}
           {qrCodeBase64 && (
@@ -269,7 +290,7 @@ export const CertificatePDF: React.FC<CertificateProps> = ({
 
           {/* FIX 7: Verification footer */}
           <Text style={styles.verificationFooter}>
-            This document can be verified at admin.cloudexify.site/verify/{intern.registration_number}
+            This document can be verified at admin.cloudexify.site/verify/{certificateNumber}
           </Text>
         </View>
       </Page>
