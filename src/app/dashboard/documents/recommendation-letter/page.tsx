@@ -277,12 +277,30 @@ function RecommendationLetterGenerator() {
             {/* Logo header */}
             <div className="flex justify-between items-center border-b border-slate-100 pb-5 mb-8">
               <div>
-                <p className="text-xl font-bold tracking-tight text-blue-600">CloudExify.</p>
+                {companyLogoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={companyLogoUrl} className="h-8 object-contain mb-1" alt="logo" />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img 
+                    src="/logo.png" 
+                    className="h-8 object-contain mb-1" 
+                    alt="logo" 
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      const textLogo = document.getElementById('preview-rl-text-logo');
+                      if (textLogo) textLogo.style.display = 'block';
+                    }}
+                  />
+                )}
+                <p id="preview-rl-text-logo" className="text-xl font-bold tracking-tight text-blue-600" style={{ display: 'none' }}>
+                  {companyName}.
+                </p>
               </div>
               <div className="text-right text-[7px] text-slate-400">
-                <p className="font-bold text-slate-700">CloudExify</p>
+                <p className="font-bold text-slate-700">{companyName}</p>
                 <p>Islamabad, Pakistan</p>
-                <p>https://cloudexify.site |hello@cloudexify.site </p>
+                <p>https://cloudexify.site | hello@cloudexify.site</p>
               </div>
             </div>
 
@@ -315,7 +333,7 @@ function RecommendationLetterGenerator() {
             </div>
 
             {/* Signatures */}
-            <div className="mt-12 w-[45%] text-left">
+            <div className="mt-12 w-[35%] text-left">
               {selectedSignatory.signature_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={selectedSignatory.signature_url} className="h-10 object-contain mb-1.5 opacity-90" alt="signature" />
@@ -324,15 +342,28 @@ function RecommendationLetterGenerator() {
               )}
               <div className="border-t border-slate-300 pt-1.5">
                 <p className="font-bold text-slate-900">{selectedSignatory.full_name}</p>
-                <p className="text-[7.5px] text-slate-400">Managing Director / Founder</p>
-                <p className="text-[7.5px] text-slate-400">CloudExify</p>
+                <p className="text-[7.5px] text-slate-400">{selectedSignatory.designation || 'Managing Director / Founder'}</p>
+                <p className="text-[7.5px] text-slate-400">{companyName}</p>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="absolute bottom-5 left-10 right-10 flex justify-between border-t border-slate-50 pt-2 text-[6.5px] text-slate-400">
-              <p>CloudExify Software Development</p>
-              <p>ID: {selectedIntern ? selectedIntern.registration_number : '[Registration Number]'}</p>
+            <div className="absolute bottom-10 left-10 right-10 flex justify-between border-t border-slate-50 pt-2 text-[6.5px] text-slate-400">
+              <p>{companyName} Software Development</p>
+              <p>ID: {previewRlId}</p>
+            </div>
+
+            {/* Verification Footer Text */}
+            <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[5.5px] text-[#9ab3d0] text-center w-max">
+              This document can be verified at admin.cloudexify.site/verify/{previewRlId}
+            </p>
+
+            {/* QR Code representation */}
+            <div className="absolute bottom-12 right-10 flex flex-col items-center">
+              <div className="w-8 h-8 bg-slate-100 border border-slate-200 flex items-center justify-center mb-0.5">
+                <span className="text-[4px] text-slate-400 font-bold">QR CODE</span>
+              </div>
+              <p className="text-[4px] text-blue-600 font-bold uppercase tracking-wider">Scan to Verify</p>
             </div>
           </div>
         </div>
