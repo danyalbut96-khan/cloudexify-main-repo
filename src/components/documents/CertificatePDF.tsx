@@ -131,13 +131,13 @@ const styles = StyleSheet.create({
   // QR code section — bottom right corner
   qrSection: {
     position: 'absolute',
-    bottom: 12,
-    right: 100,
+    bottom: 10,
+    right: 50,
     alignItems: 'center',
   },
   qrImage: {
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
   },
   qrLabel: {
     fontSize: 5,
