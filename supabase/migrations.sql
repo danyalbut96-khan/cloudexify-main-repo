@@ -181,5 +181,8 @@ CREATE POLICY "Admin full access to admin_signatures"
   USING (auth.role() = 'authenticated') 
   WITH CHECK (auth.role() = 'authenticated');
 
+-- Add company_phone column to company_settings
+ALTER TABLE public.company_settings ADD COLUMN IF NOT EXISTS company_phone text DEFAULT '+92 341 1949277';
+
 
 

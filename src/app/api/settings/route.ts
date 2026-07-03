@@ -79,6 +79,8 @@ export async function POST(request: NextRequest) {
           company_website: String(body.company_website || '').trim(),
           company_email: String(body.company_email || '').trim().toLowerCase(),
           company_logo_url: body.company_logo_url ? String(body.company_logo_url).trim() : null,
+          company_phone: body.company_phone ? sanitizeInput(String(body.company_phone)).trim() : null,
+          bank_details: body.bank_details ? sanitizeInput(String(body.bank_details)) : null,
           updated_at: new Date().toISOString()
         })
         .eq('id', 1)

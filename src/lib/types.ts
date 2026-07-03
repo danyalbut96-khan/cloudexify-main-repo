@@ -141,6 +141,7 @@ export interface CompanySettings {
   company_email: string;
   company_phone?: string;
   company_logo_url?: string | null;
+  bank_details?: string;
   updated_at: string;
 }
 

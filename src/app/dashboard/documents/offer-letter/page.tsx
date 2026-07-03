@@ -26,6 +26,13 @@ function OfferLetterGenerator() {
   const [allAdmins, setAllAdmins] = useState<any[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [companyLogoUrl, setCompanyLogoUrl] = useState('');
+  const [companyName, setCompanyName] = useState('CloudExify');
+  const [companyAddress, setCompanyAddress] = useState('Islamabad, Pakistan');
+  const [companyWebsite, setCompanyWebsite] = useState('cloudexify.site');
+  const [companyEmail, setCompanyEmail] = useState('hello@cloudexify.site');
+  const [companyPhone, setCompanyPhone] = useState('+92 341 1949277');
+  const [previewDocId, setPreviewDocId] = useState('');
 
   // Fetch all admins for dropdown signature slots
   useEffect(() => {
@@ -39,6 +46,14 @@ function OfferLetterGenerator() {
             setAdminEmail(data.adminSignature.email);
           } else if (data.allSignatures?.length > 0) {
             setAdminEmail(data.allSignatures[0].email);
+          }
+          if (data.companySettings) {
+            setCompanyLogoUrl(data.companySettings.company_logo_url || '');
+            setCompanyName(data.companySettings.company_name || 'CloudExify');
+            setCompanyAddress(data.companySettings.company_address || 'Islamabad, Pakistan');
+            setCompanyWebsite(data.companySettings.company_website || 'cloudexify.site');
+            setCompanyEmail(data.companySettings.company_email || 'hello@cloudexify.site');
+            setCompanyPhone(data.companySettings.company_phone || '+92 341 1949277');
           }
         }
       } catch (err) {
@@ -64,7 +79,12 @@ function OfferLetterGenerator() {
       };
       fetchIntern();
     }
-  }, [urlInternId]);
+  // Generate random preview document number
+  useEffect(() => {
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    const year = new Date().getFullYear();
+    setPreviewDocId(`CX-OL-${year}-${randomNum}`);
+  }, [selectedIntern]);
 
   // Handle intern search
   const handleSearch = async (val: string) => {

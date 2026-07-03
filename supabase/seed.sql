@@ -136,7 +136,13 @@ CREATE TABLE IF NOT EXISTS company_settings (
   company_address text NOT NULL DEFAULT 'Plot 45-C, 24th Commercial St, Phase II Ext Defence, Karachi, Pakistan',
   company_website text NOT NULL DEFAULT 'https://cloudexify.com',
   company_email text NOT NULL DEFAULT 'info@cloudexify.com',
+  company_phone text DEFAULT '+92 341 1949277',
   company_logo_url text,
+  bank_details text DEFAULT 'Bank: Habib Bank Limited (HBL)
+Account Name: CloudExify Private Limited
+Account Number: 1234-567890-01
+Branch Code: 0123
+IBAN: PK00 HABB 0123 4567 8901',
   updated_at timestamptz DEFAULT now()
 );
 
@@ -234,6 +240,10 @@ CREATE TRIGGER on_auth_user_created
 -- =========================================================================
 
 -- Seed Single Row Company Settings (Required for dashboard settings interface)
-INSERT INTO company_settings (id, company_name, company_address, company_website, company_email)
-VALUES (1, 'CloudExify', 'Plot 45-C, 24th Commercial St, Phase II Ext Defence, Karachi, Pakistan', 'https://cloudexify.com', 'info@cloudexify.com')
+INSERT INTO company_settings (id, company_name, company_address, company_website, company_email, company_phone, bank_details)
+VALUES (1, 'CloudExify', 'Plot 45-C, 24th Commercial St, Phase II Ext Defence, Karachi, Pakistan', 'https://cloudexify.com', 'info@cloudexify.com', '+92 341 1949277', 'Bank: Habib Bank Limited (HBL)
+Account Name: CloudExify Private Limited
+Account Number: 1234-567890-01
+Branch Code: 0123
+IBAN: PK00 HABB 0123 4567 8901')
 ON CONFLICT (id) DO NOTHING;

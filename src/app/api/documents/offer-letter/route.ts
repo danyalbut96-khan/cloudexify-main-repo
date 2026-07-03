@@ -88,9 +88,9 @@ export async function GET(request: NextRequest) {
       .select('*', { count: 'exact', head: true })
       .eq('offer_letter_generated', true)
 
-    const seqCount = (count || 0) + 1
+    const randomNum = Math.floor(1000 + Math.random() * 9000)
     const year = new Date().getFullYear()
-    const offerLetterNumber = `CX-OL-${year}-${String(seqCount).padStart(4, '0')}`
+    const offerLetterNumber = `CX-OL-${year}-${randomNum}`
 
     // 5. Generate QR Code
     const verificationUrl = `https://admin.cloudexify.site/verify/${offerLetterNumber}`

@@ -53,6 +53,8 @@ export default function SettingsPage() {
   const [companyWebsite, setCompanyWebsite] = useState('');
   const [companyEmail, setCompanyEmail] = useState('');
   const [companyLogoUrl, setCompanyLogoUrl] = useState('');
+  const [companyPhone, setCompanyPhone] = useState('');
+  const [bankDetails, setBankDetails] = useState('');
 
   // Admin Profile State
   const [displayName, setDisplayName] = useState('');
@@ -93,6 +95,8 @@ export default function SettingsPage() {
         setCompanyWebsite(data.companySettings.company_website);
         setCompanyEmail(data.companySettings.company_email);
         setCompanyLogoUrl(data.companySettings.company_logo_url || '');
+        setCompanyPhone(data.companySettings.company_phone || '');
+        setBankDetails(data.companySettings.bank_details || '');
       }
 
       if (data.adminProfile) {
@@ -135,7 +139,9 @@ export default function SettingsPage() {
           company_address: companyAddress,
           company_website: companyWebsite,
           company_email: companyEmail,
-          company_logo_url: companyLogoUrl
+          company_logo_url: companyLogoUrl,
+          company_phone: companyPhone,
+          bank_details: bankDetails
         })
       });
 
@@ -539,16 +545,42 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Office Headquarters Address</label>
-                  <textarea
-                    required
-                    value={companyAddress}
-                    onChange={(e) => setCompanyAddress(e.target.value)}
-                    rows={3}
-                    placeholder="Plot 45-C, 24th Commercial St, Phase II Ext Defence, Karachi, Pakistan"
-                    className="block w-full px-3.5 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white leading-normal"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">WhatsApp Contact Number</label>
+                    <input
+                      type="text"
+                      value={companyPhone}
+                      onChange={(e) => setCompanyPhone(e.target.value)}
+                      placeholder="e.g. +92 341 1949277"
+                      className="block w-full px-3.5 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Office Headquarters Address</label>
+                    <textarea
+                      required
+                      value={companyAddress}
+                      onChange={(e) => setCompanyAddress(e.target.value)}
+                      rows={4}
+                      placeholder="Plot 45-C, 24th Commercial St, Phase II Ext Defence, Karachi, Pakistan"
+                      className="block w-full px-3.5 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white leading-normal"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Invoice Bank Details</label>
+                    <textarea
+                      value={bankDetails}
+                      onChange={(e) => setBankDetails(e.target.value)}
+                      rows={4}
+                      placeholder="Bank: Habib Bank Limited (HBL)&#10;Account Name: CloudExify Private Limited&#10;Account Number: 1234-567890-01"
+                      className="block w-full px-3.5 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white leading-normal font-mono"
+                    />
+                  </div>
                 </div>
 
                 <div className="flex justify-end pt-2">

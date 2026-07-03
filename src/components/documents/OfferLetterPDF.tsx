@@ -6,10 +6,10 @@ import { formatDate } from '@/lib/utils';
 
 const styles = StyleSheet.create({
   page: {
-    padding: 50,
+    padding: 40,
     fontFamily: 'Helvetica',
-    fontSize: 10,
-    lineHeight: 1.5,
+    fontSize: 9.5,
+    lineHeight: 1.4,
     color: '#334155',
   },
   headerContainer: {
@@ -18,67 +18,67 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
-    paddingBottom: 20,
-    marginBottom: 30,
+    paddingBottom: 12,
+    marginBottom: 20,
   },
   companyInfo: {
     alignItems: 'flex-end',
   },
   companyName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#0F172A',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   companyMeta: {
     fontSize: 8,
     color: '#64748B',
   },
   logoPlaceholder: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#2563EB',
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#0F172A',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 15,
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
   date: {
-    marginBottom: 15,
-    fontSize: 9,
+    marginBottom: 10,
+    fontSize: 8.5,
     color: '#475569',
   },
   recipient: {
-    marginBottom: 20,
+    marginBottom: 15,
   },
   recipientName: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: 'bold',
     color: '#0F172A',
     marginBottom: 2,
   },
   recipientDetails: {
-    fontSize: 9,
+    fontSize: 8.5,
     color: '#475569',
   },
   body: {
-    marginBottom: 15,
+    marginBottom: 12,
     textAlign: 'justify',
   },
   paragraph: {
-    marginBottom: 12,
+    marginBottom: 8,
   },
   boldText: {
     fontWeight: 'bold',
     color: '#0F172A',
   },
   termsTable: {
-    marginVertical: 10,
+    marginVertical: 8,
     borderWidth: 1,
     borderColor: '#E2E8F0',
     borderRadius: 4,
@@ -87,11 +87,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
-    padding: 8,
+    padding: 6,
   },
   tableRowLast: {
     flexDirection: 'row',
-    padding: 8,
+    padding: 6,
   },
   tableLabel: {
     width: '30%',
@@ -103,14 +103,14 @@ const styles = StyleSheet.create({
     color: '#475569',
   },
   closing: {
-    marginTop: 20,
-    marginBottom: 40,
+    marginTop: 15,
+    marginBottom: 30,
   }, signatureContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    marginTop: 20,
-    marginBottom: 10,
+    marginTop: 15,
+    marginBottom: 8,
   },
 
   signatureBox: {
@@ -331,7 +331,7 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
         </View>
 
         {/* Closing */}
-        <Text>Sincerely,</Text>
+        <Text style={styles.closing}>Sincerely,</Text>
 
         {/* Signatures */}
         <View style={styles.signatureContainer}>

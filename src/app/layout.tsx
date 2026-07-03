@@ -8,6 +8,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "CloudExify Admin Portal",
   description: "Secure internal management dashboard for CloudExify.",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 export default function RootLayout({
