@@ -194,7 +194,7 @@ export const CertificatePDF: React.FC<CertificateProps> = ({
 
           {/* Logo / Branding — FIX 9: centered at top, max 160px wide */}
           {logoSrc ? (
-            <Image style={{ maxHeight: 60, maxWidth: 160, objectFit: 'contain', marginBottom: 7 }} src={logoSrc} />
+            <Image style={{ maxHeight: 50, maxWidth: 160, objectFit: 'contain', marginBottom: 2 }} src={logoSrc} />
           ) : (
             <Text style={styles.logo}>{companySettings.company_name.toUpperCase()}</Text>
           )}
