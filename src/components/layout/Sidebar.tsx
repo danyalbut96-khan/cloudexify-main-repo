@@ -63,14 +63,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       name: 'Lead Generation',
       icon: TrendingUp,
       path: '/dashboard/leadgen',
-      hasSubmenu: true,
-      submenuKey: 'leadgen',
-      submenu: [
-        { name: 'Dashboard', path: '/dashboard/leadgen', icon: LayoutDashboard },
-        { name: 'Leads Table', path: '/dashboard/leadgen/leads', icon: Users },
-        { name: 'Workflow', path: '/dashboard/leadgen/workflow', icon: FolderGit2 },
-        { name: 'Settings', path: '/dashboard/leadgen/settings', icon: Settings },
-      ],
     },
     {
       name: 'Employees',
