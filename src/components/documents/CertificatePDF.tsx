@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: '#2563EB',
-    marginBottom: 10,
+    marginBottom: 6,
     letterSpacing: 2,
   },
   subtitle: {
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   qrSection: {
     position: 'absolute',
     bottom: 10,
-    right: 50,
+    right: 30,
     alignItems: 'center',
   },
   qrImage: {
