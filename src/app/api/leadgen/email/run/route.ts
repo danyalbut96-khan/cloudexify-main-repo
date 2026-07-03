@@ -2,40 +2,23 @@ import { createClient, getAdminClient } from '@/lib/supabase/server';
 import { getStoredCredential, callOpenRouter, acquireAgentLock, releaseAgentLock } from '@/lib/ai/openrouter';
 import { sendOutreachEmail } from '@/lib/outreach/email';
 import { isRateLimited } from '@/lib/utils';
-import { logAction } from '@/lib/server-utils';
+import { logAction, StreamLogger } from '@/lib/server-utils';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
-  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
-  if (isRateLimited(ip)) {
-    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
-  }
-
-  // Support CRON authentication
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-  const isCron = cronSecret && authHeader === `Bearer ${cronSecret}`;
-
-  let adminEmail = 'system@vercel-cron.local';
-  if (!isCron) {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    adminEmail = user.email!;
-  }
+async function executeEmailOutreach(logger: StreamLogger, adminEmail: string) {
+  const adminClient = getAdminClient();
 
   // 1. Acquire global Email Agent lock
+  await logger.log('Acquiring Agent 2 (Email Outreach) global execution lock...', 'info');
   const lockAcquired = await acquireAgentLock('agent_2_email');
   if (!lockAcquired) {
-    return NextResponse.json({ success: true, message: 'Email outreach agent (Agent 2) is already running. Tick skipped.' });
+    await logger.log('Email outreach lock is already active (another instance is running). Tick skipped.', 'warn');
+    return { success: true, message: 'Email outreach agent (Agent 2) is already running. Tick skipped.' };
   }
 
   try {
-    const adminClient = getAdminClient();
-
     // 2. Fetch Email Stage config
+    await logger.log('Fetching Email stage configurations from database...', 'info');
     const { data: stageConfig } = await adminClient
       .from('pipeline_stage_config')
       .select('*')
@@ -47,10 +30,12 @@ export async function POST(request: NextRequest) {
     }
 
     if (!stageConfig.enabled) {
-      return NextResponse.json({ error: 'Email outreach stage is currently disabled.' }, { status: 400 });
+      await logger.log('Email outreach stage is disabled in configuration. Skipping execution.', 'warn');
+      return { success: false, message: 'Email outreach stage is currently disabled.' };
     }
 
     // 3. Verify Email Domain credentials
+    await logger.log('Verifying SMTP credentials and sending domain DNS states...', 'info');
     const { data: emailCreds } = await adminClient
       .from('api_credentials')
       .select('*')
@@ -58,13 +43,15 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (!emailCreds || !emailCreds.is_verified) {
-      return NextResponse.json({ error: 'Email sending is blocked. Sending domain DNS records must be verified first.' }, { status: 400 });
+      await logger.log('Email sending is blocked. Verify DNS settings or enable bypass DNS check.', 'error');
+      return { success: false, error: 'Email sending domain DNS records must be verified first.' };
     }
 
     const config = stageConfig.config || {};
     const dailyLimit = config.daily_send_limit || 30;
 
     // 4. Check daily send quota
+    await logger.log(`Validating daily send limits (max ${dailyLimit} sends)...`, 'info');
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
 
@@ -80,11 +67,14 @@ export async function POST(request: NextRequest) {
     }
 
     const remainingQuota = dailyLimit - (sentToday || 0);
+    await logger.log(`Emails sent today: ${sentToday || 0} | Remaining limit: ${remainingQuota}`, 'info');
     if (remainingQuota <= 0) {
-      return NextResponse.json({ success: true, message: 'Daily email quota reached for today.' });
+      await logger.log('Daily email quota reached for today. Skipping.', 'warn');
+      return { success: true, message: 'Daily email quota reached for today.' };
     }
 
     // 5. Query candidate prospects with email and status = 'ready_for_outreach'
+    await logger.log('Querying top leads ready for email outreach...', 'info');
     const { data: leads, error: leadsError } = await adminClient
       .from('leads')
       .select('*')
@@ -99,8 +89,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (!leads || leads.length === 0) {
-      return NextResponse.json({ success: true, message: 'No prospects with email addresses found ready for outreach.' });
+      await logger.log('No prospects with email addresses found ready for outreach.', 'warn');
+      return { success: true, message: 'No prospects with email addresses found ready for outreach.' };
     }
+
+    await logger.log(`Found ${leads.length} qualified prospects to email.`, 'info');
 
     // Resolve model parameters
     const model = stageConfig.openrouter_model || 'openai/gpt-4o-mini';
@@ -116,14 +109,17 @@ export async function POST(request: NextRequest) {
 
     // 6. Process outreach per lead (with per-lead lock)
     for (const lead of leads) {
+      await logger.log(`[Outreach ${sentCount + 1}/${leads.length}] Processing "${lead.business_name}" (${lead.email})...`, 'info');
+
       // Call Supabase RPC try_lock_lead
+      await logger.log(`Acquiring database lock on prospect ID ${lead.id}...`, 'info');
       const { data: lockOk, error: lockErr } = await adminClient.rpc('try_lock_lead', {
         p_lead_id: lead.id,
         p_agent: 'agent_2'
       });
 
       if (lockErr || !lockOk) {
-        console.warn(`Lead ${lead.id} lock acquisition failed, skipping.`);
+        await logger.log(`Prospect lock failed (another agent process claimed this lead). Skipping.`, 'warn');
         continue;
       }
 
@@ -137,6 +133,7 @@ export async function POST(request: NextRequest) {
         };
 
         // Call OpenRouter for content draft
+        await logger.log(`Requesting OpenRouter email personalization draft using model "${model}"...`, 'info');
         const result = await callOpenRouter({
           model,
           messages: [
@@ -151,8 +148,10 @@ export async function POST(request: NextRequest) {
           cleaned = cleaned.replace(/^```json/, '').replace(/^```/, '').replace(/```$/, '').trim();
         }
         const { subject, body } = JSON.parse(cleaned);
+        await logger.log(`Outreach draft resolved: "${subject}"`, 'success');
 
         // Send email via Resend client
+        await logger.log(`Dispatching email to Resend API: to = ${lead.email}...`, 'info');
         await sendOutreachEmail({ to: lead.email, subject, body });
 
         // Save outreach event log
@@ -176,9 +175,10 @@ export async function POST(request: NextRequest) {
 
         sentCount++;
         outreachLog.push({ id: lead.id, business: lead.business_name, email: lead.email });
+        await logger.log(`Outreach email successfully sent to "${lead.business_name}"!`, 'success');
 
       } catch (err: any) {
-        console.error(`Email outreach failed for lead ${lead.id}:`, err);
+        await logger.log(`Outreach execution error for ${lead.business_name}: ${err.message}`, 'error');
         // Release lead lock on exception so others can process
         await adminClient
           .from('leads')
@@ -194,16 +194,76 @@ export async function POST(request: NextRequest) {
       'agent_2_run'
     );
 
-    return NextResponse.json({
+    await logger.log(`Agent 2 run completed. Dispatched ${sentCount} emails.`, 'success');
+
+    return {
       success: true,
       sent: sentCount,
       outreach: outreachLog
-    });
+    };
 
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    await logger.log(`Agent 2 crash: ${err.message}`, 'error');
+    throw err;
   } finally {
     // 7. Release agent lock
+    await logger.log('Releasing Agent 2 (Email Outreach) global execution lock...', 'info');
     await releaseAgentLock('agent_2_email');
+  }
+}
+
+export async function POST(request: NextRequest) {
+  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
+  if (isRateLimited(ip)) {
+    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
+  }
+
+  // Support CRON authentication
+  const authHeader = request.headers.get('authorization');
+  const cronSecret = process.env.CRON_SECRET;
+  const isCron = cronSecret && authHeader === `Bearer ${cronSecret}`;
+
+  let adminEmail = 'system@vercel-cron.local';
+  if (!isCron) {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    adminEmail = user.email!;
+  }
+
+  const streamParam = request.nextUrl.searchParams.get('stream') === 'true';
+
+  if (streamParam) {
+    const responseStream = new TransformStream();
+    const writer = responseStream.writable.getWriter();
+    const logger = new StreamLogger(writer);
+
+    (async () => {
+      try {
+        await executeEmailOutreach(logger, adminEmail);
+      } catch (err: any) {
+        await logger.log(`Execution failed: ${err.message || err}`, 'error');
+      } finally {
+        await writer.close();
+      }
+    })();
+
+    return new Response(responseStream.readable, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache, no-transform',
+        'Connection': 'keep-alive',
+      },
+    });
+  } else {
+    const logger = new StreamLogger(null);
+    try {
+      const summary = await executeEmailOutreach(logger, adminEmail);
+      return NextResponse.json(summary);
+    } catch (err: any) {
+      return NextResponse.json({ error: err.message }, { status: 500 });
+    }
   }
 }

@@ -33,7 +33,6 @@ export async function GET(request: NextRequest) {
 
     const counts: Record<string, number> = {
       discovery: 0,
-      enrichment: 0,
       email: 0,
       whatsapp: 0,
       handoff: 0
@@ -41,18 +40,19 @@ export async function GET(request: NextRequest) {
 
     if (leads) {
       leads.forEach((l: any) => {
-        if (l.status === 'discovered') counts.discovery++;
-        else if (l.status === 'enriched') counts.enrichment++;
+        if (l.status === 'discovered' || l.status === 'ready_for_outreach') counts.discovery++;
         else if (l.status === 'emailed') counts.email++;
         else if (l.status === 'followed_up' || l.status === 'replied') counts.whatsapp++;
         else if (l.status === 'qualified') counts.handoff++;
       });
     }
 
-    const stageData = (configs || []).map((config: any) => ({
-      ...config,
-      lead_count: counts[config.stage_key] || 0
-    }));
+    const stageData = (configs || [])
+      .filter((config: any) => config.stage_key !== 'enrichment')
+      .map((config: any) => ({
+        ...config,
+        lead_count: counts[config.stage_key] || 0
+      }));
 
     return NextResponse.json(stageData);
   } catch (err: any) {

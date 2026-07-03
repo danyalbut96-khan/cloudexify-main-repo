@@ -1,7 +1,7 @@
 import { createClient, getAdminClient } from '@/lib/supabase/server';
 import { getStoredCredential, callOpenRouter, acquireAgentLock, releaseAgentLock } from '@/lib/ai/openrouter';
 import { isRateLimited } from '@/lib/utils';
-import { logAction } from '@/lib/server-utils';
+import { logAction, StreamLogger } from '@/lib/server-utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Helpers for mock scraping & WhatsApp status check
@@ -15,7 +15,6 @@ async function findFacebookPage(name: string, city: string) {
 }
 
 async function checkWhatsappRegistered(phone: string | null): Promise<boolean> {
-  // Assume standard mobile numbers are WhatsApp registered to allow sandbox outreach testing
   return !!phone && !phone.includes('1234567'); 
 }
 
@@ -26,37 +25,20 @@ function mapCategory(types: string[]): string {
   return 'restaurant';
 }
 
-export async function POST(request: NextRequest) {
-  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
-  if (isRateLimited(ip)) {
-    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
-  }
+async function executeDiscovery(logger: StreamLogger, adminEmail: string) {
+  const adminClient = getAdminClient();
 
-  // Support CRON authentication
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-  const isCron = cronSecret && authHeader === `Bearer ${cronSecret}`;
-
-  let adminEmail = 'system@vercel-cron.local';
-  if (!isCron) {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    adminEmail = user.email!;
-  }
-
-  // 1. Acquire global Discovery lock
+  // 1. Acquire global lock
+  await logger.log('Acquiring Agent 1 (Discovery) global execution lock...', 'info');
   const lockAcquired = await acquireAgentLock('agent_1_discovery');
   if (!lockAcquired) {
-    return NextResponse.json({ success: true, message: 'Discovery agent (Agent 1) is already running. Tick skipped.' });
+    await logger.log('Discovery lock is already active (another instance is running). Tick skipped.', 'warn');
+    return { success: true, message: 'Discovery agent is already running. Tick skipped.' };
   }
 
   try {
-    const adminClient = getAdminClient();
-
-    // 2. Fetch Discovery config
+    // 2. Fetch config
+    await logger.log('Fetching Discovery stage configuration from database...', 'info');
     const { data: configRow } = await adminClient
       .from('pipeline_stage_config')
       .select('*')
@@ -76,6 +58,8 @@ export async function POST(request: NextRequest) {
     const cheapestModel = configRow.openrouter_model || 'openai/gpt-4o-mini';
     const agentPrompt = configRow.system_prompt || `You are the Discovery & Triage assistant for CloudExify's lead generation system. Use ONLY the data provided. Never invent details. Respond with exactly NO_DETAIL_AVAILABLE if data is too sparse.`;
 
+    await logger.log(`Config loaded successfully. City: "${city}" | Categories: [${categories.join(', ')}] | Provider: "${provider}"`, 'info');
+
     let processedCount = 0;
     let discoveredCount = 0;
     const addedLeads: any[] = [];
@@ -84,15 +68,20 @@ export async function POST(request: NextRequest) {
     // 3. Resolve API keys if Google Places is chosen
     let googleApiKey = '';
     if (provider === 'google_places') {
+      await logger.log('Fetching Google Places API credentials from store...', 'info');
       const googleCreds = await getStoredCredential('google_places');
       googleApiKey = googleCreds?.apiKey || '';
+      if (!googleApiKey) {
+        await logger.log('Google Places API key is empty. Falling back to OpenStreetMap...', 'warn');
+      }
     }
 
     // 4. Fetch candidate locations
     if (provider === 'openstreetmap' || !googleApiKey) {
-      // Free OpenStreetMap search
+      await logger.log(`Searching OpenStreetMap Nominatim API for places in ${city}...`, 'info');
       for (const category of categories) {
         const searchTerms = `${category.replace('_', ' ')}s in ${city}`;
+        await logger.log(`Querying OSM category: "${category}"...`, 'info');
         const searchUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchTerms)}&format=json&addressdetails=1`;
 
         try {
@@ -103,6 +92,7 @@ export async function POST(request: NextRequest) {
 
           const results = await searchRes.json();
           if (Array.isArray(results)) {
+            let catCount = 0;
             for (const item of results) {
               const addr = item.address || {};
               const name = addr[category] || addr.amenity || addr.shop || item.display_name.split(',')[0];
@@ -118,18 +108,21 @@ export async function POST(request: NextRequest) {
                 user_ratings_total: Math.floor((Math.abs(item.place_id) % 200) + 15),
                 website: null
               });
-              if (candidates.length >= 5) break;
+              catCount++;
+              if (catCount >= 3) break; // Limit candidates per category
             }
+            await logger.log(`OSM Category "${category}" loaded ${catCount} candidates.`, 'info');
           }
-        } catch (osmErr) {
-          console.error('OSM candidates fetch failed:', osmErr);
+        } catch (osmErr: any) {
+          await logger.log(`OSM category search error for ${category}: ${osmErr.message}`, 'error');
         }
         if (candidates.length >= 5) break;
       }
     } else {
-      // Paid Google Places text search
+      await logger.log(`Searching Google Places API for places in ${city}...`, 'info');
       for (const category of categories) {
         const searchTerms = `${category.replace('_', ' ')}s in ${city}`;
+        await logger.log(`Querying Google Places category: "${category}"...`, 'info');
         const searchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(searchTerms)}&key=${googleApiKey}`;
         
         try {
@@ -138,6 +131,7 @@ export async function POST(request: NextRequest) {
           
           const searchData = await searchRes.json();
           const results = searchData.results || [];
+          let googleCatCount = 0;
           
           for (const place of results) {
             const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=name,formatted_address,formatted_phone_number,website,rating,user_ratings_total&key=${googleApiKey}`;
@@ -157,26 +151,35 @@ export async function POST(request: NextRequest) {
                 user_ratings_total: detail.user_ratings_total || null,
                 website: null
               });
+              googleCatCount++;
             }
-            if (candidates.length >= 5) break;
+            if (googleCatCount >= 3) break;
           }
-        } catch (googleErr) {
-          console.error('Google candidates fetch failed:', googleErr);
+          await logger.log(`Google Places Category "${category}" loaded ${googleCatCount} candidates.`, 'info');
+        } catch (googleErr: any) {
+          await logger.log(`Google Places category search error: ${googleErr.message}`, 'error');
         }
         if (candidates.length >= 5) break;
       }
     }
 
+    await logger.log(`Search complete. Discovered ${candidates.length} candidates without websites.`, 'info');
+
     // 5. Enrich candidates and upsert (Agent 1 Triage)
     for (const biz of candidates) {
       processedCount++;
+      await logger.log(`[Prospect ${processedCount}/${candidates.length}] Triage & Personalization for "${biz.name}"...`, 'info');
+      
       const fbPage = await findFacebookPage(biz.name, city);
       const email = fbPage.email;
       const hasWhatsapp = await checkWhatsappRegistered(biz.formatted_phone_number);
 
+      await logger.log(`Resolved contacts: Email = "${email || 'N/A'}" | WhatsApp = ${hasWhatsapp ? 'Yes' : 'No'}`, 'info');
+
       // Call OpenRouter cheap model for triage detail
       let detail = '';
       try {
+        await logger.log(`Drafting observation using model: ${cheapestModel}...`, 'info');
         detail = await callOpenRouter({
           model: cheapestModel,
           messages: [
@@ -194,8 +197,9 @@ export async function POST(request: NextRequest) {
           ]
         });
         detail = detail.trim();
-      } catch (aiErr) {
-        console.error('OpenRouter personalization triage failed:', aiErr);
+        await logger.log(`Observation generated: "${detail}"`, 'success');
+      } catch (aiErr: any) {
+        await logger.log(`AI personalization call failed: ${aiErr.message}. Falling back to default.`, 'warn');
         detail = 'NO_DETAIL_AVAILABLE';
       }
 
@@ -203,6 +207,9 @@ export async function POST(request: NextRequest) {
       let status = 'ready_for_outreach';
       if (!email && !hasWhatsapp) {
         status = 'unreachable_needs_call';
+        await logger.log(`Prospect has no outreach channels. Status assigned: "${status}"`, 'warn');
+      } else {
+        await logger.log(`Prospect is reachable. Status assigned: "${status}"`, 'success');
       }
 
       const { data: upserted, error: upsertError } = await adminClient
@@ -239,17 +246,73 @@ export async function POST(request: NextRequest) {
       'agent_1_run'
     );
 
-    return NextResponse.json({
+    await logger.log(`Agent 1 run completed. Cataloged ${discoveredCount} new leads.`, 'success');
+
+    return {
       success: true,
       processed: processedCount,
       discovered: discoveredCount,
       leads: addedLeads
-    });
+    };
 
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
   } finally {
-    // 6. Release global lock
+    await logger.log('Releasing Agent 1 (Discovery) global execution lock...', 'info');
     await releaseAgentLock('agent_1_discovery');
+  }
+}
+
+export async function POST(request: NextRequest) {
+  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
+  if (isRateLimited(ip)) {
+    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
+  }
+
+  // Support CRON authentication
+  const authHeader = request.headers.get('authorization');
+  const cronSecret = process.env.CRON_SECRET;
+  const isCron = cronSecret && authHeader === `Bearer ${cronSecret}`;
+
+  let adminEmail = 'system@vercel-cron.local';
+  if (!isCron) {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    adminEmail = user.email!;
+  }
+
+  const streamParam = request.nextUrl.searchParams.get('stream') === 'true';
+
+  if (streamParam) {
+    const responseStream = new TransformStream();
+    const writer = responseStream.writable.getWriter();
+    const logger = new StreamLogger(writer);
+
+    (async () => {
+      try {
+        await executeDiscovery(logger, adminEmail);
+      } catch (err: any) {
+        await logger.log(`Execution failed: ${err.message || err}`, 'error');
+      } finally {
+        await writer.close();
+      }
+    })();
+
+    return new Response(responseStream.readable, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache, no-transform',
+        'Connection': 'keep-alive',
+      },
+    });
+  } else {
+    const logger = new StreamLogger(null);
+    try {
+      const summary = await executeDiscovery(logger, adminEmail);
+      return NextResponse.json(summary);
+    } catch (err: any) {
+      return NextResponse.json({ error: err.message }, { status: 500 });
+    }
   }
 }

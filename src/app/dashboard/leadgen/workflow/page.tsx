@@ -112,6 +112,19 @@ export default function WorkflowPage() {
   const [runningStage, setRunningStage] = useState<string | null>(null);
   const [emailVerified, setEmailVerified] = useState(false);
 
+  // Console Log Streaming state
+  const [consoleOpen, setConsoleOpen] = useState(false);
+  const [consoleLogs, setConsoleLogs] = useState<Array<{ type: string; message: string; timestamp: string }>>([]);
+  const [activeConsoleTask, setActiveConsoleTask] = useState<string | null>(null);
+  const [consoleRunning, setConsoleRunning] = useState(false);
+  const logEndRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (logEndRef.current) {
+      logEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [consoleLogs]);
+
   // Edit Drawer state
   const [editingStageKey, setEditingStageKey] = useState<string | null>(null);
   const [editPrompt, setEditPrompt] = useState('');
@@ -173,24 +186,70 @@ export default function WorkflowPage() {
 
   const handleRunStage = async (stageKey: string) => {
     setRunningStage(stageKey);
-    const runToast = toast.loading(`Executing stage: ${stageKey.toUpperCase()}...`);
+    setActiveConsoleTask(stageKey);
+    setConsoleLogs([
+      {
+        type: 'info',
+        message: `Initializing stream connection for Agent "${stageKey.toUpperCase()}"...`,
+        timestamp: new Date().toLocaleTimeString()
+      }
+    ]);
+    setConsoleOpen(true);
+    setConsoleRunning(true);
+
     try {
-      const res = await fetch(`/api/leadgen/${stageKey}/run`, { method: 'POST' });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Pipeline run execution failed.');
+      const response = await fetch(`/api/leadgen/${stageKey}/run?stream=true`, { method: 'POST' });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-      let message = 'Run completed successfully!';
-      if (stageKey === 'discovery') message = `Discovery processed. Discovered ${data.discovered} website-less leads.`;
-      else if (stageKey === 'enrichment') message = `Enrichment completed. Synthesized ${data.enriched} lead profiles.`;
-      else if (stageKey === 'email') message = `Email Outreach completed. Dispatched ${data.sent} cold emails.`;
-      else if (stageKey === 'whatsapp') message = `WhatsApp Followup completed. Dispatched ${data.sent} template messages.`;
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('Readable stream not supported by browser.');
+      }
 
-      toast.success(message, { id: runToast, duration: 4000 });
-      fetchStages();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          try {
+            const parsedLog = JSON.parse(line);
+            setConsoleLogs(prev => [...prev, parsedLog]);
+          } catch {
+            setConsoleLogs(prev => [
+              ...prev,
+              {
+                type: 'info',
+                message: line,
+                timestamp: new Date().toLocaleTimeString()
+              }
+            ]);
+          }
+        }
+      }
     } catch (err: any) {
-      toast.error(err.message || 'Stage execution failed', { id: runToast });
+      setConsoleLogs(prev => [
+        ...prev,
+        {
+          type: 'error',
+          message: err.message || 'Stream processing failed.',
+          timestamp: new Date().toLocaleTimeString()
+        }
+      ]);
+      toast.error(err.message || 'Stage execution failed');
     } finally {
+      setConsoleRunning(false);
       setRunningStage(null);
+      fetchStages();
     }
   };
 
@@ -249,17 +308,15 @@ export default function WorkflowPage() {
   const nodes = useMemo(() => {
     if (stages.length === 0) return [];
     
-    const stageKeys = ['discovery', 'enrichment', 'email', 'whatsapp', 'handoff'];
+    const stageKeys = ['discovery', 'email', 'whatsapp', 'handoff'];
     const names = {
-      discovery: '1. Discovery',
-      enrichment: '2. Enrichment',
-      email: '3. Email Outreach',
-      whatsapp: '4. WhatsApp Follow-up',
-      handoff: '5. Sales Handoff'
+      discovery: '1. Discovery & Triage',
+      email: '2. Email Outreach',
+      whatsapp: '3. WhatsApp Outreach',
+      handoff: '4. Sales Handoff'
     };
     const icons = {
       discovery: Search,
-      enrichment: Sliders,
       email: Mail,
       whatsapp: MessageSquare,
       handoff: Award
@@ -297,7 +354,7 @@ export default function WorkflowPage() {
 
   // 4. Connect 5 nodes in sequence
   const edges = useMemo(() => {
-    const stageKeys = ['discovery', 'enrichment', 'email', 'whatsapp', 'handoff'];
+    const stageKeys = ['discovery', 'email', 'whatsapp', 'handoff'];
     const list = [];
     for (let i = 0; i < stageKeys.length - 1; i++) {
       const source = stageKeys[i];
@@ -330,7 +387,7 @@ export default function WorkflowPage() {
             <div className="text-xs leading-relaxed text-slate-500">
               <h3 className="font-bold text-slate-800 mb-0.5">Linear Stage Pipeline</h3>
               <p>
-                Configure models, toggle automatic cron jobs, and run individual stages manually for testing. The stages feed into one another chronologically: Discovery finds leads → Enrichment fetches FB profiles and personalization details → Email sends outreach → WhatsApp follows up if no reply → Sales handoff logs qualified targets.
+                Configure models, toggle automatic cron jobs, and run individual stages manually for testing. The stages feed into one another chronologically: Discovery & Triage gathers leads, checks social metrics, and drafts factual observations → Email sends outreach → WhatsApp follows up if no reply → Sales handoff logs qualified targets.
               </p>
             </div>
           </div>
@@ -445,6 +502,87 @@ export default function WorkflowPage() {
                 isLoading={savingEdit}
               >
                 Save Configurations
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
+      {/* Real-time Agent Console Log Modal */}
+      {consoleOpen && (
+        <>
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[90]" onClick={() => !consoleRunning && setConsoleOpen(false)} />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-slate-950 border border-slate-800 shadow-2xl rounded-2xl overflow-hidden z-[100] flex flex-col h-[480px]">
+            {/* Terminal Header */}
+            <div className="bg-slate-900 px-4 py-3 border-b border-slate-800 flex justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <div className="flex space-x-1.5">
+                  <div className="w-3 h-3 rounded-full bg-rose-500" />
+                  <div className="w-3 h-3 rounded-full bg-amber-500" />
+                  <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                </div>
+                <span className="text-[11px] font-bold text-slate-400 font-mono pl-2 tracking-wider">
+                  agent_outreach_console ~ active_stage:{activeConsoleTask}
+                </span>
+              </div>
+              <button 
+                onClick={() => setConsoleOpen(false)} 
+                disabled={consoleRunning}
+                className="text-slate-400 hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Terminal Body */}
+            <div className="flex-1 p-5 overflow-y-auto font-mono text-[11px] space-y-2 bg-slate-950 text-slate-100 select-text">
+              {consoleLogs.map((log, idx) => {
+                let colorClass = 'text-slate-300';
+                let prefix = '⚙';
+                if (log.type === 'success') {
+                  colorClass = 'text-emerald-400 font-semibold';
+                  prefix = '✔';
+                } else if (log.type === 'warn') {
+                  colorClass = 'text-amber-400 font-semibold';
+                  prefix = '⚠';
+                } else if (log.type === 'error') {
+                  colorClass = 'text-rose-400 font-semibold';
+                  prefix = '✖';
+                }
+
+                return (
+                  <div key={idx} className="flex items-start space-x-2 leading-relaxed">
+                    <span className="text-slate-600 shrink-0 font-semibold pr-1">[{log.timestamp}]</span>
+                    <span className={`${colorClass} shrink-0 pr-1`}>{prefix}</span>
+                    <span className={colorClass}>{log.message}</span>
+                  </div>
+                );
+              })}
+              <div ref={logEndRef} />
+            </div>
+
+            {/* Terminal Footer */}
+            <div className="bg-slate-900/50 px-5 py-3.5 border-t border-slate-800/80 flex justify-between items-center">
+              <div className="flex items-center space-x-2.5">
+                {consoleRunning ? (
+                  <>
+                    <div className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse" />
+                    <span className="text-[10px] text-slate-400 font-bold tracking-wider font-mono">EXECUTION IN PROGRESS...</span>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                    <span className="text-[10px] text-slate-400 font-bold tracking-wider font-mono">FINISHED</span>
+                  </>
+                )}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 hover:border-slate-600 font-mono text-[10px]"
+                onClick={() => setConsoleOpen(false)}
+                disabled={consoleRunning}
+              >
+                Close Console
               </Button>
             </div>
           </div>

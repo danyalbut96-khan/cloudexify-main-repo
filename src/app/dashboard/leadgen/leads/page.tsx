@@ -39,24 +39,85 @@ export default function LeadsTablePage() {
 
   // Manual Trigger states
   const [discovering, setDiscovering] = useState(false);
+  const [consoleOpen, setConsoleOpen] = useState(false);
+  const [consoleLogs, setConsoleLogs] = useState<Array<{ type: string; message: string; timestamp: string }>>([]);
+  const [consoleRunning, setConsoleRunning] = useState(false);
+  const logEndRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (logEndRef.current) {
+      logEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [consoleLogs]);
 
   const handleTriggerDiscovery = async () => {
     const confirmMsg = "Trigger prospect discovery run? This will fetch category data using current configurations.";
     if (!window.confirm(confirmMsg)) return;
 
     setDiscovering(true);
-    const runToast = toast.loading("Executing discovery pipeline...");
-    try {
-      const res = await fetch('/api/leadgen/discovery/run', { method: 'POST' });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to execute discovery.');
+    setConsoleLogs([
+      {
+        type: 'info',
+        message: 'Initializing stream connection for Discovery Agent (Agent 1)...',
+        timestamp: new Date().toLocaleTimeString()
+      }
+    ]);
+    setConsoleOpen(true);
+    setConsoleRunning(true);
 
-      toast.success(`Discovery finished! Processed places and added ${data.discovered} new prospects.`, { id: runToast, duration: 4000 });
-      fetchLeads();
+    try {
+      const response = await fetch('/api/leadgen/discovery/run?stream=true', { method: 'POST' });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('Readable stream not supported by browser.');
+      }
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          try {
+            const parsedLog = JSON.parse(line);
+            setConsoleLogs(prev => [...prev, parsedLog]);
+          } catch {
+            setConsoleLogs(prev => [
+              ...prev,
+              {
+                type: 'info',
+                message: line,
+                timestamp: new Date().toLocaleTimeString()
+              }
+            ]);
+          }
+        }
+      }
     } catch (err: any) {
-      toast.error(err.message || 'Discovery run failed', { id: runToast });
+      setConsoleLogs(prev => [
+        ...prev,
+        {
+          type: 'error',
+          message: err.message || 'Stream processing failed.',
+          timestamp: new Date().toLocaleTimeString()
+        }
+      ]);
+      toast.error(err.message || 'Discovery run failed');
     } finally {
+      setConsoleRunning(false);
       setDiscovering(false);
+      fetchLeads();
     }
   };
 
@@ -622,6 +683,87 @@ export default function LeadsTablePage() {
                   </div>
                 </form>
               </div>
+            </div>
+          </div>
+        </>
+      )}
+      {/* Real-time Discovery Console Log Modal */}
+      {consoleOpen && (
+        <>
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[90]" onClick={() => !consoleRunning && setConsoleOpen(false)} />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-slate-950 border border-slate-800 shadow-2xl rounded-2xl overflow-hidden z-[100] flex flex-col h-[480px]">
+            {/* Terminal Header */}
+            <div className="bg-slate-900 px-4 py-3 border-b border-slate-800 flex justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <div className="flex space-x-1.5">
+                  <div className="w-3 h-3 rounded-full bg-rose-500" />
+                  <div className="w-3 h-3 rounded-full bg-amber-500" />
+                  <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                </div>
+                <span className="text-[11px] font-bold text-slate-400 font-mono pl-2 tracking-wider">
+                  agent_discovery_console ~ active_agent:discovery
+                </span>
+              </div>
+              <button 
+                onClick={() => setConsoleOpen(false)} 
+                disabled={consoleRunning}
+                className="text-slate-400 hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Terminal Body */}
+            <div className="flex-1 p-5 overflow-y-auto font-mono text-[11px] space-y-2 bg-slate-950 text-slate-100 select-text">
+              {consoleLogs.map((log, idx) => {
+                let colorClass = 'text-slate-300';
+                let prefix = '⚙';
+                if (log.type === 'success') {
+                  colorClass = 'text-emerald-400 font-semibold';
+                  prefix = '✔';
+                } else if (log.type === 'warn') {
+                  colorClass = 'text-amber-400 font-semibold';
+                  prefix = '⚠';
+                } else if (log.type === 'error') {
+                  colorClass = 'text-rose-400 font-semibold';
+                  prefix = '✖';
+                }
+
+                return (
+                  <div key={idx} className="flex items-start space-x-2 leading-relaxed">
+                    <span className="text-slate-600 shrink-0 font-semibold pr-1">[{log.timestamp}]</span>
+                    <span className={`${colorClass} shrink-0 pr-1`}>{prefix}</span>
+                    <span className={colorClass}>{log.message}</span>
+                  </div>
+                );
+              })}
+              <div ref={logEndRef} />
+            </div>
+
+            {/* Terminal Footer */}
+            <div className="bg-slate-900/50 px-5 py-3.5 border-t border-slate-800/80 flex justify-between items-center">
+              <div className="flex items-center space-x-2.5">
+                {consoleRunning ? (
+                  <>
+                    <div className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse" />
+                    <span className="text-[10px] text-slate-400 font-bold tracking-wider font-mono">DISCOVERING PROSPECTS...</span>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                    <span className="text-[10px] text-slate-400 font-bold tracking-wider font-mono">FINISHED</span>
+                  </>
+                )}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 hover:border-slate-600 font-mono text-[10px]"
+                onClick={() => setConsoleOpen(false)}
+                disabled={consoleRunning}
+              >
+                Close Console
+              </Button>
             </div>
           </div>
         </>
