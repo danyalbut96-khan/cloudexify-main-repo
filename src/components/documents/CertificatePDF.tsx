@@ -131,8 +131,8 @@ const styles = StyleSheet.create({
   // QR code section — bottom right corner
   qrSection: {
     position: 'absolute',
-    bottom: 15,
-    right: 90,
+    bottom: 12,
+    right: 100,
     alignItems: 'center',
   },
   qrImage: {
