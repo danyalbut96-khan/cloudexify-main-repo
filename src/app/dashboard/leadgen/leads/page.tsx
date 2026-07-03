@@ -32,6 +32,11 @@ export default function LeadsTablePage() {
   const [simChannel, setSimChannel] = useState<'email' | 'whatsapp'>('email');
   const [simulating, setSimulating] = useState(false);
 
+  // Profile editing form states
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editPhone, setEditPhone] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+
   // Manual Trigger states
   const [discovering, setDiscovering] = useState(false);
 
@@ -97,11 +102,38 @@ export default function LeadsTablePage() {
       const data = await res.json();
       setLeadDetail(data.lead);
       setHistory(data.history);
+      setEditPhone(data.lead.phone || '');
+      setEditEmail(data.lead.email || '');
+      setIsEditingProfile(false);
     } catch (err: any) {
       toast.error(err.message || 'Failed to fetch details');
       setSelectedLeadId(null);
     } finally {
       setLoadingDetails(false);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    if (!selectedLeadId) return;
+    const actionToast = toast.loading('Saving profile changes...');
+    try {
+      const res = await fetch('/api/leadgen/leads', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: selectedLeadId,
+          phone: editPhone,
+          email: editEmail
+        })
+      });
+      if (!res.ok) throw new Error('Failed to save profile changes.');
+      const updated = await res.json();
+      setLeadDetail(updated);
+      toast.success('Profile updated successfully!', { id: actionToast });
+      setIsEditingProfile(false);
+      fetchLeads();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to save changes', { id: actionToast });
     }
   };
 
@@ -422,16 +454,51 @@ export default function LeadsTablePage() {
             <div className="flex-1 p-6 space-y-6 overflow-y-auto">
               {/* Grounded Factual details */}
               <div className="space-y-3.5">
-                <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Prospect Profile</h4>
+                <div className="flex justify-between items-center">
+                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Prospect Profile</h4>
+                  {isEditingProfile ? (
+                    <div className="flex space-x-2">
+                      <Button size="sm" variant="secondary" onClick={handleSaveProfile}>Save</Button>
+                      <Button size="sm" variant="outline" className="bg-white" onClick={() => setIsEditingProfile(false)}>Cancel</Button>
+                    </div>
+                  ) : (
+                    <Button size="sm" variant="outline" className="bg-white" onClick={() => setIsEditingProfile(true)}>Edit Profile</Button>
+                  )}
+                </div>
                 <div className="grid grid-cols-2 gap-4 text-xs font-semibold text-slate-600 bg-slate-50/70 border border-slate-100 rounded-xl p-4">
-                  <div>
-                    <span className="block text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Phone</span>
-                    {leadDetail.phone || 'N/A'}
-                  </div>
-                  <div>
-                    <span className="block text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Email</span>
-                    {leadDetail.email || 'N/A'}
-                  </div>
+                  {isEditingProfile ? (
+                    <>
+                      <div>
+                        <span className="block text-[10px] text-slate-400 uppercase tracking-wider mb-1">Phone</span>
+                        <input
+                          type="text"
+                          value={editPhone}
+                          onChange={(e) => setEditPhone(e.target.value)}
+                          className="w-full px-2 py-1 text-xs border border-slate-200 rounded focus:outline-none bg-white font-medium text-slate-700"
+                        />
+                      </div>
+                      <div>
+                        <span className="block text-[10px] text-slate-400 uppercase tracking-wider mb-1">Email</span>
+                        <input
+                          type="text"
+                          value={editEmail}
+                          onChange={(e) => setEditEmail(e.target.value)}
+                          className="w-full px-2 py-1 text-xs border border-slate-200 rounded focus:outline-none bg-white font-medium text-slate-700"
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div>
+                        <span className="block text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Phone</span>
+                        {leadDetail.phone || 'N/A'}
+                      </div>
+                      <div>
+                        <span className="block text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Email</span>
+                        {leadDetail.email || 'N/A'}
+                      </div>
+                    </>
+                  )}
                   <div className="col-span-2 border-t border-slate-100 pt-2.5">
                     <span className="block text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Address</span>
                     {leadDetail.address || 'N/A'}

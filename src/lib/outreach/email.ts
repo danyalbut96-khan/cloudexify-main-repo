@@ -32,16 +32,20 @@ export async function verifyDomainDns(domain: string, selector = 'resend'): Prom
   }
 
   // 2. Verify DKIM
-  try {
-    const records = await dns.promises.resolveTxt(`${selector}._domainkey.${domain}`);
-    const flatRecords = records.flat();
-    const dkim = flatRecords.find(r => r.startsWith('v=DKIM1'));
-    if (dkim) {
-      result.dkim.record = dkim;
-      result.dkim.status = 'pass';
+  const selectors = ['resend', 'resend-a', 'resend-b', 'resend-c'];
+  for (const sel of selectors) {
+    try {
+      const records = await dns.promises.resolveTxt(`${sel}._domainkey.${domain}`);
+      const flatRecords = records.flat();
+      const dkim = flatRecords.find(r => r.startsWith('v=DKIM1') || r.includes('p='));
+      if (dkim) {
+        result.dkim.record = dkim;
+        result.dkim.status = 'pass';
+        break;
+      }
+    } catch (err) {
+      result.dkim.record = `No DKIM record found at ${sel}._domainkey.${domain}`;
     }
-  } catch (err) {
-    result.dkim.record = `No DKIM record found at ${selector}._domainkey.${domain}`;
   }
 
   // 3. Verify DMARC

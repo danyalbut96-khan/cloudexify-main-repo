@@ -106,14 +106,18 @@ export async function PUT(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { id, status } = sanitizeObject(body);
+    const { id, status, phone, email } = sanitizeObject(body);
+
+    const updateFields: any = {
+      updated_at: new Date().toISOString()
+    };
+    if (status !== undefined) updateFields.status = status;
+    if (phone !== undefined) updateFields.phone = phone;
+    if (email !== undefined) updateFields.email = email;
 
     const { data: lead, error } = await supabase
       .from('leads')
-      .update({
-        status,
-        updated_at: new Date().toISOString()
-      })
+      .update(updateFields)
       .eq('id', id)
       .select()
       .single();
@@ -122,7 +126,8 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    await logAction(user.email!, `Updated status of lead "${lead.business_name}" to ${status}`, 'leads', id);
+    const detailsStr = phone !== undefined || email !== undefined ? 'profile details' : `status to ${status}`;
+    await logAction(user.email!, `Updated ${detailsStr} of lead "${lead.business_name}"`, 'leads', id);
 
     return NextResponse.json(lead);
   } catch (err: any) {
