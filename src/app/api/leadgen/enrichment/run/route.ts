@@ -1,4 +1,4 @@
-import { getAdminClient } from '@/lib/supabase/server';
+import { createClient, getAdminClient } from '@/lib/supabase/server';
 import { callOpenRouter } from '@/lib/ai/openrouter';
 import { isRateLimited } from '@/lib/utils';
 import { logAction } from '@/lib/server-utils';
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
   let adminEmail = 'system@vercel-cron.local';
   if (!isCron) {
-    const supabase = getAdminClient();
+    const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
