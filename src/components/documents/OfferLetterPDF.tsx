@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     color: '#475569',
   },
   body: {
-    marginBottom: 25,
+    marginBottom: 15,
     textAlign: 'justify',
   },
   paragraph: {
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     color: '#0F172A',
   },
   termsTable: {
-    marginVertical: 15,
+    marginVertical: 10,
     borderWidth: 1,
     borderColor: '#E2E8F0',
     borderRadius: 4,
@@ -109,8 +109,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    marginTop: 25,
-    marginBottom: 15,
+    marginTop: 20,
+    marginBottom: 10,
   },
 
   signatureBox: {
@@ -141,51 +141,41 @@ const styles = StyleSheet.create({
 
   footer: {
     position: 'absolute',
-    bottom: 25,
+    bottom: 20,
     left: 45,
     right: 45,
-    borderTopWidth: 1,
-    borderTopColor: '#3B82F6',
-    paddingTop: 12,
+    paddingTop: 6,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
 
   footerLeft: {
-    width: '48%',
-  },
-
-  footerCenter: {
-    width: '28%',
-    alignItems: 'center',
+    width: '75%',
   },
 
   footerRight: {
-    width: '18%',
-    alignItems: 'center',
-  },
-
-  footerTitle: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: '#111827',
+    width: '22%',
+    alignItems: 'flex-end',
   },
 
   footerText: {
-    fontSize: 8,
+    fontSize: 7,
     color: '#475569',
-    lineHeight: 12,
+    lineHeight: 1.3,
   },
 
-  footerLink: {
-    fontSize: 8,
-    color: '#2563EB',
+  footerTextBold: {
+    fontSize: 7,
+    fontWeight: 'bold',
+    color: '#0F172A',
+    lineHeight: 1.3,
   },
 
   footerSmall: {
-    fontSize: 7,
+    fontSize: 6.5,
     color: '#94A3B8',
+    marginTop: 2,
   },
 
   internLabel: {
@@ -216,13 +206,13 @@ const styles = StyleSheet.create({
   },
 
   qrCode: {
-    width: 52,
-    height: 52,
-    marginBottom: 6,
+    width: 42,
+    height: 42,
+    marginBottom: 2,
   },
 
   verifyText: {
-    fontSize: 7,
+    fontSize: 5.5,
     fontWeight: 'bold',
     color: '#2563EB',
     textAlign: 'center',
@@ -370,13 +360,24 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
 
         {/* Footer */}
         <View style={styles.footer}>
-          <View>
-            <Text>{cName} Internship Program 2026</Text>
-            <Text>Document ID: {offerLetterNumber}</Text>
-            <Text>Verify at: {cWebsite.replace('https://', '')}/verify</Text>
+          <View style={styles.footerLeft}>
+            <Text style={styles.footerTextBold}>
+              {cWebsite.replace('https://', '').replace('http://', '')} | {cEmail}
+            </Text>
+            {companySettings.company_phone && (
+              <Text style={styles.footerText}>WhatsApp: {companySettings.company_phone}</Text>
+            )}
+            <Text style={[styles.footerText, { color: '#2563EB' }]}>
+              Verify: offerletter.cloudexify.site/verify/{offerLetterNumber}
+            </Text>
+            <Text style={styles.footerTextBold}>
+              Document ID: {offerLetterNumber}
+            </Text>
+            <Text style={styles.footerSmall}>© 2026 {cName}. All rights reserved.</Text>
           </View>
-          <View style={{ alignItems: 'flex-end' }}>
+          <View style={styles.footerRight}>
             {qrCodeBase64 && <Image style={styles.qrCode} src={qrCodeBase64} />}
+            <Text style={styles.verifyText}>SCAN TO VERIFY</Text>
           </View>
         </View>
       </Page>

@@ -279,39 +279,39 @@ function OfferLetterGenerator() {
               </p>
 
               {/* Table details mockup */}
-              <div className="border border-slate-200 rounded-md overflow-hidden my-4">
-                <div className="bg-blue-500 px-3 py-2">
+              <div className="border border-slate-200 rounded-md overflow-hidden my-2.5">
+                <div className="bg-blue-500 px-3 py-1.5">
                   <p className="text-white text-[10px] font-bold uppercase tracking-wider">INTERNSHIP DETAILS</p>
                 </div>
-                <div className="flex px-3 py-2 bg-slate-50 border-b border-slate-200">
+                <div className="flex px-3 py-1.5 bg-slate-50 border-b border-slate-200">
                   <span className="w-[30%] font-bold text-blue-600 text-[9px]">Program</span>
                   <span className="w-[70%] text-[9px] text-slate-700">{selectedIntern ? selectedIntern.domain : 'Domain'} Internship Program 2026</span>
                 </div>
-                <div className="flex px-3 py-2 border-b border-slate-200">
+                <div className="flex px-3 py-1.5 border-b border-slate-200">
                   <span className="w-[30%] font-bold text-blue-600 text-[9px]">Duration</span>
                   <span className="w-[70%] text-[9px] text-slate-700"><span className="font-bold text-slate-900">{formatDate(joiningDate)}</span> to <span className="font-bold text-slate-900">End Date</span> (2 Months)</span>
                 </div>
-                <div className="flex px-3 py-2 bg-slate-50 border-b border-slate-200">
+                <div className="flex px-3 py-1.5 bg-slate-50 border-b border-slate-200">
                   <span className="w-[30%] font-bold text-blue-600 text-[9px]">Mode</span>
                   <span className="w-[70%] text-[9px] text-slate-700">Remote</span>
                 </div>
-                <div className="flex px-3 py-2 border-b border-slate-200">
+                <div className="flex px-3 py-1.5 border-b border-slate-200">
                   <span className="w-[30%] font-bold text-blue-600 text-[9px]">Projects</span>
                   <span className="w-[70%] text-[9px] text-slate-700">4 real world projects</span>
                 </div>
-                <div className="flex px-3 py-2 bg-slate-50 border-b border-slate-200">
+                <div className="flex px-3 py-1.5 bg-slate-50 border-b border-slate-200">
                   <span className="w-[30%] font-bold text-blue-600 text-[9px]">Compensation</span>
                   <span className="w-[70%] text-[9px] text-slate-700">Unpaid — Certificate + Experience</span>
                 </div>
-                <div className="flex items-center px-3 py-2">
+                <div className="flex items-center px-3 py-1.5">
                   <span className="w-[30%] font-bold text-blue-600 text-[9px]">Reg. No</span>
                   <span className="text-[9px] font-bold text-blue-600 border border-blue-200 bg-blue-50 px-1.5 py-0.5 rounded">[{selectedIntern ? selectedIntern.registration_number : 'CX-XXXX'}]</span>
                 </div>
               </div>
 
               {/* Terms Box */}
-              <div className="bg-slate-50 border border-slate-200 rounded-md p-3 mb-4">
-                <p className="font-bold text-slate-900 text-[10px] mb-2">TERMS & CONDITIONS</p>
+              <div className="bg-slate-50 border border-slate-200 rounded-md p-2.5 mb-2.5">
+                <p className="font-bold text-slate-900 text-[10px] mb-1.5">TERMS & CONDITIONS</p>
                 <ul className="space-y-1 pl-2 text-[9px] text-slate-600 list-disc list-outside ml-2">
                   <li>This internship is unpaid and remote-based.</li>
                   <li>Intern must complete all 4 assigned projects to receive certificate.</li>
@@ -321,12 +321,12 @@ function OfferLetterGenerator() {
               </div>
 
               {/* Acceptance Paragraph */}
-              <p className="italic text-slate-500 mb-6 text-[9.5px]">
+              <p className="italic text-slate-500 mb-3 text-[9.5px]">
                 By accepting this offer letter, you confirm your commitment to the CloudExify Summer Internship Program 2026 and agree to abide by all terms and conditions stated herein.
               </p>
             </div>
 
-            <p className="mb-8">Sincerely,</p>
+            <p className="mb-4">Sincerely,</p>
 
             {/* Signature mockup */}
             <div className="flex justify-between mt-2">
@@ -355,19 +355,19 @@ function OfferLetterGenerator() {
             </div>
 
             {/* Footer Mockup */}
-            <div className="absolute bottom-6 left-10 right-10 flex justify-between border-t-2 border-blue-500 pt-2.5">
-              <div className="w-[75%] text-[8px] space-y-1">
+            <div className="absolute bottom-4 left-10 right-10 flex justify-between pt-1">
+              <div className="w-[75%] text-[7px] space-y-0.5 leading-tight">
                 <p className="font-bold text-slate-900">cloudexify.site | hello@cloudexify.site</p>
                 <p className="text-slate-500">WhatsApp: +92 341 1949277X</p>
                 <p className="text-blue-600">Verify: offerletter.cloudexify.site/verify</p>
                 <p className="font-bold text-slate-900">Document ID: CX-OL-2026-XXXX</p>
-                <p className="text-slate-500">© 2026 CloudExify. All rights reserved.</p>
+                <p className="text-slate-400">© 2026 CloudExify. All rights reserved.</p>
               </div>
-              <div className="w-[25%] flex flex-col items-end justify-start pt-1">
-                <div className="w-12 h-12 bg-slate-200 border border-slate-300 flex items-center justify-center mb-1">
-                  <span className="text-[6px] text-slate-400 font-bold">QR CODE</span>
+              <div className="w-[25%] flex flex-col items-end justify-start pt-0.5">
+                <div className="w-9 h-9 bg-slate-200 border border-slate-300 flex items-center justify-center mb-0.5">
+                  <span className="text-[5px] text-slate-400 font-bold">QR CODE</span>
                 </div>
-                <p className="text-[6px] text-blue-600 font-bold tracking-widest uppercase">SCAN TO VERIFY</p>
+                <p className="text-[5px] text-blue-600 font-bold tracking-widest uppercase">SCAN TO VERIFY</p>
               </div>
             </div>
           </div>
