@@ -153,11 +153,11 @@ const styles = StyleSheet.create({
   // Verification footer
   verificationFooter: {
     position: 'absolute',
-    bottom: 5,
+    bottom: 10,
     left: 20,
     right: 20,
     fontSize: 6,
-    color: '#CBD5E1',
+    color: '#9ab3d0ff',
     textAlign: 'center',
   },
 });
