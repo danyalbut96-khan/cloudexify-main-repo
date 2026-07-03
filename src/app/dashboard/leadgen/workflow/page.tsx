@@ -438,7 +438,7 @@ export default function WorkflowPage() {
 
             <div className="flex-1 p-6 space-y-5 overflow-y-auto text-xs">
               {/* LLM Model Swapper */}
-              {editingStageKey !== 'discovery' && editingStageKey !== 'handoff' && (
+              {editingStageKey !== 'handoff' && (
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1.5 font-bold uppercase tracking-wider">OpenRouter LLM Model</label>
                   <select
@@ -455,7 +455,7 @@ export default function WorkflowPage() {
               )}
 
               {/* System Prompt Customizer */}
-              {editingStageKey !== 'discovery' && editingStageKey !== 'handoff' && (
+              {editingStageKey !== 'handoff' && (
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1.5 font-bold uppercase tracking-wider">System Prompt Template</label>
                   <textarea
@@ -463,6 +463,10 @@ export default function WorkflowPage() {
                     onChange={(e) => setEditPrompt(e.target.value)}
                     className="block w-full px-3 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none bg-white font-medium"
                     rows={8}
+                    placeholder="Enter system prompts guiding OpenRouter output generation..."
+                  />
+                </div>
+              )}
                     placeholder="Enter system prompts guiding OpenRouter output generation..."
                   />
                 </div>
