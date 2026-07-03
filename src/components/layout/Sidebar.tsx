@@ -15,6 +15,7 @@ import {
   ChevronDown,
   ChevronRight,
   FileText,
+  TrendingUp,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '../ui/Badge';
