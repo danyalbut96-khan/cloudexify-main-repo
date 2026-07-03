@@ -25,14 +25,15 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   companyName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#0F172A',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   companyMeta: {
-    fontSize: 8,
+    fontSize: 7.5,
     color: '#64748B',
+    lineHeight: 1.3,
   },
   logoPlaceholder: {
     fontSize: 22,
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   signatureContainer: {
-    width: '45%',
+    width: '35%',
   },
   signatureImage: {
     width: 100,
@@ -97,7 +98,6 @@ const styles = StyleSheet.create({
     fontSize: 7,
     color: '#94A3B8',
   },
-  // FIX 7: Verification footer
   verificationFooter: {
     position: 'absolute',
     bottom: 14,
@@ -106,6 +106,22 @@ const styles = StyleSheet.create({
     fontSize: 6,
     color: '#CBD5E1',
     textAlign: 'center',
+  },
+  qrSection: {
+    position: 'absolute',
+    bottom: 45,
+    right: 55,
+    alignItems: 'center',
+  },
+  qrImage: {
+    width: 45,
+    height: 45,
+  },
+  qrLabel: {
+    fontSize: 5,
+    color: '#94A3B8',
+    textAlign: 'center',
+    marginTop: 2,
   },
 });
 
@@ -118,6 +134,8 @@ interface RecommendationLetterProps {
   completionDate: string;
   customText?: string;
   logoBase64?: string | null;
+  recommendationLetterNumber: string;
+  qrCodeBase64?: string | null;
 }
 
 export const RecommendationLetterPDF: React.FC<RecommendationLetterProps> = ({
@@ -129,6 +147,8 @@ export const RecommendationLetterPDF: React.FC<RecommendationLetterProps> = ({
   completionDate,
   customText,
   logoBase64,
+  recommendationLetterNumber,
+  qrCodeBase64,
 }) => {
   const currentDate = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
@@ -146,7 +166,7 @@ export const RecommendationLetterPDF: React.FC<RecommendationLetterProps> = ({
         <View style={styles.headerContainer}>
           <View>
             {logoSrc ? (
-              <Image style={{ maxHeight: 40, maxWidth: 120, objectFit: 'contain' }} src={logoSrc} />
+              <Image style={{ maxHeight: 52, maxWidth: 160, objectFit: 'contain' }} src={logoSrc} />
             ) : (
               <Text style={styles.logoPlaceholder}>{companySettings.company_name}</Text>
             )}
@@ -206,13 +226,21 @@ export const RecommendationLetterPDF: React.FC<RecommendationLetterProps> = ({
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text>CloudExify Software Development</Text>
-          <Text>Verification ID: {intern.registration_number}</Text>
+          <Text>{companySettings.company_name} Software Development</Text>
+          <Text>Verification ID: {recommendationLetterNumber}</Text>
         </View>
 
-        {/* FIX 7: Verification footer */}
+        {/* QR Code Section — bottom right corner */}
+        {qrCodeBase64 && (
+          <View style={styles.qrSection}>
+            <Image style={styles.qrImage} src={qrCodeBase64} />
+            <Text style={styles.qrLabel}>Scan to verify document</Text>
+          </View>
+        )}
+
+        {/* Verification footer */}
         <Text style={styles.verificationFooter}>
-          This document can be verified at admin.cloudexify.site/verify/{intern.registration_number}
+          This document can be verified at admin.cloudexify.site/verify/{recommendationLetterNumber}
         </Text>
       </Page>
     </Document>

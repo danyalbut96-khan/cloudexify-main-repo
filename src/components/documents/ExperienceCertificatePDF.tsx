@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   },
   signatureContainer: {
     marginTop: 40,
-    width: '45%',
+    width: '35%',
   },
   signatureImage: {
     width: 100,
@@ -157,7 +157,7 @@ export const ExperienceCertificatePDF: React.FC<ExperienceCertificateProps> = ({
         <View style={styles.headerContainer}>
           <View>
             {logoSrc ? (
-              <Image style={{ maxHeight: 40, maxWidth: 120, objectFit: 'contain' }} src={logoSrc} />
+              <Image style={{ maxHeight: 52, maxWidth: 160, objectFit: 'contain' }} src={logoSrc} />
             ) : (
               <Text style={styles.logoPlaceholder}>{companySettings.company_name}</Text>
             )}

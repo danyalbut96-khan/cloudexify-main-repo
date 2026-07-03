@@ -7,6 +7,7 @@ import React from 'react'
 import { RecommendationLetterPDF } from '@/components/documents/RecommendationLetterPDF'
 import { readFileSync } from 'fs'
 import { join } from 'path'
+import QRCode from 'qrcode'
 
 /** Read the logo from /public/logo.png and encode as base64 data URI for server-side PDF rendering */
 function getLogoBase64(): string | null {
@@ -78,7 +79,25 @@ export async function GET(request: NextRequest) {
     // 4. Read logo from /public/logo.png as base64 for PDF rendering (FIX 9)
     const logoBase64 = getLogoBase64()
 
-    // 5. Render PDF to Buffer
+    // 5. Generate Random ID & QR code as base64 PNG
+    const randomNum = Math.floor(1000 + Math.random() * 9000)
+    const year = new Date().getFullYear()
+    const recommendationLetterNumber = `CX-RL-${year}-${randomNum}`
+
+    const verificationUrl = `https://admin.cloudexify.site/verify/${recommendationLetterNumber}`
+    let qrCodeBase64: string | null = null
+    try {
+      const qrBuffer = await QRCode.toBuffer(verificationUrl, {
+        errorCorrectionLevel: 'M',
+        width: 180,
+        margin: 1,
+      })
+      qrCodeBase64 = `data:image/png;base64,${qrBuffer.toString('base64')}`
+    } catch (qrErr) {
+      console.error('QR code generation failed:', qrErr)
+    }
+
+    // 6. Render PDF to Buffer
     const docElement = React.createElement(RecommendationLetterPDF, {
       intern,
       companySettings,
@@ -88,27 +107,47 @@ export async function GET(request: NextRequest) {
       completionDate,
       customText,
       logoBase64,
+      recommendationLetterNumber,
+      qrCodeBase64,
     })
 
     const pdfBuffer = await pdf(docElement as any).toBuffer()
+    const generatedAt = new Date().toISOString()
 
-    // 6. Update Intern Document generated status
+    // 7. Update Intern Document generated status
     const { error: docUpdateError } = await supabase
       .from('intern_documents')
       .upsert({
         intern_id: internId,
         recommendation_letter_generated: true,
-        recommendation_letter_date: new Date().toISOString()
+        recommendation_letter_date: generatedAt
       }, { onConflict: 'intern_id' })
 
     if (docUpdateError) {
       console.error('Failed to update intern document record:', docUpdateError)
     }
 
-    // 7. Record in Audit Logs
+    // 8. Save Verification Record
+    const { error: verifyError } = await supabase
+      .from('document_verifications')
+      .insert({
+        document_type: 'recommendation_letter',
+        document_number: recommendationLetterNumber,
+        intern_id: internId,
+        intern_name: intern.full_name,
+        intern_domain: intern.domain,
+        generated_at: generatedAt,
+        generated_by: user.email
+      })
+
+    if (verifyError) {
+      console.error('Failed to save document verification record:', verifyError)
+    }
+
+    // 9. Record in Audit Logs
     await logAction(
       user.email!,
-      `Generated Recommendation Letter for intern ${intern.full_name} (${intern.registration_number})`,
+      `Generated Recommendation Letter for intern ${intern.full_name} (${recommendationLetterNumber})`,
       'documents',
       intern.id
     )

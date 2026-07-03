@@ -27,6 +27,9 @@ function RecommendationLetterGenerator() {
   const [allAdmins, setAllAdmins] = useState<any[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [previewRlId, setPreviewRlId] = useState('');
+  const [companyLogoUrl, setCompanyLogoUrl] = useState('');
+  const [companyName, setCompanyName] = useState('CloudExify');
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -39,6 +42,10 @@ function RecommendationLetterGenerator() {
             setAdminEmail(data.adminSignature.email);
           } else if (data.allSignatures?.length > 0) {
             setAdminEmail(data.allSignatures[0].email);
+          }
+          if (data.companySettings) {
+            setCompanyLogoUrl(data.companySettings.company_logo_url || '');
+            setCompanyName(data.companySettings.company_name || 'CloudExify');
           }
         }
       } catch (err) {
@@ -64,6 +71,13 @@ function RecommendationLetterGenerator() {
       fetchIntern();
     }
   }, [urlInternId]);
+
+  // Generate random preview recommendation letter number
+  useEffect(() => {
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    const year = new Date().getFullYear();
+    setPreviewRlId(`CX-RL-${year}-${randomNum}`);
+  }, [selectedIntern]);
 
   const handleSearch = async (val: string) => {
     setSearchQuery(val);
@@ -112,7 +126,7 @@ function RecommendationLetterGenerator() {
         customText
       });
       const endpoint = `/api/documents/recommendation-letter?${params.toString()}`;
-      
+
       const response = await fetch(endpoint);
       if (!response.ok) throw new Error('Generation failed');
 
@@ -267,8 +281,8 @@ function RecommendationLetterGenerator() {
               </div>
               <div className="text-right text-[7px] text-slate-400">
                 <p className="font-bold text-slate-700">CloudExify</p>
-                <p>Plot 45-C, 24th Commercial St, Karachi, Pakistan</p>
-                <p>https://cloudexify.com | admin@cloudexify.com</p>
+                <p>Islamabad, Pakistan</p>
+                <p>https://cloudexify.site |hello@cloudexify.site </p>
               </div>
             </div>
 

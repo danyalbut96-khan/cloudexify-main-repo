@@ -261,7 +261,7 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
         <View style={styles.headerContainer}>
           <View>
             {logoSrc ? (
-              <Image style={{ maxHeight: 40, maxWidth: 120, objectFit: 'contain' }} src={logoSrc} />
+              <Image style={{ maxHeight: 52, maxWidth: 160, objectFit: 'contain' }} src={logoSrc} />
             ) : (
               <Text style={styles.logoPlaceholder}>{cName}</Text>
             )}
