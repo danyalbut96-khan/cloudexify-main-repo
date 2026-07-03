@@ -105,52 +105,128 @@ const styles = StyleSheet.create({
   closing: {
     marginTop: 20,
     marginBottom: 40,
-  },
-  signatureContainer: {
+  }, signatureContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20,
+    alignItems: 'flex-end',
+    marginTop: 25,
+    marginBottom: 15,
   },
+
   signatureBox: {
     width: '45%',
     alignItems: 'center',
   },
+
   signatureImage: {
-    width: 100,
-    height: 40,
-    marginBottom: 5,
+    width: 110,
+    height: 45,
+    marginBottom: 8,
     objectFit: 'contain',
   },
+
   signatureLine: {
-    width: '100%',
+    width: '90%',
     borderTopWidth: 1,
-    borderTopColor: '#94A3B8',
-    marginTop: 10,
-    paddingTop: 5,
+    borderTopColor: '#64748B',
+    paddingTop: 8,
     alignItems: 'center',
   },
+
   signerTitle: {
     fontSize: 8,
     color: '#64748B',
+    marginTop: 2,
   },
+
   footer: {
     position: 'absolute',
-    bottom: 30,
-    left: 50,
-    right: 50,
+    bottom: 25,
+    left: 45,
+    right: 45,
     borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
-    paddingTop: 10,
+    borderTopColor: '#3B82F6',
+    paddingTop: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+
+  footerLeft: {
+    width: '48%',
+  },
+
+  footerCenter: {
+    width: '28%',
+    alignItems: 'center',
+  },
+
+  footerRight: {
+    width: '18%',
+    alignItems: 'center',
+  },
+
+  footerTitle: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#111827',
+  },
+
+  footerText: {
+    fontSize: 8,
+    color: '#475569',
+    lineHeight: 12,
+  },
+
+  footerLink: {
+    fontSize: 8,
+    color: '#2563EB',
+  },
+
+  footerSmall: {
     fontSize: 7,
     color: '#94A3B8',
   },
+
+  internLabel: {
+    fontSize: 8,
+    color: '#64748B',
+    marginBottom: 4,
+  },
+
+  internName: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginTop: 6,
+  },
+
+  internLine: {
+    width: 120,
+    borderBottomWidth: 1,
+    borderBottomColor: '#64748B',
+    marginBottom: 8,
+  },
+
+  dateLine: {
+    width: 80,
+    borderBottomWidth: 1,
+    borderBottomColor: '#64748B',
+    marginTop: 2,
+  },
+
   qrCode: {
-    width: 45,
-    height: 45,
-    marginBottom: 2,
-  }
+    width: 52,
+    height: 52,
+    marginBottom: 6,
+  },
+
+  verifyText: {
+    fontSize: 7,
+    fontWeight: 'bold',
+    color: '#2563EB',
+    textAlign: 'center',
+  },
 });
 
 interface OfferLetterProps {
@@ -185,8 +261,8 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
   const logoSrc = companySettings.company_logo_url || logoBase64 || null;
   const cName = companySettings.company_name || 'CloudExify';
   const cAddress = companySettings.company_address || 'Address Not Set';
-  const cWebsite = companySettings.company_website || 'cloudexify.com';
-  const cEmail = companySettings.company_email || 'admin@cloudexify.com';
+  const cWebsite = companySettings.company_website || 'cloudexify.site';
+  const cEmail = companySettings.company_email || 'hello@cloudexify.site';
 
   return (
     <Document>
