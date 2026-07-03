@@ -3,11 +3,13 @@ import { getStoredCredential } from '../ai/openrouter';
 export async function sendOutreachWhatsApp({
   to,
   businessName,
-  personalizationDetail
+  personalizationDetail,
+  text
 }: {
   to: string;
-  businessName: string;
-  personalizationDetail: string;
+  businessName?: string;
+  personalizationDetail?: string;
+  text?: string;
 }) {
   const creds = await getStoredCredential('gupshup');
   if (!creds || !creds.apiKey || !creds.sourceNumber) {
@@ -23,13 +25,21 @@ export async function sendOutreachWhatsApp({
     cleanNumber = '92' + cleanNumber.substring(1);
   }
 
-  const messagePayload = {
-    type: 'template',
-    template: {
-      id: templateId,
-      params: [businessName, personalizationDetail.slice(0, 100)] // Standard limits for parameters
-    }
-  };
+  let messagePayload: any = {};
+  if (text) {
+    messagePayload = {
+      type: 'text',
+      text: text
+    };
+  } else {
+    messagePayload = {
+      type: 'template',
+      template: {
+        id: templateId,
+        params: [businessName || '', (personalizationDetail || '').slice(0, 100)] // Standard limits for parameters
+      }
+    };
+  }
 
   const formBody = new URLSearchParams();
   formBody.append('channel', 'whatsapp');

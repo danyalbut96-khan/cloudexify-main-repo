@@ -53,3 +53,28 @@ export async function callOpenRouter({
   const data = await response.json();
   return data.choices?.[0]?.message?.content as string;
 }
+
+export async function acquireAgentLock(agentName: string): Promise<boolean> {
+  const supabase = getAdminClient();
+  const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+
+  const { data, error } = await supabase
+    .from('agent_run_state')
+    .update({
+      is_running: true,
+      started_at: new Date().toISOString()
+    })
+    .eq('agent_name', agentName)
+    .or(`is_running.eq.false,started_at.lt.${tenMinutesAgo}`)
+    .select();
+
+  return !error && data && data.length > 0;
+}
+
+export async function releaseAgentLock(agentName: string): Promise<void> {
+  const supabase = getAdminClient();
+  await supabase
+    .from('agent_run_state')
+    .update({ is_running: false })
+    .eq('agent_name', agentName);
+}

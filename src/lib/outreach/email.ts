@@ -79,12 +79,14 @@ export async function sendOutreachEmail({
     throw new Error('Email provider credentials or sending domain are not configured.');
   }
 
-  const { apiKey, domain } = creds;
+  const { apiKey, domain, bypassDnsCheck } = creds;
 
-  // Ensure DNS check passes before sending
-  const dnsStatus = await verifyDomainDns(domain);
-  if (!dnsStatus.allPassed) {
-    throw new Error('DNS SPF/DKIM/DMARC records are not verified for the domain: ' + domain);
+  // Ensure DNS check passes before sending (unless bypassed in settings)
+  if (!bypassDnsCheck) {
+    const dnsStatus = await verifyDomainDns(domain);
+    if (!dnsStatus.allPassed) {
+      throw new Error('DNS SPF/DKIM/DMARC records are not verified for the domain: ' + domain);
+    }
   }
 
   const response = await fetch('https://api.resend.com/emails', {

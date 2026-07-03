@@ -1,4 +1,5 @@
 import { createClient, getAdminClient } from '@/lib/supabase/server';
+import { getStoredCredential, callOpenRouter, acquireAgentLock, releaseAgentLock } from '@/lib/ai/openrouter';
 import { sendOutreachWhatsApp } from '@/lib/outreach/whatsapp';
 import { isRateLimited } from '@/lib/utils';
 import { logAction } from '@/lib/server-utils';
@@ -25,126 +26,157 @@ export async function POST(request: NextRequest) {
     adminEmail = user.email!;
   }
 
+  // 1. Acquire global WhatsApp Agent lock
+  const lockAcquired = await acquireAgentLock('agent_3_whatsapp');
+  if (!lockAcquired) {
+    return NextResponse.json({ success: true, message: 'WhatsApp outreach agent (Agent 3) is already running. Tick skipped.' });
+  }
+
   try {
     const adminClient = getAdminClient();
 
-    // 1. Get WhatsApp Stage config
+    // 2. Fetch WhatsApp Stage config
     const { data: stageConfig } = await adminClient
       .from('pipeline_stage_config')
       .select('*')
       .eq('stage_key', 'whatsapp')
       .single();
 
-    if (!stageConfig || !stageConfig.enabled) {
-      return NextResponse.json({ error: 'WhatsApp stage is currently disabled.' }, { status: 400 });
+    if (!stageConfig) {
+      throw new Error('Pipeline stage configuration for WhatsApp is missing.');
     }
 
-    const config = stageConfig.config || {};
-    const delayDays = config.followup_delay_days || 3;
+    if (!stageConfig.enabled) {
+      return NextResponse.json({ error: 'WhatsApp outreach stage is currently disabled.' }, { status: 400 });
+    }
 
-    // 2. Fetch emailed leads that have a phone number
+    // 3. Verify Gupshup WhatsApp credentials
+    const { data: waCreds } = await adminClient
+      .from('api_credentials')
+      .select('*')
+      .eq('provider', 'gupshup')
+      .single();
+
+    if (!waCreds || !waCreds.is_verified) {
+      return NextResponse.json({ error: 'WhatsApp outreach is blocked. Gupshup credentials must be fully verified.' }, { status: 400 });
+    }
+
+    // 4. Query prospects with status = 'ready_for_outreach', no email on file, and has_whatsapp = true
     const { data: leads, error: leadsError } = await adminClient
       .from('leads')
       .select('*')
-      .eq('status', 'emailed')
-      .not('phone', 'is', null);
+      .eq('status', 'ready_for_outreach')
+      .is('email', null)
+      .eq('has_whatsapp', true)
+      .is('locked_by', null)
+      .order('google_rating', { ascending: false })
+      .limit(3);
 
     if (leadsError) {
-      return NextResponse.json({ error: leadsError.message }, { status: 500 });
+      throw new Error(`Failed to fetch prospects for WhatsApp outreach: ${leadsError.message}`);
     }
 
     if (!leads || leads.length === 0) {
-      return NextResponse.json({ success: true, message: 'No emailed leads with phone numbers found.' });
+      return NextResponse.json({ success: true, message: 'No prospects without email addresses found ready for WhatsApp outreach.' });
     }
 
+    // Resolve model parameters
+    const model = stageConfig.openrouter_model || 'openai/gpt-4o-mini';
+    const rawPrompt = stageConfig.system_prompt || 'Write a short warm first-touch WhatsApp outreach message to a local business.';
+    const systemPrompt = rawPrompt.replace('{{mode}}', 'first_touch');
+
     let sentCount = 0;
-    const logDetails: any[] = [];
-    const thresholdDate = new Date();
-    thresholdDate.setDate(thresholdDate.getDate() - delayDays);
+    const outreachLog: any[] = [];
 
+    // 5. Process outreach per lead (with per-lead lock)
     for (const lead of leads) {
-      // Find last outbound outreach event
-      const { data: events, error: eventError } = await adminClient
-        .from('outreach_events')
-        .select('*')
-        .eq('lead_id', lead.id)
-        .order('created_at', { ascending: false });
+      // Call Supabase RPC try_lock_lead
+      const { data: lockOk, error: lockErr } = await adminClient.rpc('try_lock_lead', {
+        p_lead_id: lead.id,
+        p_agent: 'agent_3'
+      });
 
-      if (eventError || !events || events.length === 0) continue;
-
-      const lastOutboundEmail = events.find(e => e.channel === 'email' && e.direction === 'outbound');
-      if (!lastOutboundEmail) continue;
-
-      const lastOutboundTime = new Date(lastOutboundEmail.created_at);
-      if (lastOutboundTime > thresholdDate) {
-        // Not enough days have passed yet
-        continue;
-      }
-
-      // Ensure no inbound replies exist
-      const hasReplied = events.some(e => e.direction === 'inbound');
-      if (hasReplied) {
-        // Already replied, should not receive automated follow-ups
+      if (lockErr || !lockOk) {
+        console.warn(`Lead ${lead.id} lock acquisition failed, skipping.`);
         continue;
       }
 
       try {
+        const leadContext = {
+          business_name: lead.business_name,
+          category: lead.category,
+          google_rating: lead.google_rating,
+          google_review_count: lead.google_review_count,
+          personalization_detail: lead.personalization_detail
+        };
+
+        // Call OpenRouter for WhatsApp copy
+        const message = await callOpenRouter({
+          model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: JSON.stringify(leadContext) }
+          ]
+        });
+
+        const cleanedMessage = message.trim();
+
+        // Send WhatsApp outreach via Gupshup
         await sendOutreachWhatsApp({
           to: lead.phone,
           businessName: lead.business_name,
           personalizationDetail: lead.personalization_detail || ''
         });
 
-        // Log outreach event
-        await adminClient
-          .from('outreach_events')
-          .insert({
-            lead_id: lead.id,
-            channel: 'whatsapp',
-            direction: 'outbound',
-            content: `Sent follow-up WhatsApp template via Gupshup for "${lead.business_name}"`,
-            status: 'sent'
-          });
+        // Save outreach event log
+        await adminClient.from('outreach_events').insert({
+          lead_id: lead.id,
+          channel: 'whatsapp',
+          direction: 'outbound',
+          content: cleanedMessage,
+          status: 'sent'
+        });
 
-        // Update lead status
+        // Set status to 'followed_up' and release lock
         await adminClient
           .from('leads')
           .update({
             status: 'followed_up',
+            locked_by: null,
             updated_at: new Date().toISOString()
           })
           .eq('id', lead.id);
 
         sentCount++;
-        logDetails.push({ business_name: lead.business_name, phone: lead.phone });
+        outreachLog.push({ id: lead.id, business: lead.business_name, phone: lead.phone });
+
       } catch (err: any) {
-        console.error(`WhatsApp send failed for lead ${lead.id}:`, err);
-        // Log event failure
+        console.error(`WhatsApp outreach failed for lead ${lead.id}:`, err);
+        // Release lead lock on exception
         await adminClient
-          .from('outreach_events')
-          .insert({
-            lead_id: lead.id,
-            channel: 'whatsapp',
-            direction: 'outbound',
-            content: `Failed to send WhatsApp: ${err.message}`,
-            status: 'failed'
-          });
+          .from('leads')
+          .update({ locked_by: null })
+          .eq('id', lead.id);
       }
     }
 
     await logAction(
       adminEmail,
-      `Ran WhatsApp Stage: successfully sent ${sentCount} templates.`,
+      `Agent 3 (WhatsApp Outreach) completed: dispatched ${sentCount} WhatsApp outreach messages.`,
       'leads',
-      'whatsapp_run'
+      'agent_3_run'
     );
 
     return NextResponse.json({
       success: true,
       sent: sentCount,
-      outbox: logDetails
+      outreach: outreachLog
     });
+
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
+  } finally {
+    // 6. Release agent lock
+    await releaseAgentLock('agent_3_whatsapp');
   }
 }

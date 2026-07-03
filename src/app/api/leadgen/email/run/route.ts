@@ -1,5 +1,5 @@
 import { createClient, getAdminClient } from '@/lib/supabase/server';
-import { callOpenRouter } from '@/lib/ai/openrouter';
+import { getStoredCredential, callOpenRouter, acquireAgentLock, releaseAgentLock } from '@/lib/ai/openrouter';
 import { sendOutreachEmail } from '@/lib/outreach/email';
 import { isRateLimited } from '@/lib/utils';
 import { logAction } from '@/lib/server-utils';
@@ -26,21 +26,31 @@ export async function POST(request: NextRequest) {
     adminEmail = user.email!;
   }
 
+  // 1. Acquire global Email Agent lock
+  const lockAcquired = await acquireAgentLock('agent_2_email');
+  if (!lockAcquired) {
+    return NextResponse.json({ success: true, message: 'Email outreach agent (Agent 2) is already running. Tick skipped.' });
+  }
+
   try {
     const adminClient = getAdminClient();
 
-    // 1. Get Email Stage config
+    // 2. Fetch Email Stage config
     const { data: stageConfig } = await adminClient
       .from('pipeline_stage_config')
       .select('*')
       .eq('stage_key', 'email')
       .single();
 
-    if (!stageConfig || !stageConfig.enabled) {
-      return NextResponse.json({ error: 'Email stage is currently disabled.' }, { status: 400 });
+    if (!stageConfig) {
+      throw new Error('Pipeline stage configuration for email is missing.');
     }
 
-    // 2. Check if Email Domain is verified
+    if (!stageConfig.enabled) {
+      return NextResponse.json({ error: 'Email outreach stage is currently disabled.' }, { status: 400 });
+    }
+
+    // 3. Verify Email Domain credentials
     const { data: emailCreds } = await adminClient
       .from('api_credentials')
       .select('*')
@@ -48,13 +58,13 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (!emailCreds || !emailCreds.is_verified) {
-      return NextResponse.json({ error: 'Email sending is blocked. Sending domain DNS records must be fully verified first.' }, { status: 400 });
+      return NextResponse.json({ error: 'Email sending is blocked. Sending domain DNS records must be verified first.' }, { status: 400 });
     }
 
     const config = stageConfig.config || {};
     const dailyLimit = config.daily_send_limit || 30;
 
-    // 3. Count emails sent today
+    // 4. Check daily send quota
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
 
@@ -66,117 +76,134 @@ export async function POST(request: NextRequest) {
       .gte('created_at', startOfToday.toISOString());
 
     if (countError) {
-      return NextResponse.json({ error: countError.message }, { status: 500 });
+      throw new Error(`Failed to check email quota: ${countError.message}`);
     }
 
     const remainingQuota = dailyLimit - (sentToday || 0);
     if (remainingQuota <= 0) {
-      return NextResponse.json({ success: true, message: 'Daily email send limit reached for today.' });
+      return NextResponse.json({ success: true, message: 'Daily email quota reached for today.' });
     }
 
-    // 4. Fetch enriched leads that have a valid email address
+    // 5. Query candidate prospects with email and status = 'ready_for_outreach'
     const { data: leads, error: leadsError } = await adminClient
       .from('leads')
       .select('*')
-      .eq('status', 'enriched')
+      .eq('status', 'ready_for_outreach')
       .not('email', 'is', null)
-      .limit(Math.min(remainingQuota, 5)); // Send in small batches to stay responsive
+      .is('locked_by', null)
+      .order('google_rating', { ascending: false })
+      .limit(Math.min(remainingQuota, 5));
 
     if (leadsError) {
-      return NextResponse.json({ error: leadsError.message }, { status: 500 });
+      throw new Error(`Failed to fetch leads for outreach: ${leadsError.message}`);
     }
 
     if (!leads || leads.length === 0) {
-      return NextResponse.json({ success: true, message: 'No enriched leads with email addresses found.' });
+      return NextResponse.json({ success: true, message: 'No prospects with email addresses found ready for outreach.' });
     }
 
-    const model = stageConfig.openrouter_model || 'anthropic/claude-3.5-sonnet';
-    const systemPrompt = stageConfig.system_prompt || 
-      'You are a professional outreach writer representing CloudExify. Write a compelling, natural, warm, and highly personalized cold outreach email. Focus on helping the business grow its digital presence. Ground the content in the personalization detail provided. Never state a specific human identity like "I am [Specific Name]". Always write as "CloudExify Team" or "AI Growth Assistant at CloudExify". Maintain a warm tone.';
+    // Resolve model parameters
+    const model = stageConfig.openrouter_model || 'openai/gpt-4o-mini';
+    const rawPrompt = stageConfig.system_prompt || 'Write a warm cold outreach email to a local business owner.';
+    
+    // Fetch WhatsApp sender number to populate template
+    const gupshupCreds = await getStoredCredential('gupshup');
+    const companyWhatsApp = gupshupCreds?.sourceNumber || '+92 341 1949277';
+    const systemPrompt = rawPrompt.replace('{{whatsapp_number}}', companyWhatsApp);
 
     let sentCount = 0;
     const outreachLog: any[] = [];
 
+    // 6. Process outreach per lead (with per-lead lock)
     for (const lead of leads) {
-      const promptInput = `
-        Business Name: ${lead.business_name}
-        Category: ${lead.category}
-        Personalization Detail: ${lead.personalization_detail}
-      `;
+      // Call Supabase RPC try_lock_lead
+      const { data: lockOk, error: lockErr } = await adminClient.rpc('try_lock_lead', {
+        p_lead_id: lead.id,
+        p_agent: 'agent_2'
+      });
 
-      let emailBody = '';
-      try {
-        emailBody = await callOpenRouter({
-          model,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: `Compose a high-converting outreach email for this prospect:\n${promptInput}` }
-          ],
-          maxTokens: 500
-        });
-      } catch (aiErr: any) {
-        console.error(`AI email generation failed for lead ${lead.id}:`, aiErr);
+      if (lockErr || !lockOk) {
+        console.warn(`Lead ${lead.id} lock acquisition failed, skipping.`);
         continue;
       }
 
       try {
-        const subject = `Digital upgrade inquiry: ${lead.business_name}`;
-        await sendOutreachEmail({
-          to: lead.email,
-          subject,
-          body: emailBody
+        const leadContext = {
+          business_name: lead.business_name,
+          category: lead.category,
+          google_rating: lead.google_rating,
+          google_review_count: lead.google_review_count,
+          personalization_detail: lead.personalization_detail
+        };
+
+        // Call OpenRouter for content draft
+        const result = await callOpenRouter({
+          model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: JSON.stringify(leadContext) }
+          ]
         });
 
-        // Insert outreach event
-        await adminClient
-          .from('outreach_events')
-          .insert({
-            lead_id: lead.id,
-            channel: 'email',
-            direction: 'outbound',
-            content: emailBody,
-            status: 'sent'
-          });
+        // Parse JSON safely
+        let cleaned = result.trim();
+        if (cleaned.startsWith('```')) {
+          cleaned = cleaned.replace(/^```json/, '').replace(/^```/, '').replace(/```$/, '').trim();
+        }
+        const { subject, body } = JSON.parse(cleaned);
 
-        // Update lead status
+        // Send email via Resend client
+        await sendOutreachEmail({ to: lead.email, subject, body });
+
+        // Save outreach event log
+        await adminClient.from('outreach_events').insert({
+          lead_id: lead.id,
+          channel: 'email',
+          direction: 'outbound',
+          content: body,
+          status: 'sent'
+        });
+
+        // Set status to 'emailed' and release lock
         await adminClient
           .from('leads')
           .update({
             status: 'emailed',
+            locked_by: null,
             updated_at: new Date().toISOString()
           })
           .eq('id', lead.id);
 
         sentCount++;
-        outreachLog.push({ business_name: lead.business_name, email: lead.email });
-      } catch (sendErr: any) {
-        console.error(`Email delivery failed for lead ${lead.id}:`, sendErr);
-        // Log event failure
+        outreachLog.push({ id: lead.id, business: lead.business_name, email: lead.email });
+
+      } catch (err: any) {
+        console.error(`Email outreach failed for lead ${lead.id}:`, err);
+        // Release lead lock on exception so others can process
         await adminClient
-          .from('outreach_events')
-          .insert({
-            lead_id: lead.id,
-            channel: 'email',
-            direction: 'outbound',
-            content: `Failed to send email: ${sendErr.message}`,
-            status: 'failed'
-          });
+          .from('leads')
+          .update({ locked_by: null })
+          .eq('id', lead.id);
       }
     }
 
     await logAction(
       adminEmail,
-      `Ran Email Outreach: successfully sent ${sentCount} cold emails.`,
+      `Agent 2 (Email Outreach) completed: dispatched ${sentCount} cold outreach emails.`,
       'leads',
-      'email_run'
+      'agent_2_run'
     );
 
     return NextResponse.json({
       success: true,
       sent: sentCount,
-      outbox: outreachLog
+      outreach: outreachLog
     });
+
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
+  } finally {
+    // 7. Release agent lock
+    await releaseAgentLock('agent_2_email');
   }
 }
