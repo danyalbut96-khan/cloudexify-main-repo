@@ -26,7 +26,17 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const pathname = usePathname();
-  const [isInternsOpen, setIsInternsOpen] = useState(pathname.startsWith('/dashboard/interns') || pathname.startsWith('/dashboard/documents'));
+  const [openSubmenus, setOpenSubmenus] = useState<Record<string, boolean>>({
+    interns: pathname.startsWith('/dashboard/interns') || pathname.startsWith('/dashboard/documents'),
+    leadgen: pathname.startsWith('/dashboard/leadgen'),
+  });
+
+  const toggleSubmenu = (key: string) => {
+    setOpenSubmenus(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
 
   const menuItems = [
     {
@@ -39,12 +49,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       icon: Users,
       path: '/dashboard/interns',
       hasSubmenu: true,
+      submenuKey: 'interns',
       submenu: [
         { name: 'All Interns', path: '/dashboard/interns', icon: Users },
         { name: 'Generate Offer Letter', path: '/dashboard/documents/offer-letter', icon: FileText },
         { name: 'Generate Certificate', path: '/dashboard/documents/certificate', icon: FileText },
         { name: 'Generate Experience Cert', path: '/dashboard/documents/experience-certificate', icon: FileText },
         { name: 'Generate Rec Letter', path: '/dashboard/documents/recommendation-letter', icon: FileText },
+      ],
+    },
+    {
+      name: 'Lead Generation',
+      icon: TrendingUp,
+      path: '/dashboard/leadgen',
+      hasSubmenu: true,
+      submenuKey: 'leadgen',
+      submenu: [
+        { name: 'Dashboard', path: '/dashboard/leadgen', icon: LayoutDashboard },
+        { name: 'Leads Table', path: '/dashboard/leadgen/leads', icon: Users },
+        { name: 'Workflow', path: '/dashboard/leadgen/workflow', icon: FolderGit2 },
+        { name: 'Settings', path: '/dashboard/leadgen/settings', icon: Settings },
       ],
     },
     {
@@ -112,7 +136,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           <nav className="p-4 space-y-1.5 overflow-y-auto max-h-[calc(100vh-8rem)]">
             {menuItems.map((item, idx) => {
               const Icon = item.icon;
-              const isSubActive = item.hasSubmenu && pathname.startsWith('/dashboard/documents');
+              const isSubActive = item.hasSubmenu && (pathname.startsWith('/dashboard/documents') || pathname.startsWith('/dashboard/leadgen/'));
               const isActive =
                 pathname === item.path ||
                 (item.path !== '/dashboard' && pathname.startsWith(item.path)) ||
@@ -134,10 +158,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               }
 
               if (item.hasSubmenu) {
+                const sKey = item.submenuKey || '';
+                const isSubOpen = openSubmenus[sKey];
                 return (
                   <div key={idx} className="space-y-1">
                     <button
-                      onClick={() => setIsInternsOpen(!isInternsOpen)}
+                      onClick={() => toggleSubmenu(sKey)}
                       className={cn(
                         'w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition-colors text-sm font-medium text-left',
                         isActive
@@ -149,13 +175,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                         <Icon className="h-4.5 w-4.5" />
                         <span>{item.name}</span>
                       </div>
-                      {isInternsOpen ? (
+                      {isSubOpen ? (
                         <ChevronDown className="h-4 w-4" />
                       ) : (
                         <ChevronRight className="h-4 w-4" />
                       )}
                     </button>
-                    {isInternsOpen && (
+                    {isSubOpen && (
                       <div className="pl-6 pr-2 py-1 space-y-1.5 border-l border-slate-800 ml-6 mt-1">
                         {item.submenu?.map((subItem, subIdx) => {
                           const SubIcon = subItem.icon;
