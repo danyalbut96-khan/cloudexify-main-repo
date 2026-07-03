@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
     const logoBase64 = getLogoBase64()
 
     // 5. Generate QR code as base64 PNG (FIX 6)
-    const verificationUrl = `https://cloudexify.com/verify/${intern.registration_number}`
+    const verificationUrl = `https://admin.cloudexify.site/verify/${intern.registration_number}`
     let qrCodeBase64: string | null = null
     try {
       const qrBuffer = await QRCode.toBuffer(verificationUrl, {

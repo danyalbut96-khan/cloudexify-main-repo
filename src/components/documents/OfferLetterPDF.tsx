@@ -368,7 +368,7 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
               <Text style={styles.footerText}>WhatsApp: {companySettings.company_phone}</Text>
             )}
             <Text style={[styles.footerText, { color: '#2563EB' }]}>
-              Verify: offerletter.cloudexify.site/verify/{offerLetterNumber}
+              Verify: admin.cloudexify.site/verify/{offerLetterNumber}
             </Text>
             <Text style={styles.footerTextBold}>
               Document ID: {offerLetterNumber}

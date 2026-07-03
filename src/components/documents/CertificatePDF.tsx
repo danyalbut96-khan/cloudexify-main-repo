@@ -184,7 +184,7 @@ export const CertificatePDF: React.FC<CertificateProps> = ({
   qrCodeBase64,
 }) => {
   const logoSrc = companySettings.company_logo_url || logoBase64 || null;
-  const verificationUrl = `https://cloudexify.com/verify/${intern.registration_number}`;
+  const verificationUrl = `https://admin.cloudexify.site/verify/${intern.registration_number}`;
 
   return (
     <Document>
@@ -269,7 +269,7 @@ export const CertificatePDF: React.FC<CertificateProps> = ({
 
           {/* FIX 7: Verification footer */}
           <Text style={styles.verificationFooter}>
-            This document can be verified at cloudexify.com/verify/{intern.registration_number}
+            This document can be verified at admin.cloudexify.site/verify/{intern.registration_number}
           </Text>
         </View>
       </Page>

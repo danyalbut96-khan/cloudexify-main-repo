@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
     const offerLetterNumber = `CX-OL-${year}-${String(seqCount).padStart(4, '0')}`
 
     // 5. Generate QR Code
-    const verificationUrl = `https://offerletter.cloudexify.site/verify/${offerLetterNumber}`
+    const verificationUrl = `https://admin.cloudexify.site/verify/${offerLetterNumber}`
     let qrCodeBase64: string | null = null
     try {
       const qrBuffer = await QRCode.toBuffer(verificationUrl, {

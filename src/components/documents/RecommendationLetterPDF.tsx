@@ -212,7 +212,7 @@ export const RecommendationLetterPDF: React.FC<RecommendationLetterProps> = ({
 
         {/* FIX 7: Verification footer */}
         <Text style={styles.verificationFooter}>
-          This document can be verified at cloudexify.com/verify/{intern.registration_number}
+          This document can be verified at admin.cloudexify.site/verify/{intern.registration_number}
         </Text>
       </Page>
     </Document>

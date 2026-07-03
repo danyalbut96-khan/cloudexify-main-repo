@@ -359,7 +359,7 @@ function OfferLetterGenerator() {
               <div className="w-[75%] text-[7px] space-y-0.5 leading-tight">
                 <p className="font-bold text-slate-900">cloudexify.site | hello@cloudexify.site</p>
                 <p className="text-slate-500">WhatsApp: +92 341 1949277X</p>
-                <p className="text-blue-600">Verify: offerletter.cloudexify.site/verify</p>
+                <p className="text-blue-600">Verify: admin.cloudexify.site/verify</p>
                 <p className="font-bold text-slate-900">Document ID: CX-OL-2026-XXXX</p>
                 <p className="text-slate-400">© 2026 CloudExify. All rights reserved.</p>
               </div>
