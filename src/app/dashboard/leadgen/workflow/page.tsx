@@ -467,10 +467,6 @@ export default function WorkflowPage() {
                   />
                 </div>
               )}
-                    placeholder="Enter system prompts guiding OpenRouter output generation..."
-                  />
-                </div>
-              )}
 
               {/* Config JSON custom settings */}
               <div>
