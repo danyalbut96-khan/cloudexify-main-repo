@@ -216,7 +216,7 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
         {/* Recipient */}
         <View style={styles.recipient}>
           <Text style={styles.recipientName}>{intern.full_name}</Text>
-          {intern.city && <Text style={styles.recipientDetails}>{intern.city}</Text>}
+          {intern.city && <Text style={styles.recipientDetails}></Text>}
         </View>
 
         {/* Body */}

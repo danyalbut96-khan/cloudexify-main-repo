@@ -12,7 +12,7 @@ import QRCode from 'qrcode'
 /** Read the logo from /public/logo.png and encode as base64 data URI for server-side PDF rendering */
 function getLogoBase64(): string | null {
   try {
-    const logoPath = join(process.cwd(), 'public', 'logo.png')
+    const logoPath = join(process.cwd(), 'public/', 'logo.png')
     const buffer = readFileSync(logoPath)
     return `data:image/png;base64,${buffer.toString('base64')}`
   } catch {
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
       .from('intern_documents')
       .select('*', { count: 'exact', head: true })
       .eq('offer_letter_generated', true)
-    
+
     const seqCount = (count || 0) + 1
     const year = new Date().getFullYear()
     const offerLetterNumber = `CX-OL-${year}-${String(seqCount).padStart(4, '0')}`
