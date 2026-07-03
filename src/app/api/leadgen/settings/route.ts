@@ -154,8 +154,12 @@ export async function POST(request: NextRequest) {
       // Read domain verification status if it is email_smtp
       let isVerified = true;
       if (provider === 'email_smtp' && credentialData.domain) {
-        const dnsCheck = await verifyDomainDns(credentialData.domain);
-        isVerified = dnsCheck.allPassed;
+        if (credentialData.bypassDnsCheck) {
+          isVerified = true;
+        } else {
+          const dnsCheck = await verifyDomainDns(credentialData.domain);
+          isVerified = dnsCheck.allPassed;
+        }
       }
 
       const { data, error } = await supabase

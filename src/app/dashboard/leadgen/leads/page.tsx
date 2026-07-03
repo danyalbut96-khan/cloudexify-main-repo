@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { TableSkeleton } from '@/components/ui/Skeleton';
-import { Search, Filter, Eye, Check, X, Mail, Phone, Calendar, Star, Building2, Send, MessageSquare } from 'lucide-react';
+import { Search, Filter, Eye, Check, X, Mail, Phone, Calendar, Star, Building2, Send, MessageSquare, Play } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function LeadsTablePage() {
@@ -31,6 +31,29 @@ export default function LeadsTablePage() {
   const [simText, setSimText] = useState('');
   const [simChannel, setSimChannel] = useState<'email' | 'whatsapp'>('email');
   const [simulating, setSimulating] = useState(false);
+
+  // Manual Trigger states
+  const [discovering, setDiscovering] = useState(false);
+
+  const handleTriggerDiscovery = async () => {
+    const confirmMsg = "Trigger prospect discovery run? This will fetch category data using current configurations.";
+    if (!window.confirm(confirmMsg)) return;
+
+    setDiscovering(true);
+    const runToast = toast.loading("Executing discovery pipeline...");
+    try {
+      const res = await fetch('/api/leadgen/discovery/run', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to execute discovery.');
+
+      toast.success(`Discovery finished! Processed places and added ${data.discovered} new prospects.`, { id: runToast, duration: 4000 });
+      fetchLeads();
+    } catch (err: any) {
+      toast.error(err.message || 'Discovery run failed', { id: runToast });
+    } finally {
+      setDiscovering(false);
+    }
+  };
 
   const fetchLeads = async () => {
     setLoading(true);
@@ -175,7 +198,21 @@ export default function LeadsTablePage() {
   };
 
   return (
-    <PageWrapper title="Lead Prospect Directory">
+    <PageWrapper
+      title="Lead Prospect Directory"
+      actions={
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={handleTriggerDiscovery}
+          isLoading={discovering}
+          className="flex items-center space-x-1.5 shadow-md shadow-blue-200"
+        >
+          <Play className="h-4 w-4" />
+          <span>Discover Prospects</span>
+        </Button>
+      }
+    >
       {/* Search & Filters */}
       <Card className="mb-6 p-4">
         <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
