@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
           const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
-              'Authorization': `Bearer ${activeKey}`,
+              'Authorization': `Bearer ${activeKey.trim()}`,
               'Content-Type': 'application/json',
               'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
               'X-Title': 'CloudExify Lead Generation'
