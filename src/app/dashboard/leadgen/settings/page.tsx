@@ -5,7 +5,7 @@ import { PageWrapper } from '@/components/ui/PageWrapper';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { Save, Radio, CheckCircle2, XCircle, Search, Mail, ShieldAlert, KeyRound, Building2 } from 'lucide-react';
+import { Save, Radio, CheckCircle2, XCircle, Search, Mail, ShieldAlert, KeyRound, Building2, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function LeadGenSettingsPage() {
@@ -22,6 +22,12 @@ export default function LeadGenSettingsPage() {
   const [discoveryProvider, setDiscoveryProvider] = useState('openstreetmap');
   const [discoveryConfigRowId, setDiscoveryConfigRowId] = useState('');
   const [discoveryConfigRaw, setDiscoveryConfigRaw] = useState<any>({});
+
+  // Show/Hide Eyeball states for API keys
+  const [showOpenRouter, setShowOpenRouter] = useState(false);
+  const [showGoogle, setShowGoogle] = useState(false);
+  const [showGupshup, setShowGupshup] = useState(false);
+  const [showEmail, setShowEmail] = useState(false);
 
   // Provider keys states
   const [openRouterKey, setOpenRouterKey] = useState('');
@@ -248,13 +254,22 @@ export default function LeadGenSettingsPage() {
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-500 mb-1.5">OpenRouter API Key</label>
-                <input
-                  type="password"
-                  value={openRouterKey}
-                  onChange={(e) => setOpenRouterKey(e.target.value)}
-                  placeholder="sk-or-v1-••••••••"
-                  className="block w-full px-3 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-                />
+                <div className="relative">
+                  <input
+                    type={showOpenRouter ? "text" : "password"}
+                    value={openRouterKey}
+                    onChange={(e) => setOpenRouterKey(e.target.value)}
+                    placeholder="sk-or-v1-••••••••"
+                    className="block w-full pl-3 pr-10 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowOpenRouter(!showOpenRouter)}
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 focus:outline-none"
+                  >
+                    {showOpenRouter ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
               <div className="flex justify-end space-x-2.5 pt-2 border-t border-slate-50">
                 <Button
@@ -289,13 +304,22 @@ export default function LeadGenSettingsPage() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1.5">Google Places API Key</label>
-                  <input
-                    type="password"
-                    value={googleKey}
-                    onChange={(e) => setGoogleKey(e.target.value)}
-                    placeholder="AIzaSy••••••••"
-                    className="block w-full px-3 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showGoogle ? "text" : "password"}
+                      value={googleKey}
+                      onChange={(e) => setGoogleKey(e.target.value)}
+                      placeholder="AIzaSy••••••••"
+                      className="block w-full pl-3 pr-10 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowGoogle(!showGoogle)}
+                      className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 focus:outline-none"
+                    >
+                      {showGoogle ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
                 <div className="flex justify-end space-x-2.5 pt-2 border-t border-slate-50">
                   <Button
@@ -329,17 +353,26 @@ export default function LeadGenSettingsPage() {
             </div>
             <div className="space-y-4">
               <div className="bg-emerald-50/50 border border-emerald-100 rounded-xl p-3 text-[10px] text-emerald-800 leading-normal font-semibold">
-                💡 <strong>Free Sandbox Mode:</strong> To test WhatsApp outreach for free, navigate to your Gupshup Console, enable the Sandbox, copy the sandbox API Key, and set your Meta Sender Number to the sandbox proxy number provided.
+                💡 <strong>Free Sandbox Mode:</strong> To test WhatsApp outreach for free, enable Sandbox Mode in your Gupshup Console. Use the sandbox API Key and set your Meta Sender Number to the sandbox proxy number provided.
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-500 mb-1.5">Gupshup API Key</label>
-                <input
-                  type="password"
-                  value={gupshupKey}
-                  onChange={(e) => setGupshupKey(e.target.value)}
-                  placeholder="Gupshup API Token"
-                  className="block w-full px-3 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none bg-white"
-                />
+                <div className="relative">
+                  <input
+                    type={showGupshup ? "text" : "password"}
+                    value={gupshupKey}
+                    onChange={(e) => setGupshupKey(e.target.value)}
+                    placeholder="Gupshup API Token"
+                    className="block w-full pl-3 pr-10 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none bg-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowGupshup(!showGupshup)}
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 focus:outline-none"
+                  >
+                    {showGupshup ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -413,13 +446,22 @@ export default function LeadGenSettingsPage() {
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-500 mb-1.5">Resend API Key</label>
-                <input
-                  type="password"
-                  value={emailKey}
-                  onChange={(e) => setEmailKey(e.target.value)}
-                  placeholder="re_••••••••"
-                  className="block w-full px-3 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none bg-white"
-                />
+                <div className="relative">
+                  <input
+                    type={showEmail ? "text" : "password"}
+                    value={emailKey}
+                    onChange={(e) => setEmailKey(e.target.value)}
+                    placeholder="re_••••••••"
+                    className="block w-full pl-3 pr-10 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none bg-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowEmail(!showEmail)}
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 focus:outline-none"
+                  >
+                    {showEmail ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-500 mb-1.5">Sending Domain</label>

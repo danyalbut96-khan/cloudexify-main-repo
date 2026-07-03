@@ -85,7 +85,9 @@ export async function POST(request: NextRequest) {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${activeKey}`,
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+              'X-Title': 'CloudExify Lead Generation'
             },
             body: JSON.stringify({
               model: 'openai/gpt-4o-mini',
