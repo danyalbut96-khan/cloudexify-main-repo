@@ -61,8 +61,15 @@ export function sanitizeInput(input: string): string {
     .trim();
 }
 
-// Sanitize deep object properties recursively
+// Sanitize deep object properties recursively (handling arrays correctly)
 export function sanitizeObject<T extends Record<string, any>>(obj: T): T {
+  if (Array.isArray(obj)) {
+    return (obj as any).map((item: any) => {
+      if (typeof item === 'string') return sanitizeInput(item);
+      if (typeof item === 'object' && item !== null) return sanitizeObject(item);
+      return item;
+    }) as any;
+  }
   const sanitized = { ...obj } as any;
   for (const key in sanitized) {
     if (typeof sanitized[key] === 'string') {

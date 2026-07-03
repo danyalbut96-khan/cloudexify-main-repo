@@ -36,7 +36,10 @@ export async function POST(request: NextRequest) {
       .single();
 
     const city = configRow?.config?.city || 'Islamabad';
-    const categories = configRow?.config?.categories || ['restaurant', 'clinic', 'beauty_salon'];
+    let categories = configRow?.config?.categories || ['restaurant', 'clinic', 'beauty_salon'];
+    if (categories && typeof categories === 'object' && !Array.isArray(categories)) {
+      categories = Object.values(categories);
+    }
     const provider = configRow?.config?.provider || 'openstreetmap';
 
     let discoveredCount = 0;
