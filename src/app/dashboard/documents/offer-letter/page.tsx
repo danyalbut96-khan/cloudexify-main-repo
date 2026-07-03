@@ -79,6 +79,8 @@ function OfferLetterGenerator() {
       };
       fetchIntern();
     }
+  }, [urlInternId]);
+
   // Generate random preview document number
   useEffect(() => {
     const randomNum = Math.floor(1000 + Math.random() * 9000);
