@@ -7,13 +7,32 @@ export async function POST(request: NextRequest) {
     const rawName = String(body.full_name || '').trim()
     const rawRegNo = String(body.registration_number || '').trim().toUpperCase()
 
-    if (!rawName || !rawRegNo) {
-      return NextResponse.json({ error: 'Full name and registration number are required.' }, { status: 400 })
+    if (!rawName && !rawRegNo) {
+      return NextResponse.json({ error: 'Please enter a name or registration number to search.' }, { status: 400 })
     }
 
     const supabase = createClient()
 
-    // Case-insensitive lookup using UPPER on stored registration_number
+    // Scenario A: Only full_name is provided (Search Suggestions)
+    if (rawName && !rawRegNo) {
+      const { data: matches, error } = await supabase
+        .from('interns')
+        .select('id, full_name, registration_number, domain, email')
+        .ilike('full_name', `%${rawName}%`)
+        .limit(10)
+
+      if (error) {
+        return NextResponse.json({ error: 'Database search failed.' }, { status: 500 })
+      }
+
+      return NextResponse.json({
+        type: 'suggestions',
+        suggestions: matches || []
+      })
+    }
+
+    // Scenario B: registration_number is provided (direct search, optional name match)
+    // Find the intern by registration_number (case-insensitive)
     const { data: intern, error } = await supabase
       .from('interns')
       .select('id, full_name, registration_number, domain, email')
@@ -28,17 +47,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No intern found with that registration number. Please check your details.' }, { status: 404 })
     }
 
-    // Verify name matches (case-insensitive, trimmed)
-    const storedName = (intern.full_name || '').trim().toLowerCase()
-    const inputName = rawName.toLowerCase()
-    if (storedName !== inputName) {
-      return NextResponse.json({ error: 'Name does not match our records. Please check your full name.' }, { status: 404 })
+    // If name was also passed, verify it matches (case-insensitive, trimmed)
+    if (rawName) {
+      const storedName = (intern.full_name || '').trim().toLowerCase()
+      const inputName = rawName.toLowerCase()
+      if (storedName !== inputName && !storedName.includes(inputName) && !inputName.includes(storedName)) {
+        return NextResponse.json({ error: 'Name does not match our records for this registration number.' }, { status: 404 })
+      }
     }
 
-    // Extract domain code from registration number (e.g. CX2026PY001 → PY)
-    // Pattern: letters + 4digits + domainCode + 3digits
+    // Extract domain code from registration number (e.g. CX-2026-PY-001 or CX2026PY001)
     const regNo = intern.registration_number.toUpperCase()
-    const domainCodeMatch = regNo.match(/[A-Z]{2}\d{4}([A-Z]+)\d{3,}/)
+    const normalizedReg = regNo.replace(/[^A-Z0-9]/g, '')
+    const domainCodeMatch = normalizedReg.match(/[A-Z]{2}\d{4}([A-Z]+)\d{3,}/)
     const domainCode = domainCodeMatch ? domainCodeMatch[1] : ''
 
     // Count existing projects
@@ -66,6 +87,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
+      type: 'exact',
       intern: {
         id: intern.id,
         full_name: intern.full_name,

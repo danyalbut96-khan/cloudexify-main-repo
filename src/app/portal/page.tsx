@@ -54,6 +54,7 @@ export default function PortalPage() {
   const [lookupLoading, setLookupLoading] = useState(false);
   const [lookupError, setLookupError] = useState('');
   const [lookupResult, setLookupResult] = useState<LookupResult | null>(null);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
 
   // Project form
   const [projectTitle, setProjectTitle] = useState('');
@@ -99,16 +100,47 @@ export default function PortalPage() {
     fetchLeaderboard();
   }, []);
 
-  const handleLookup = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLookup = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setLookupError('');
     setLookupResult(null);
+    setSuggestions([]);
     setLookupLoading(true);
     try {
       const res = await fetch('/api/portal/lookup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ full_name: fullName, registration_number: regNo })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setLookupError(data.error || 'Lookup failed.');
+      } else if (data.type === 'suggestions') {
+        setSuggestions(data.suggestions || []);
+        if (!data.suggestions || data.suggestions.length === 0) {
+          setLookupError('No intern found with that name query.');
+        }
+      } else {
+        setLookupResult(data);
+      }
+    } catch {
+      setLookupError('Network error. Please try again.');
+    } finally {
+      setLookupLoading(false);
+    }
+  };
+
+  const selectInternProfile = async (name: string, reg: string) => {
+    setFullName(name);
+    setRegNo(reg);
+    setSuggestions([]);
+    setLookupError('');
+    setLookupLoading(true);
+    try {
+      const res = await fetch('/api/portal/lookup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ full_name: name, registration_number: reg })
       });
       const data = await res.json();
       if (!res.ok) {
@@ -176,6 +208,7 @@ export default function PortalPage() {
       setLookupResult(null);
       setFullName('');
       setRegNo('');
+      setSuggestions([]);
     }
   };
 
@@ -184,6 +217,7 @@ export default function PortalPage() {
     setLookupResult(null);
     setFullName('');
     setRegNo('');
+    setSuggestions([]);
     setLookupError('');
   };
 
@@ -362,10 +396,9 @@ export default function PortalPage() {
 
                     <div className="space-y-3">
                       <div>
-                        <label className="text-xs font-medium text-slate-300 mb-1.5 block">Full Name</label>
+                        <label className="text-xs font-medium text-slate-300 mb-1.5 block">Full Name (Search by Name)</label>
                         <input
                           type="text"
-                          required
                           value={fullName}
                           onChange={e => setFullName(e.target.value)}
                           placeholder="e.g. Ahmed Khan"
@@ -373,18 +406,39 @@ export default function PortalPage() {
                         />
                       </div>
                       <div>
-                        <label className="text-xs font-medium text-slate-300 mb-1.5 block">Registration Number</label>
+                        <label className="text-xs font-medium text-slate-300 mb-1.5 block">Registration ID (Direct Lookup)</label>
                         <input
                           type="text"
-                          required
                           value={regNo}
                           onChange={e => setRegNo(e.target.value.toUpperCase())}
-                          placeholder="e.g. CX2026PY001"
+                          placeholder="e.g. CX-2026-PY-001"
                           className="w-full bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all font-mono tracking-wider"
                         />
-                        <p className="text-[10px] text-slate-500 mt-1">Auto-converted to uppercase. Check your welcome email.</p>
+                        <p className="text-[10px] text-slate-500 mt-1">Enter your Registration ID or type your name above to search.</p>
                       </div>
                     </div>
+
+                    {suggestions.length > 0 && (
+                      <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                        <p className="text-[11px] font-bold text-slate-400">Match suggestions (Click to select):</p>
+                        <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto">
+                          {suggestions.map((s) => (
+                            <button
+                              key={s.id}
+                              type="button"
+                              onClick={() => selectInternProfile(s.full_name, s.registration_number)}
+                              className="text-left px-3 py-2 bg-slate-850 hover:bg-slate-800 border border-slate-700/60 rounded-lg text-xs flex justify-between items-center transition-all group"
+                            >
+                              <div>
+                                <span className="font-semibold text-white group-hover:text-blue-400 transition-colors">{s.full_name}</span>
+                                <span className="text-[10px] text-slate-500 font-mono block mt-0.5">{s.registration_number}</span>
+                              </div>
+                              <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors">{s.domain}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {lookupError && (
                       <div className="flex items-start gap-2.5 bg-red-500/10 border border-red-500/20 text-red-300 rounded-xl px-4 py-3 text-xs">
@@ -399,7 +453,7 @@ export default function PortalPage() {
                       className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl py-3 text-sm transition-all shadow-lg shadow-blue-900/30"
                     >
                       {lookupLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-                      {lookupLoading ? 'Looking up...' : 'Find My Profile'}
+                      {lookupLoading ? 'Searching...' : 'Find My Profile'}
                     </button>
 
                     {/* Intern card after lookup */}
