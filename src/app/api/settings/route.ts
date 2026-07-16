@@ -41,11 +41,27 @@ export async function GET(request: NextRequest) {
       .from('admin_signatures')
       .select('*')
 
+    // 5. Fetch intern analysis settings (singleton, id=1)
+    const { data: internAnalysisSettings } = await supabase
+      .from('intern_analysis_settings')
+      .select('*')
+      .eq('id', 1)
+      .maybeSingle()
+
+    // 6. Fetch all intern analysis criteria grouped by domain
+    const { data: internAnalysisCriteria } = await supabase
+      .from('intern_analysis_criteria')
+      .select('*')
+      .order('domain_code', { ascending: true })
+      .order('sort_order', { ascending: true })
+
     return NextResponse.json({
       companySettings: companySettings || null,
       adminProfile: adminProfile || null,
       sheetConnections: sheetConnections || [],
-      allSignatures: allSignatures || []
+      allSignatures: allSignatures || [],
+      internAnalysisSettings: internAnalysisSettings || null,
+      internAnalysisCriteria: internAnalysisCriteria || []
     })
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 })
@@ -219,6 +235,61 @@ export async function POST(request: NextRequest) {
 
       await logAction(user.email!, `Toggled sheet connection active status to ${isActive}`, 'settings', connectionId)
       return NextResponse.json({ sheetConnection: data })
+    }
+
+    // Type 6: Save Intern Analysis Settings (API key, model, portal config, system prompt)
+    if (type === 'intern-analysis-settings') {
+      const { data, error } = await supabase
+        .from('intern_analysis_settings')
+        .upsert({
+          id: 1,
+          openrouter_api_key: body.openrouter_api_key ? String(body.openrouter_api_key).trim() : null,
+          openrouter_model: body.openrouter_model ? String(body.openrouter_model).trim() : 'mistralai/mistral-7b-instruct:free',
+          max_projects_per_intern: body.max_projects_per_intern ? Number(body.max_projects_per_intern) : 4,
+          registration_open: Boolean(body.registration_open),
+          batch_coming_soon_message: body.batch_coming_soon_message ? String(body.batch_coming_soon_message).trim() : '',
+          system_prompt_prefix: body.system_prompt_prefix ? String(body.system_prompt_prefix).trim() : '',
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'id' })
+        .select()
+        .single()
+
+      if (error) {
+        return NextResponse.json({ error: error.message }, { status: 400 })
+      }
+      await logAction(user.email!, 'Updated intern analysis system settings', 'settings', '1')
+      return NextResponse.json({ internAnalysisSettings: data })
+    }
+
+    // Type 7: Save Intern Analysis Criteria for a domain
+    if (type === 'intern-analysis-criteria') {
+      const domainCode = String(body.domain_code || '').toUpperCase()
+      const criteria = body.criteria as Array<{ id?: string; criterion_name: string; criterion_description: string; sort_order: number }>
+
+      if (!domainCode || !Array.isArray(criteria) || criteria.length === 0) {
+        return NextResponse.json({ error: 'domain_code and criteria array required' }, { status: 400 })
+      }
+
+      // Upsert each criterion row
+      const upsertRows = criteria.map((c, idx) => ({
+        ...(c.id ? { id: c.id } : {}),
+        domain_code: domainCode,
+        criterion_name: String(c.criterion_name || '').trim(),
+        criterion_description: String(c.criterion_description || '').trim(),
+        max_marks: 5,
+        sort_order: c.sort_order ?? (idx + 1)
+      }))
+
+      const { data, error } = await supabase
+        .from('intern_analysis_criteria')
+        .upsert(upsertRows, { onConflict: 'domain_code,sort_order' })
+        .select()
+
+      if (error) {
+        return NextResponse.json({ error: error.message }, { status: 400 })
+      }
+      await logAction(user.email!, `Updated scoring criteria for domain ${domainCode}`, 'settings', domainCode)
+      return NextResponse.json({ criteria: data })
     }
 
     return NextResponse.json({ error: 'Invalid settings type option' }, { status: 400 })

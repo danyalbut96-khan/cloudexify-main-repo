@@ -22,6 +22,9 @@ import {
   AlertTriangle,
   X,
   ShieldOff,
+  BrainCircuit,
+  Save,
+  Loader2,
 } from 'lucide-react';
 import { PageWrapper } from '@/components/ui/PageWrapper';
 import { Card } from '@/components/ui/Card';
@@ -33,7 +36,7 @@ import { useRouter } from 'next/navigation';
 
 export default function SettingsPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'branding' | 'profile' | 'sheets' | 'security'>('branding');
+  const [activeTab, setActiveTab] = useState<'branding' | 'profile' | 'sheets' | 'security' | 'intern-analysis'>('branding');
   const [loading, setLoading] = useState(true);
 
   // Loading states for actions
@@ -74,6 +77,20 @@ export default function SettingsPage() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Intern Analysis Settings State
+  const [aiApiKey, setAiApiKey] = useState('');
+  const [aiModel, setAiModel] = useState('mistralai/mistral-7b-instruct:free');
+  const [aiMaxProjects, setAiMaxProjects] = useState(4);
+  const [aiRegistrationOpen, setAiRegistrationOpen] = useState(false);
+  const [aiBatchMessage, setAiBatchMessage] = useState('Batch 2 Registration Opening Soon! Stay tuned for announcements.');
+  const [aiSystemPrompt, setAiSystemPrompt] = useState('');
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [isSavingAiSettings, setIsSavingAiSettings] = useState(false);
+  const [aiCriteria, setAiCriteria] = useState<Record<string, Array<{id?: string; criterion_name: string; criterion_description: string; sort_order: number}>>>({});
+  const [savingCriteriaDomain, setSavingCriteriaDomain] = useState<string | null>(null);
+  const AI_DOMAINS = ['PY', 'CPP', 'JAVA', 'DS', 'CYB', 'GEN'];
+  const AI_DOMAIN_LABELS: Record<string, string> = { PY: 'Python', CPP: 'C++', JAVA: 'Java', DS: 'Data Science', CYB: 'Cybersecurity', GEN: 'Full Stack' };
   const [showCurrentPass, setShowCurrentPass] = useState(false);
   const [showNewPass, setShowNewPass] = useState(false);
 
@@ -107,6 +124,25 @@ export default function SettingsPage() {
       }
 
       setSheetConnections(data.sheetConnections || []);
+
+      if (data.internAnalysisSettings) {
+        const s = data.internAnalysisSettings;
+        setAiApiKey(s.openrouter_api_key || '');
+        setAiModel(s.openrouter_model || 'mistralai/mistral-7b-instruct:free');
+        setAiMaxProjects(s.max_projects_per_intern ?? 4);
+        setAiRegistrationOpen(s.registration_open ?? false);
+        setAiBatchMessage(s.batch_coming_soon_message || '');
+        setAiSystemPrompt(s.system_prompt_prefix || '');
+      }
+
+      if (data.internAnalysisCriteria && Array.isArray(data.internAnalysisCriteria)) {
+        const grouped: Record<string, any[]> = {};
+        data.internAnalysisCriteria.forEach((c: any) => {
+          if (!grouped[c.domain_code]) grouped[c.domain_code] = [];
+          grouped[c.domain_code].push({ id: c.id, criterion_name: c.criterion_name, criterion_description: c.criterion_description, sort_order: c.sort_order });
+        });
+        setAiCriteria(grouped);
+      }
 
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -469,6 +505,15 @@ export default function SettingsPage() {
           >
             <KeyRound className="h-4 w-4" />
             <span>Security & Password</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('intern-analysis')}
+            className={`flex items-center space-x-2.5 px-4 py-2.5 rounded-lg text-xs font-semibold tracking-wide uppercase transition-colors text-left shrink-0 ${activeTab === 'intern-analysis' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
+              }`}
+          >
+            <BrainCircuit className="h-4 w-4" />
+            <span>Intern Analysis</span>
           </button>
         </div>
 
@@ -1060,6 +1105,231 @@ export default function SettingsPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* TAB 5: Intern Analysis Settings */}
+      {activeTab === 'intern-analysis' && (
+        <div className="flex-1 space-y-6">
+
+          {/* Section 1: API Configuration */}
+          <Card className="border border-slate-100 p-6">
+            <h3 className="text-sm font-bold text-slate-800 flex items-center mb-5">
+              <BrainCircuit className="h-4.5 w-4.5 mr-2 text-blue-500" />
+              AI & API Configuration
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">OpenRouter API Key</label>
+                <div className="relative">
+                  <input
+                    type={showApiKey ? 'text' : 'password'}
+                    value={aiApiKey}
+                    onChange={e => setAiApiKey(e.target.value)}
+                    placeholder="sk-or-v1-..."
+                    className="block w-full pr-10 px-3.5 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white font-mono"
+                  />
+                  <button type="button" onClick={() => setShowApiKey(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                    {showApiKey ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">Get your free key at openrouter.ai/keys — stored securely in Supabase, never in code.</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">AI Model</label>
+                <select
+                  value={aiModel}
+                  onChange={e => setAiModel(e.target.value)}
+                  className="block w-full px-3.5 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                >
+                  <option value="mistralai/mistral-7b-instruct:free">mistral-7b-instruct (FREE)</option>
+                  <option value="google/gemini-flash-1.5">gemini-flash-1.5 (Very Cheap)</option>
+                  <option value="openai/gpt-4o-mini">gpt-4o-mini (Cheap)</option>
+                  <option value="anthropic/claude-3-haiku">claude-3-haiku (Cheap)</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Max Projects Per Intern</label>
+                  <input
+                    type="number"
+                    min={1} max={10}
+                    value={aiMaxProjects}
+                    onChange={e => setAiMaxProjects(Number(e.target.value))}
+                    className="block w-full px-3.5 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Registration Status</label>
+                  <button
+                    type="button"
+                    onClick={() => setAiRegistrationOpen(v => !v)}
+                    className={`w-full flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold border transition-all ${
+                      aiRegistrationOpen
+                        ? 'bg-green-50 border-green-200 text-green-700'
+                        : 'bg-amber-50 border-amber-200 text-amber-700'
+                    }`}
+                  >
+                    {aiRegistrationOpen ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}
+                    {aiRegistrationOpen ? 'Open — Accepting New Interns' : 'Closed — Batch Coming Soon'}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">&quot;Batch Coming Soon&quot; Message (shown on portal)</label>
+                <input
+                  type="text"
+                  value={aiBatchMessage}
+                  onChange={e => setAiBatchMessage(e.target.value)}
+                  className="block w-full px-3.5 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">AI System Prompt Prefix</label>
+                <textarea
+                  rows={3}
+                  value={aiSystemPrompt}
+                  onChange={e => setAiSystemPrompt(e.target.value)}
+                  placeholder="You are an expert software engineering mentor..."
+                  className="block w-full px-3.5 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white resize-none"
+                />
+                <p className="text-[10px] text-slate-400 mt-1">This prefix is prepended to every AI analysis request.</p>
+              </div>
+
+              <button
+                type="button"
+                disabled={isSavingAiSettings}
+                onClick={async () => {
+                  setIsSavingAiSettings(true);
+                  const t = toast.loading('Saving AI settings...');
+                  try {
+                    const res = await fetch('/api/settings', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        type: 'intern-analysis-settings',
+                        openrouter_api_key: aiApiKey,
+                        openrouter_model: aiModel,
+                        max_projects_per_intern: aiMaxProjects,
+                        registration_open: aiRegistrationOpen,
+                        batch_coming_soon_message: aiBatchMessage,
+                        system_prompt_prefix: aiSystemPrompt,
+                      })
+                    });
+                    if (!res.ok) throw new Error((await res.json()).error);
+                    toast.success('AI settings saved!', { id: t });
+                  } catch (err: any) {
+                    toast.error(err.message, { id: t });
+                  } finally {
+                    setIsSavingAiSettings(false);
+                  }
+                }}
+                className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg text-xs font-semibold transition-colors"
+              >
+                {isSavingAiSettings ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                Save AI Settings
+              </button>
+            </div>
+          </Card>
+
+          {/* Section 2: Per-Domain Scoring Criteria */}
+          <Card className="border border-slate-100 p-6">
+            <h3 className="text-sm font-bold text-slate-800 flex items-center mb-1">
+              <BrainCircuit className="h-4.5 w-4.5 mr-2 text-violet-500" />
+              Scoring Criteria Manager
+            </h3>
+            <p className="text-xs text-slate-400 mb-5">Each domain has 5 criteria × 5 marks = 25 marks per project. 4 projects = 100 total.</p>
+
+            <div className="space-y-6">
+              {AI_DOMAINS.map(domain => {
+                const criteria = aiCriteria[domain] || Array.from({ length: 5 }, (_, i) => ({ criterion_name: '', criterion_description: '', sort_order: i + 1 }));
+                return (
+                  <div key={domain} className="border border-slate-100 rounded-xl overflow-hidden">
+                    <div className="px-4 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-black px-2 py-0.5 bg-blue-600 text-white rounded">{domain}</span>
+                        <span className="text-xs font-semibold text-slate-600">{AI_DOMAIN_LABELS[domain]}</span>
+                      </div>
+                      <span className="text-[10px] text-slate-400">5 criteria × 5 marks = 25 pts</span>
+                    </div>
+                    <div className="p-4 space-y-3">
+                      {criteria.map((c, idx) => (
+                        <div key={idx} className="grid grid-cols-12 gap-2 items-start">
+                          <div className="col-span-1 text-center pt-2">
+                            <span className="text-xs font-bold text-slate-400">#{idx + 1}</span>
+                          </div>
+                          <div className="col-span-4">
+                            <input
+                              type="text"
+                              value={c.criterion_name}
+                              onChange={e => {
+                                const updated = [...criteria];
+                                updated[idx] = { ...updated[idx], criterion_name: e.target.value };
+                                setAiCriteria(prev => ({ ...prev, [domain]: updated }));
+                              }}
+                              placeholder="Criterion name"
+                              className="w-full px-2.5 py-1.5 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white"
+                            />
+                          </div>
+                          <div className="col-span-6">
+                            <input
+                              type="text"
+                              value={c.criterion_description}
+                              onChange={e => {
+                                const updated = [...criteria];
+                                updated[idx] = { ...updated[idx], criterion_description: e.target.value };
+                                setAiCriteria(prev => ({ ...prev, [domain]: updated }));
+                              }}
+                              placeholder="Description for AI..."
+                              className="w-full px-2.5 py-1.5 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white"
+                            />
+                          </div>
+                          <div className="col-span-1 text-center pt-2">
+                            <span className="text-[10px] font-bold text-slate-400">5 pts</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="px-4 pb-4">
+                      <button
+                        type="button"
+                        disabled={savingCriteriaDomain === domain}
+                        onClick={async () => {
+                          setSavingCriteriaDomain(domain);
+                          const t = toast.loading(`Saving ${domain} criteria...`);
+                          try {
+                            const res = await fetch('/api/settings', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                type: 'intern-analysis-criteria',
+                                domain_code: domain,
+                                criteria: criteria.map((c, i) => ({ ...c, sort_order: i + 1 }))
+                              })
+                            });
+                            if (!res.ok) throw new Error((await res.json()).error);
+                            toast.success(`${domain} criteria saved!`, { id: t });
+                          } catch (err: any) {
+                            toast.error(err.message, { id: t });
+                          } finally {
+                            setSavingCriteriaDomain(null);
+                          }
+                        }}
+                        className="flex items-center gap-1.5 px-4 py-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-white rounded-lg text-[10px] font-semibold transition-colors"
+                      >
+                        {savingCriteriaDomain === domain ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
+                        Save {AI_DOMAIN_LABELS[domain]} Criteria
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
         </div>
       )}
 

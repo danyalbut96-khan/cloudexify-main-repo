@@ -16,6 +16,7 @@ import {
   ChevronRight,
   FileText,
   TrendingUp,
+  BrainCircuit,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '../ui/Badge';
@@ -63,6 +64,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       name: 'Lead Generation',
       icon: TrendingUp,
       path: '/dashboard/leadgen',
+    },
+    {
+      name: 'Intern Analysis',
+      icon: BrainCircuit,
+      path: '/dashboard/intern-analysis',
     },
     {
       name: 'Employees',

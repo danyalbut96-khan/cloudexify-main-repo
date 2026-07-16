@@ -1,0 +1,555 @@
+'use client';
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { PageWrapper } from '@/components/ui/PageWrapper';
+import { Card } from '@/components/ui/Card';
+import toast from 'react-hot-toast';
+import {
+  BrainCircuit, Trophy, Users, FolderGit2, CheckCircle2, Clock,
+  XCircle, Loader2, GitBranch, ChevronDown, ChevronUp, BarChart3,
+  Zap, RefreshCw, ExternalLink, AlertCircle, Medal, Star
+} from 'lucide-react';
+
+const DOMAINS = [
+  { code: 'PY', label: 'Python', color: 'from-blue-500 to-cyan-500', bg: 'bg-blue-500/10', border: 'border-blue-500/20', text: 'text-blue-400' },
+  { code: 'CPP', label: 'C++', color: 'from-purple-500 to-pink-500', bg: 'bg-purple-500/10', border: 'border-purple-500/20', text: 'text-purple-400' },
+  { code: 'JAVA', label: 'Java', color: 'from-orange-500 to-red-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20', text: 'text-orange-400' },
+  { code: 'DS', label: 'Data Science', color: 'from-green-500 to-teal-500', bg: 'bg-green-500/10', border: 'border-green-500/20', text: 'text-green-400' },
+  { code: 'CYB', label: 'Cybersecurity', color: 'from-red-500 to-rose-600', bg: 'bg-red-500/10', border: 'border-red-500/20', text: 'text-red-400' },
+  { code: 'GEN', label: 'Full Stack', color: 'from-indigo-500 to-violet-500', bg: 'bg-indigo-500/10', border: 'border-indigo-500/20', text: 'text-indigo-400' },
+];
+
+const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
+  pending: { label: 'Pending', color: 'bg-amber-500/10 text-amber-400 border-amber-500/20', icon: <Clock className="w-3 h-3" /> },
+  analyzing: { label: 'Analyzing…', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20', icon: <Loader2 className="w-3 h-3 animate-spin" /> },
+  done: { label: 'Done', color: 'bg-green-500/10 text-green-400 border-green-500/20', icon: <CheckCircle2 className="w-3 h-3" /> },
+  failed: { label: 'Failed', color: 'bg-red-500/10 text-red-400 border-red-500/20', icon: <XCircle className="w-3 h-3" /> },
+};
+
+const RANK_MEDALS = ['🥇', '🥈', '🥉'];
+
+interface Project {
+  id: string;
+  intern_id: string;
+  intern_name: string;
+  registration_number: string;
+  project_title: string;
+  repo_url: string;
+  domain_code: string;
+  project_number: number;
+  description: string | null;
+  submitted_at: string;
+  ai_score: number | null;
+  ai_feedback: any;
+  ai_analyzed_at: string | null;
+  analysis_status: string;
+}
+
+interface InternSummary {
+  intern_id: string;
+  intern_name: string;
+  registration_number: string;
+  domain_code: string;
+  projects: Project[];
+  totalScore: number;
+  analyzedCount: number;
+  maxProjects: number;
+}
+
+type ActiveTab = 'overview' | 'leaderboard' | 'queue';
+
+export default function InternAnalysisPage() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<ActiveTab>('overview');
+  const [activeDomain, setActiveDomain] = useState('PY');
+  const [expandedIntern, setExpandedIntern] = useState<string | null>(null);
+  const [analyzingIds, setAnalyzingIds] = useState<Set<string>>(new Set());
+  const [bulkAnalyzing, setBulkAnalyzing] = useState(false);
+  const [maxProjects, setMaxProjects] = useState(4);
+
+  const fetchProjects = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/analysis/projects');
+      if (!res.ok) throw new Error('Failed to load projects');
+      const data = await res.json();
+      setProjects(data.projects || []);
+      setMaxProjects(data.maxProjects || 4);
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchProjects(); }, [fetchProjects]);
+
+  const analyzeProject = async (projectId: string) => {
+    setAnalyzingIds(prev => new Set(prev).add(projectId));
+    // Optimistically set status
+    setProjects(prev => prev.map(p => p.id === projectId ? { ...p, analysis_status: 'analyzing' } : p));
+    try {
+      const res = await fetch('/api/analysis/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ project_id: projectId })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || 'Analysis failed');
+        setProjects(prev => prev.map(p => p.id === projectId ? { ...p, analysis_status: 'failed' } : p));
+      } else {
+        toast.success('Analysis complete!');
+        setProjects(prev => prev.map(p => p.id === projectId ? data.project : p));
+      }
+    } catch {
+      toast.error('Network error during analysis');
+      setProjects(prev => prev.map(p => p.id === projectId ? { ...p, analysis_status: 'failed' } : p));
+    } finally {
+      setAnalyzingIds(prev => { const s = new Set(prev); s.delete(projectId); return s; });
+    }
+  };
+
+  const analyzeAllPending = async () => {
+    const pending = projects.filter(p => p.analysis_status === 'pending' || p.analysis_status === 'failed');
+    if (pending.length === 0) { toast('No pending projects to analyze'); return; }
+    setBulkAnalyzing(true);
+    toast(`Analyzing ${pending.length} projects sequentially…`);
+    for (const p of pending) {
+      await analyzeProject(p.id);
+      await new Promise(r => setTimeout(r, 800)); // small delay between requests
+    }
+    setBulkAnalyzing(false);
+    toast.success('Bulk analysis complete!');
+  };
+
+  // Stats
+  const totalProjects = projects.length;
+  const analyzedCount = projects.filter(p => p.analysis_status === 'done').length;
+  const pendingCount = projects.filter(p => p.analysis_status === 'pending').length;
+  const failedCount = projects.filter(p => p.analysis_status === 'failed').length;
+  const uniqueInterns = new Set(projects.map(p => p.intern_id)).size;
+  const completionPct = totalProjects > 0 ? Math.round((analyzedCount / totalProjects) * 100) : 0;
+
+  // Build intern summaries for leaderboard
+  const buildLeaderboard = (domainCode: string): InternSummary[] => {
+    const domainProjects = projects.filter(p => p.domain_code === domainCode);
+    const byIntern = new Map<string, Project[]>();
+    domainProjects.forEach(p => {
+      if (!byIntern.has(p.intern_id)) byIntern.set(p.intern_id, []);
+      byIntern.get(p.intern_id)!.push(p);
+    });
+
+    const summaries: InternSummary[] = [];
+    byIntern.forEach((projs, internId) => {
+      const totalScore = projs.reduce((s, p) => s + (p.ai_score ?? 0), 0);
+      const analyzedCount = projs.filter(p => p.analysis_status === 'done').length;
+      summaries.push({
+        intern_id: internId,
+        intern_name: projs[0].intern_name,
+        registration_number: projs[0].registration_number,
+        domain_code: domainCode,
+        projects: projs.sort((a, b) => a.project_number - b.project_number),
+        totalScore,
+        analyzedCount,
+        maxProjects,
+      });
+    });
+    return summaries.sort((a, b) => b.totalScore - a.totalScore);
+  };
+
+  const leaderboard = buildLeaderboard(activeDomain);
+  const activeDomainInfo = DOMAINS.find(d => d.code === activeDomain)!;
+
+  if (loading) {
+    return (
+      <PageWrapper title="Intern Analysis">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
+        </div>
+      </PageWrapper>
+    );
+  }
+
+  return (
+    <PageWrapper title="Intern Analysis">
+      <div className="space-y-6 p-6">
+
+        {/* Tabs */}
+        <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-xl p-1 w-fit">
+          {([
+            { id: 'overview', label: 'Overview', icon: BarChart3 },
+            { id: 'leaderboard', label: 'Leaderboard', icon: Trophy },
+            { id: 'queue', label: 'Project Queue', icon: FolderGit2 },
+          ] as { id: ActiveTab; label: string; icon: any }[]).map(tab => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  activeTab === tab.id
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* ====== TAB: OVERVIEW ====== */}
+        {activeTab === 'overview' && (
+          <div className="space-y-6">
+            {/* Stat cards */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { label: 'Total Interns', value: uniqueInterns, icon: Users, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+                { label: 'Projects Submitted', value: totalProjects, icon: FolderGit2, color: 'text-violet-400', bg: 'bg-violet-500/10' },
+                { label: 'Analyzed', value: analyzedCount, icon: CheckCircle2, color: 'text-green-400', bg: 'bg-green-500/10' },
+                { label: 'Pending / Failed', value: `${pendingCount} / ${failedCount}`, icon: Clock, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+              ].map(stat => {
+                const Icon = stat.icon;
+                return (
+                  <Card key={stat.label} className="p-5 bg-slate-900 border-slate-800">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-xs text-slate-500 font-medium">{stat.label}</span>
+                      <div className={`w-8 h-8 rounded-lg ${stat.bg} flex items-center justify-center`}>
+                        <Icon className={`w-4 h-4 ${stat.color}`} />
+                      </div>
+                    </div>
+                    <p className="text-2xl font-black text-white">{stat.value}</p>
+                  </Card>
+                );
+              })}
+            </div>
+
+            {/* Progress + Bulk Analyze */}
+            <Card className="p-6 bg-slate-900 border-slate-800">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-semibold text-white text-sm">Analysis Progress</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">{analyzedCount} of {totalProjects} projects analyzed</p>
+                </div>
+                <button
+                  onClick={analyzeAllPending}
+                  disabled={bulkAnalyzing || pendingCount === 0}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-xs font-semibold transition-all shadow-lg shadow-blue-900/30"
+                >
+                  {bulkAnalyzing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
+                  {bulkAnalyzing ? 'Analyzing All…' : `Analyze All Pending (${pendingCount})`}
+                </button>
+              </div>
+              <div className="h-2.5 bg-slate-800 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-blue-500 to-violet-500 rounded-full transition-all duration-700"
+                  style={{ width: `${completionPct}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-xs text-slate-500 mt-2">
+                <span>0%</span>
+                <span className="font-semibold text-white">{completionPct}% complete</span>
+                <span>100%</span>
+              </div>
+            </Card>
+
+            {/* Domain breakdown */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {DOMAINS.map(domain => {
+                const domainProjs = projects.filter(p => p.domain_code === domain.code);
+                const domainDone = domainProjs.filter(p => p.analysis_status === 'done').length;
+                const domainInterns = new Set(domainProjs.map(p => p.intern_id)).size;
+                const pct = domainProjs.length > 0 ? Math.round((domainDone / domainProjs.length) * 100) : 0;
+                return (
+                  <Card
+                    key={domain.code}
+                    className="p-4 bg-slate-900 border-slate-800 cursor-pointer hover:border-slate-600 transition-all"
+                    onClick={() => { setActiveDomain(domain.code); setActiveTab('leaderboard'); }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded bg-gradient-to-r ${domain.color} text-white`}>{domain.code}</span>
+                      <span className="text-xs text-slate-500">{domainInterns} interns</span>
+                    </div>
+                    <p className="text-sm font-semibold text-white mb-1">{domain.label}</p>
+                    <p className="text-xs text-slate-500 mb-3">{domainDone}/{domainProjs.length} analyzed</p>
+                    <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                      <div className={`h-full bg-gradient-to-r ${domain.color} rounded-full transition-all`} style={{ width: `${pct}%` }} />
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ====== TAB: LEADERBOARD ====== */}
+        {activeTab === 'leaderboard' && (
+          <div className="space-y-5">
+            {/* Domain selector */}
+            <div className="flex flex-wrap gap-2">
+              {DOMAINS.map(domain => (
+                <button
+                  key={domain.code}
+                  onClick={() => { setActiveDomain(domain.code); setExpandedIntern(null); }}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                    activeDomain === domain.code
+                      ? `bg-gradient-to-r ${domain.color} text-white border-transparent shadow-lg`
+                      : `${domain.bg} ${domain.border} ${domain.text} hover:opacity-80`
+                  }`}
+                >
+                  {domain.code} — {domain.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Leaderboard table */}
+            <Card className="bg-slate-900 border-slate-800 overflow-hidden">
+              <div className={`h-1 bg-gradient-to-r ${activeDomainInfo.color}`} />
+              <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Trophy className={`w-4 h-4 ${activeDomainInfo.text}`} />
+                  <h3 className="font-semibold text-white text-sm">{activeDomainInfo.label} Leaderboard</h3>
+                  <span className="text-xs text-slate-500">({leaderboard.length} interns)</span>
+                </div>
+                <button onClick={fetchProjects} className="text-slate-500 hover:text-white transition-colors">
+                  <RefreshCw className="w-4 h-4" />
+                </button>
+              </div>
+
+              {leaderboard.length === 0 ? (
+                <div className="p-10 text-center text-slate-500 text-sm">
+                  No projects found for {activeDomainInfo.label} domain yet.
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-800">
+                  {leaderboard.map((intern, idx) => {
+                    const isExpanded = expandedIntern === intern.intern_id;
+                    const isTop3 = idx < 3;
+                    return (
+                      <div key={intern.intern_id}>
+                        <button
+                          className="w-full text-left"
+                          onClick={() => setExpandedIntern(isExpanded ? null : intern.intern_id)}
+                        >
+                          <div className={`px-5 py-4 flex items-center gap-4 hover:bg-slate-800/40 transition-colors ${isTop3 ? 'bg-slate-800/20' : ''}`}>
+                            {/* Rank */}
+                            <div className="w-10 text-center shrink-0">
+                              {idx < 3 ? (
+                                <span className="text-xl">{RANK_MEDALS[idx]}</span>
+                              ) : (
+                                <span className="text-sm font-bold text-slate-500">#{idx + 1}</span>
+                              )}
+                            </div>
+
+                            {/* Name & reg */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <p className="font-semibold text-white text-sm truncate">{intern.intern_name}</p>
+                                {idx === 0 && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">TOP</span>}
+                              </div>
+                              <p className="text-[10px] text-slate-500 font-mono">{intern.registration_number}</p>
+                            </div>
+
+                            {/* Projects done */}
+                            <div className="hidden sm:flex items-center gap-1 shrink-0">
+                              {Array.from({ length: intern.maxProjects }).map((_, i) => (
+                                <div key={i} className={`w-2 h-2 rounded-full ${i < intern.analyzedCount ? `bg-gradient-to-br ${activeDomainInfo.color}` : 'bg-slate-700'}`} />
+                              ))}
+                              <span className="text-xs text-slate-400 ml-1">{intern.analyzedCount}/{intern.maxProjects}</span>
+                            </div>
+
+                            {/* Score */}
+                            <div className="text-right shrink-0">
+                              <p className={`text-lg font-black ${isTop3 ? activeDomainInfo.text : 'text-white'}`}>
+                                {intern.totalScore.toFixed(1)}
+                              </p>
+                              <p className="text-[10px] text-slate-500">/ {intern.maxProjects * 25} pts</p>
+                            </div>
+
+                            <div className="text-slate-600 shrink-0">
+                              {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                            </div>
+                          </div>
+                        </button>
+
+                        {/* Expanded: per-project breakdown */}
+                        {isExpanded && (
+                          <div className="bg-slate-950/60 border-t border-slate-800 p-4 space-y-3">
+                            <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Project Breakdown</h4>
+                            {intern.projects.map(proj => (
+                              <div key={proj.id} className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 space-y-3">
+                                <div className="flex items-start justify-between gap-2">
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <span className="text-[10px] font-bold text-slate-500">PROJECT #{proj.project_number}</span>
+                                      <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded border ${STATUS_CONFIG[proj.analysis_status]?.color}`}>
+                                        {STATUS_CONFIG[proj.analysis_status]?.icon}
+                                        {STATUS_CONFIG[proj.analysis_status]?.label}
+                                      </span>
+                                    </div>
+                                    <p className="font-semibold text-white text-sm mt-0.5">{proj.project_title}</p>
+                                    {proj.description && <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">{proj.description}</p>}
+                                  </div>
+                                  <div className="flex items-center gap-2 shrink-0">
+                                    <a href={proj.repo_url} target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-blue-400 transition-colors">
+                                      <ExternalLink className="w-3.5 h-3.5" />
+                                    </a>
+                                    {(proj.analysis_status === 'pending' || proj.analysis_status === 'failed') && (
+                                      <button
+                                        onClick={() => analyzeProject(proj.id)}
+                                        disabled={analyzingIds.has(proj.id)}
+                                        className="flex items-center gap-1 px-2.5 py-1 bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/30 text-blue-400 rounded-lg text-[10px] font-semibold transition-all disabled:opacity-50"
+                                      >
+                                        {analyzingIds.has(proj.id) ? <Loader2 className="w-3 h-3 animate-spin" /> : <BrainCircuit className="w-3 h-3" />}
+                                        Analyze
+                                      </button>
+                                    )}
+                                    {proj.analysis_status === 'done' && (
+                                      <span className={`text-base font-black ${activeDomainInfo.text}`}>{proj.ai_score?.toFixed(1)}<span className="text-[10px] text-slate-500 font-normal">/25</span></span>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* AI criteria breakdown */}
+                                {proj.analysis_status === 'done' && proj.ai_feedback?.criteria && (
+                                  <div className="space-y-1.5 pt-2 border-t border-slate-800">
+                                    {proj.ai_feedback.criteria.map((c: any, i: number) => (
+                                      <div key={i} className="space-y-0.5">
+                                        <div className="flex items-center justify-between text-xs">
+                                          <span className="text-slate-300 font-medium">{c.name}</span>
+                                          <span className={`font-bold ${c.score >= 4 ? 'text-green-400' : c.score >= 2.5 ? 'text-amber-400' : 'text-red-400'}`}>{c.score}/5</span>
+                                        </div>
+                                        <div className="h-1 bg-slate-800 rounded-full overflow-hidden">
+                                          <div className={`h-full rounded-full bg-gradient-to-r ${activeDomainInfo.color}`} style={{ width: `${(c.score / 5) * 100}%` }} />
+                                        </div>
+                                        {c.comment && <p className="text-[10px] text-slate-500 leading-relaxed">{c.comment}</p>}
+                                      </div>
+                                    ))}
+                                    {proj.ai_feedback.overall_feedback && (
+                                      <div className="mt-2 p-3 bg-slate-800/40 rounded-lg border border-slate-700/60">
+                                        <p className="text-[10px] text-slate-400 leading-relaxed"><Star className="w-3 h-3 inline mr-1 text-amber-400" />{proj.ai_feedback.overall_feedback}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </Card>
+          </div>
+        )}
+
+        {/* ====== TAB: PROJECT QUEUE ====== */}
+        {activeTab === 'queue' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-slate-400">{totalProjects} total projects · {pendingCount} pending</p>
+              <button onClick={fetchProjects} className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors">
+                <RefreshCw className="w-3.5 h-3.5" /> Refresh
+              </button>
+            </div>
+
+            <Card className="bg-slate-900 border-slate-800 overflow-hidden">
+              {/* Table header */}
+              <div className="grid grid-cols-12 gap-2 px-4 py-3 border-b border-slate-800 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                <div className="col-span-1">Status</div>
+                <div className="col-span-3">Intern</div>
+                <div className="col-span-1">Domain</div>
+                <div className="col-span-1">#</div>
+                <div className="col-span-3">Project</div>
+                <div className="col-span-1">Score</div>
+                <div className="col-span-2">Action</div>
+              </div>
+
+              {projects.length === 0 ? (
+                <div className="p-10 text-center text-slate-500 text-sm">No projects submitted yet.</div>
+              ) : (
+                <div className="divide-y divide-slate-800/60">
+                  {projects.map(proj => {
+                    const domainInfo = DOMAINS.find(d => d.code === proj.domain_code);
+                    const statusCfg = STATUS_CONFIG[proj.analysis_status] || STATUS_CONFIG.pending;
+                    return (
+                      <div key={proj.id} className="grid grid-cols-12 gap-2 px-4 py-3.5 items-center hover:bg-slate-800/20 transition-colors">
+                        {/* Status */}
+                        <div className="col-span-1">
+                          <span className={`inline-flex items-center gap-1 text-[9px] font-semibold px-1.5 py-0.5 rounded border ${statusCfg.color}`}>
+                            {statusCfg.icon}
+                          </span>
+                        </div>
+                        {/* Intern */}
+                        <div className="col-span-3 min-w-0">
+                          <p className="text-xs font-semibold text-white truncate">{proj.intern_name}</p>
+                          <p className="text-[9px] text-slate-500 font-mono truncate">{proj.registration_number}</p>
+                        </div>
+                        {/* Domain */}
+                        <div className="col-span-1">
+                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded bg-gradient-to-r ${domainInfo?.color ?? 'from-slate-600 to-slate-500'} text-white`}>
+                            {proj.domain_code}
+                          </span>
+                        </div>
+                        {/* Project # */}
+                        <div className="col-span-1">
+                          <span className="text-xs text-slate-400 font-medium">#{proj.project_number}</span>
+                        </div>
+                        {/* Title */}
+                        <div className="col-span-3 min-w-0">
+                          <p className="text-xs text-white truncate">{proj.project_title}</p>
+                          <a href={proj.repo_url} target="_blank" rel="noopener noreferrer" className="text-[9px] text-slate-500 hover:text-blue-400 transition-colors flex items-center gap-0.5">
+                            <GitBranch className="w-2.5 h-2.5" />
+                            <span className="truncate">{proj.repo_url.replace('https://github.com/', '')}</span>
+                          </a>
+                        </div>
+                        {/* Score */}
+                        <div className="col-span-1">
+                          {proj.analysis_status === 'done' && proj.ai_score !== null ? (
+                            <span className={`text-sm font-black ${domainInfo?.text ?? 'text-white'}`}>
+                              {proj.ai_score.toFixed(1)}<span className="text-[9px] text-slate-500">/25</span>
+                            </span>
+                          ) : (
+                            <span className="text-xs text-slate-600">—</span>
+                          )}
+                        </div>
+                        {/* Action */}
+                        <div className="col-span-2">
+                          {(proj.analysis_status === 'pending' || proj.analysis_status === 'failed') ? (
+                            <button
+                              onClick={() => analyzeProject(proj.id)}
+                              disabled={analyzingIds.has(proj.id)}
+                              className="flex items-center gap-1 px-2.5 py-1.5 bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/30 text-blue-400 rounded-lg text-[10px] font-semibold transition-all disabled:opacity-50 whitespace-nowrap"
+                            >
+                              {analyzingIds.has(proj.id) ? <Loader2 className="w-3 h-3 animate-spin" /> : <BrainCircuit className="w-3 h-3" />}
+                              Analyze
+                            </button>
+                          ) : proj.analysis_status === 'done' ? (
+                            <button
+                              onClick={() => { setActiveDomain(proj.domain_code); setActiveTab('leaderboard'); }}
+                              className="flex items-center gap-1 px-2.5 py-1.5 bg-green-600/10 hover:bg-green-600/20 border border-green-500/20 text-green-400 rounded-lg text-[10px] font-medium transition-all whitespace-nowrap"
+                            >
+                              <Medal className="w-3 h-3" />
+                              View
+                            </button>
+                          ) : (
+                            <span className="text-[10px] text-slate-600">Processing…</span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </Card>
+          </div>
+        )}
+      </div>
+    </PageWrapper>
+  );
+}

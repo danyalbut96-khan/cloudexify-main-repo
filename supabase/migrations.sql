@@ -184,5 +184,145 @@ CREATE POLICY "Admin full access to admin_signatures"
 -- Add company_phone column to company_settings
 ALTER TABLE public.company_settings ADD COLUMN IF NOT EXISTS company_phone text DEFAULT '+92 341 1949277';
 
+-- =========================================================================
+-- INTERN PORTAL & AI ANALYSIS SYSTEM MIGRATION
+-- =========================================================================
 
+-- 1. intern_analysis_settings (singleton, id=1)
+CREATE TABLE IF NOT EXISTS public.intern_analysis_settings (
+  id integer PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  openrouter_api_key text,
+  openrouter_model text DEFAULT 'mistralai/mistral-7b-instruct:free',
+  max_projects_per_intern integer DEFAULT 4,
+  registration_open boolean DEFAULT false,
+  batch_coming_soon_message text DEFAULT 'Batch 2 Registration Opening Soon! Stay tuned for announcements.',
+  system_prompt_prefix text DEFAULT 'You are an expert software engineering mentor evaluating internship projects. Be fair, constructive, and precise. Analyze the repository carefully before scoring.',
+  updated_at timestamptz DEFAULT now()
+);
 
+-- Seed default row for intern_analysis_settings
+INSERT INTO public.intern_analysis_settings (id)
+VALUES (1)
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. intern_projects
+CREATE TABLE IF NOT EXISTS public.intern_projects (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  intern_id uuid REFERENCES public.interns(id) ON DELETE CASCADE,
+  registration_number text NOT NULL,
+  intern_name text NOT NULL,
+  project_title text NOT NULL,
+  repo_url text NOT NULL,
+  domain_code text NOT NULL,
+  project_number integer NOT NULL CHECK (project_number BETWEEN 1 AND 10),
+  description text,
+  submitted_at timestamptz DEFAULT now(),
+  ai_score numeric(5,2),
+  ai_feedback jsonb,
+  ai_analyzed_at timestamptz,
+  analysis_status text DEFAULT 'pending' CHECK (analysis_status IN ('pending','analyzing','done','failed')),
+  UNIQUE (intern_id, project_number)
+);
+
+-- 3. intern_analysis_criteria
+CREATE TABLE IF NOT EXISTS public.intern_analysis_criteria (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  domain_code text NOT NULL,
+  criterion_name text NOT NULL,
+  criterion_description text NOT NULL,
+  max_marks integer DEFAULT 5,
+  sort_order integer NOT NULL,
+  UNIQUE (domain_code, sort_order)
+);
+
+-- =========================================================================
+-- RLS FOR NEW TABLES
+-- =========================================================================
+
+ALTER TABLE public.intern_analysis_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.intern_projects ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.intern_analysis_criteria ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Admin full access to intern_analysis_settings" ON public.intern_analysis_settings;
+CREATE POLICY "Admin full access to intern_analysis_settings"
+  ON public.intern_analysis_settings FOR ALL
+  TO authenticated
+  USING (auth.role() = 'authenticated')
+  WITH CHECK (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Admin full access to intern_projects" ON public.intern_projects;
+CREATE POLICY "Admin full access to intern_projects"
+  ON public.intern_projects FOR ALL
+  TO authenticated
+  USING (auth.role() = 'authenticated')
+  WITH CHECK (auth.role() = 'authenticated');
+
+-- Public insert + select for portal (anon users can submit projects and lookup)
+DROP POLICY IF EXISTS "Public can read intern_projects" ON public.intern_projects;
+CREATE POLICY "Public can read intern_projects"
+  ON public.intern_projects FOR SELECT
+  TO anon
+  USING (true);
+
+DROP POLICY IF EXISTS "Public can insert intern_projects" ON public.intern_projects;
+CREATE POLICY "Public can insert intern_projects"
+  ON public.intern_projects FOR INSERT
+  TO anon
+  WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Admin full access to intern_analysis_criteria" ON public.intern_analysis_criteria;
+CREATE POLICY "Admin full access to intern_analysis_criteria"
+  ON public.intern_analysis_criteria FOR ALL
+  TO authenticated
+  USING (auth.role() = 'authenticated')
+  WITH CHECK (auth.role() = 'authenticated');
+
+-- Public can read criteria (needed for portal display)
+DROP POLICY IF EXISTS "Public can read intern_analysis_criteria" ON public.intern_analysis_criteria;
+CREATE POLICY "Public can read intern_analysis_criteria"
+  ON public.intern_analysis_criteria FOR SELECT
+  TO anon
+  USING (true);
+
+-- =========================================================================
+-- SEED DEFAULT SCORING CRITERIA (30 rows: 6 domains x 5 criteria)
+-- =========================================================================
+
+INSERT INTO public.intern_analysis_criteria (domain_code, criterion_name, criterion_description, max_marks, sort_order) VALUES
+-- Python (PY)
+('PY', 'Code Structure & Organization', 'Assess how well the code is organized into files, folders, functions, and classes. Look for logical separation of concerns.', 5, 1),
+('PY', 'Use of Functions, Classes & Modules', 'Evaluate proper use of Python functions, OOP classes, and module imports. Avoid repetitive code.', 5, 2),
+('PY', 'Error Handling & Edge Cases', 'Check for try/except blocks, input validation, and handling of unexpected inputs or failures.', 5, 3),
+('PY', 'Libraries & Dependencies Used', 'Evaluate relevance and proper usage of third-party libraries (requirements.txt present, imports make sense).', 5, 4),
+('PY', 'README & Documentation Quality', 'Assess README completeness: project description, setup steps, usage examples, and screenshots if applicable.', 5, 5),
+-- C++ (CPP)
+('CPP', 'OOP Design & Implementation', 'Evaluate correct use of classes, inheritance, encapsulation, and polymorphism in C++.', 5, 1),
+('CPP', 'Memory Management', 'Check for proper use of pointers, dynamic allocation (new/delete), and absence of memory leaks.', 5, 2),
+('CPP', 'Algorithm Efficiency', 'Assess time and space complexity of implemented algorithms. Look for efficient data structures.', 5, 3),
+('CPP', 'Code Readability & Comments', 'Evaluate naming conventions, indentation, inline comments, and overall code clarity.', 5, 4),
+('CPP', 'Build & Compilation Readiness', 'Check for Makefile, CMakeLists.txt, or clear build instructions. Code should compile without errors.', 5, 5),
+-- Java (JAVA)
+('JAVA', 'OOP & Design Patterns', 'Evaluate use of Java OOP principles and common design patterns (Singleton, Factory, MVC, etc.).', 5, 1),
+('JAVA', 'Package & Class Structure', 'Assess proper package naming, class organization, and separation of concerns (model/view/controller).', 5, 2),
+('JAVA', 'Use of Java Standard APIs', 'Check for proper use of Java Collections, Streams, I/O, and standard library APIs.', 5, 3),
+('JAVA', 'Build File Present (Maven/Gradle)', 'Verify presence of pom.xml or build.gradle with correct dependencies and build configuration.', 5, 4),
+('JAVA', 'Code Quality & Javadocs', 'Evaluate Javadoc comments on public methods/classes, code style, and absence of dead code.', 5, 5),
+-- Data Science (DS)
+('DS', 'Dataset & Problem Definition', 'Assess clarity of the problem statement and appropriateness of the dataset used for the task.', 5, 1),
+('DS', 'Exploratory Data Analysis (EDA)', 'Evaluate depth of EDA: missing value handling, distributions, correlations, and data cleaning steps.', 5, 2),
+('DS', 'Model or Algorithm Used', 'Check appropriateness of the chosen model/algorithm, hyperparameter tuning, and train/test split.', 5, 3),
+('DS', 'Visualization & Results', 'Assess quality of charts, graphs, and final result presentation (accuracy, metrics, confusion matrix).', 5, 4),
+('DS', 'Notebook & Report Quality', 'Evaluate Jupyter notebook or report structure, markdown explanations, and reproducibility.', 5, 5),
+-- Cybersecurity (CYB)
+('CYB', 'Vulnerability or Threat Identified', 'Assess whether a real, relevant vulnerability or threat was correctly identified and described.', 5, 1),
+('CYB', 'Tools & Methodology Used', 'Evaluate the tools used (Nmap, Burp Suite, Metasploit, Wireshark, etc.) and methodology followed.', 5, 2),
+('CYB', 'Ethical Scope & Responsible Use', 'Check that all testing was done ethically (lab environment, own systems, CTF) with no illegal activity.', 5, 3),
+('CYB', 'Report & Documentation Quality', 'Assess quality of the security report: findings, risk ratings, evidence screenshots, remediation steps.', 5, 4),
+('CYB', 'Practical Demonstration', 'Evaluate whether a working proof-of-concept or demo exists (video, screenshots, or reproducible steps).', 5, 5),
+-- Full Stack (GEN)
+('GEN', 'Frontend Quality & UI Design', 'Assess visual design, responsiveness, component structure, and user experience of the frontend.', 5, 1),
+('GEN', 'Backend & API Implementation', 'Evaluate REST/GraphQL API design, authentication, route structure, and error handling.', 5, 2),
+('GEN', 'Database Integration', 'Check for proper database schema, ORM usage or raw queries, data validation, and migrations.', 5, 3),
+('GEN', 'Deployment & Live Link Present', 'Verify the app is deployed (Vercel, Railway, Heroku, etc.) with a working live URL in README.', 5, 4),
+('GEN', 'Code Quality & README', 'Evaluate overall code cleanliness, comments, .env example file, and README setup instructions.', 5, 5)
+ON CONFLICT (domain_code, sort_order) DO NOTHING;
