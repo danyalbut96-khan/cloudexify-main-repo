@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   GitBranch, Search, CheckCircle, AlertCircle, Send, ChevronRight,
-  Lock, Bell, BrainCircuit, Star, Trophy, Loader2, X, Plus
+  Lock, Bell, BrainCircuit, Star, Trophy, Loader2, X, Plus, RefreshCw
 } from 'lucide-react';
 
 const DOMAIN_LABELS: Record<string, string> = {
@@ -23,6 +23,8 @@ const DOMAIN_COLORS: Record<string, string> = {
   CYB: 'from-red-500 to-rose-600',
   GEN: 'from-indigo-500 to-violet-500',
 };
+
+const RANK_MEDALS = ['🥇', '🥈', '🥉'];
 
 interface InternData {
   id: string;
@@ -65,6 +67,26 @@ export default function PortalPage() {
   const [submittedProject, setSubmittedProject] = useState<any>(null);
   const [notifyEmail, setNotifyEmail] = useState('');
 
+  // Public Leaderboard State
+  const [leaderboardData, setLeaderboardData] = useState<Record<string, any[]>>({});
+  const [leaderboardDomain, setLeaderboardDomain] = useState('PY');
+  const [leaderboardLoading, setLeaderboardLoading] = useState(true);
+
+  const fetchLeaderboard = async () => {
+    setLeaderboardLoading(true);
+    try {
+      const res = await fetch('/api/portal/leaderboard');
+      if (res.ok) {
+        const data = await res.json();
+        setLeaderboardData(data.leaderboards || {});
+      }
+    } catch {
+      // Quietly ignore
+    } finally {
+      setLeaderboardLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetch('/api/portal/settings')
       .then(r => r.json())
@@ -73,6 +95,8 @@ export default function PortalPage() {
         if (typeof d.registration_open === 'boolean') setRegistrationOpen(d.registration_open);
       })
       .catch(() => {});
+
+    fetchLeaderboard();
   }, []);
 
   const handleLookup = async (e: React.FormEvent) => {
@@ -615,6 +639,117 @@ export default function PortalPage() {
                 )}
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Public Leaderboards Section */}
+        <div className="pt-8">
+          <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 backdrop-blur-sm p-6 sm:p-8 space-y-6">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent pointer-events-none" />
+            
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Trophy className="w-5 h-5 text-amber-400" />
+                  <h2 className="text-xl font-black text-white">Public Leaderboards</h2>
+                </div>
+                <p className="text-slate-400 text-xs leading-relaxed">
+                  Real-time top 10 rankings per domain. Registration numbers are shown for privacy.
+                </p>
+              </div>
+              <button 
+                onClick={fetchLeaderboard}
+                className="w-fit flex items-center gap-1.5 px-3 py-1.5 bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg text-xs font-semibold transition-colors"
+              >
+                <RefreshCw className="w-3.5 h-3.5" /> Refresh
+              </button>
+            </div>
+
+            {/* Domain Tabs */}
+            <div className="flex flex-wrap gap-2 border-b border-slate-800/80 pb-4">
+              {Object.entries(DOMAIN_LABELS).map(([code, label]) => (
+                <button
+                  key={code}
+                  onClick={() => setLeaderboardDomain(code)}
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold border transition-all ${
+                    leaderboardDomain === code
+                      ? `bg-gradient-to-r ${DOMAIN_COLORS[code]} text-white border-transparent shadow-lg shadow-blue-900/20`
+                      : 'bg-slate-800/40 border-slate-800/80 text-slate-400 hover:text-slate-200 hover:bg-slate-800/80'
+                  }`}
+                >
+                  <span className="text-[10px] opacity-75">{code}</span>
+                  <span>{label.replace(' Programming', '')}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Leaderboard Table / Content */}
+            {leaderboardLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+              </div>
+            ) : !leaderboardData[leaderboardDomain] || leaderboardData[leaderboardDomain].length === 0 ? (
+              <div className="text-center py-12 bg-slate-950/20 rounded-xl border border-slate-800/40">
+                <Star className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+                <p className="text-slate-400 text-xs font-semibold">No analyzed projects in this domain yet.</p>
+                <p className="text-slate-600 text-[10px] mt-1">Scores will appear once AI evaluations are completed by admins.</p>
+              </div>
+            ) : (
+              <div className="overflow-hidden border border-slate-800/80 rounded-xl bg-slate-950/20 divide-y divide-slate-800/60">
+                {/* Table Header */}
+                <div className="grid grid-cols-12 gap-2 px-4 py-3 bg-slate-900/20 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  <div className="col-span-2 text-center">Rank</div>
+                  <div className="col-span-5">Registration ID</div>
+                  <div className="col-span-3 text-center">Projects</div>
+                  <div className="col-span-2 text-right">Total Score</div>
+                </div>
+
+                {/* Table Rows */}
+                {leaderboardData[leaderboardDomain].map((row, idx) => {
+                  const isTop3 = idx < 3;
+                  const colors = DOMAIN_COLORS[leaderboardDomain];
+                  return (
+                    <div 
+                      key={row.registration_number} 
+                      className={`grid grid-cols-12 gap-2 px-4 py-3.5 items-center hover:bg-slate-800/10 transition-colors ${
+                        isTop3 ? 'bg-slate-900/10' : ''
+                      }`}
+                    >
+                      {/* Rank / Medal */}
+                      <div className="col-span-2 text-center">
+                        {idx < 3 ? (
+                          <span className="text-lg">{RANK_MEDALS[idx]}</span>
+                        ) : (
+                          <span className="text-xs font-bold text-slate-500">#{idx + 1}</span>
+                        )}
+                      </div>
+                      
+                      {/* Reg Number */}
+                      <div className="col-span-5">
+                        <span className="text-xs sm:text-sm font-semibold text-white font-mono tracking-wide">
+                          {row.registration_number}
+                        </span>
+                      </div>
+
+                      {/* Projects count */}
+                      <div className="col-span-3 text-center">
+                        <span className="text-xs text-slate-400 font-medium">
+                          {row.projects_count} submitted
+                        </span>
+                      </div>
+
+                      {/* Score */}
+                      <div className="col-span-2 text-right">
+                        <span className={`text-sm sm:text-base font-black bg-gradient-to-r ${colors} bg-clip-text text-transparent`}>
+                          {row.total_score.toFixed(1)}
+                        </span>
+                        <span className="text-[10px] text-slate-600 font-medium ml-0.5">/100</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </main>

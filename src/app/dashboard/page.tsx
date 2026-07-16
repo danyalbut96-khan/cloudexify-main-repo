@@ -14,6 +14,7 @@ import {
   FileText,
   BadgeAlert,
   Building,
+  BrainCircuit,
 } from 'lucide-react';
 import { Card, CardTitle, CardValue } from '@/components/ui/Card';
 import { PageWrapper } from '@/components/ui/PageWrapper';
@@ -301,6 +302,39 @@ export default function DashboardPage() {
                 <p className="text-xs text-slate-400 py-6 text-center">No invoices generated yet.</p>
               )}
             </div>
+          </Card>
+
+          {/* AI Project Analysis card */}
+          <Card
+            hoverEffect
+            onClick={() => router.push('/dashboard/intern-analysis')}
+            className="border border-blue-100 bg-gradient-to-br from-blue-50/30 to-violet-50/10 cursor-pointer relative overflow-hidden"
+          >
+            <div className="flex items-center space-x-2.5 mb-3">
+              <BrainCircuit className="h-4.5 w-4.5 text-blue-500" />
+              <h2 className="text-sm font-bold text-slate-800">Intern Project AI</h2>
+              <Badge variant="blue" className="text-[9px] px-1.5 py-0">AI Active</Badge>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-2 text-center mb-3">
+              <div className="bg-white/80 rounded-lg p-2 border border-slate-100">
+                <p className="text-[10px] text-slate-400 font-semibold uppercase">Total</p>
+                <p className="text-base font-black text-slate-800">{stats?.analysis?.total || 0}</p>
+              </div>
+              <div className="bg-white/80 rounded-lg p-2 border border-slate-100">
+                <p className="text-[10px] text-slate-400 font-semibold uppercase">Done</p>
+                <p className="text-base font-black text-green-600">{stats?.analysis?.done || 0}</p>
+              </div>
+              <div className="bg-white/80 rounded-lg p-2 border border-slate-100">
+                <p className="text-[10px] text-slate-400 font-semibold uppercase">Pending</p>
+                <p className="text-base font-black text-amber-500">{stats?.analysis?.pending || 0}</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-400 leading-normal mb-1 font-medium flex items-center justify-between">
+              <span>Go to AI Analysis Dashboard</span>
+              <ArrowRight className="h-3.5 w-3.5 text-blue-500" />
+            </p>
           </Card>
 
           {/* Employee Placeholder card */}

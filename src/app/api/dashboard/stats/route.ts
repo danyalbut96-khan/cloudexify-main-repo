@@ -126,6 +126,30 @@ export async function GET(request: NextRequest) {
       adminBreakdown[email].amount += Number(inv.amount_pkr)
     })
 
+    // 5. Query Intern Projects Analysis Stats
+    const { data: analysisProjects, error: analysisError } = await supabase
+      .from('intern_projects')
+      .select('id, analysis_status, ai_score')
+
+    const analysisStats = {
+      total: 0,
+      done: 0,
+      pending: 0,
+      failed: 0,
+      analyzing: 0,
+    }
+
+    if (!analysisError && analysisProjects) {
+      analysisStats.total = analysisProjects.length
+      analysisProjects.forEach(ap => {
+        const s = ap.analysis_status || 'pending'
+        if (s === 'done') analysisStats.done++
+        else if (s === 'pending') analysisStats.pending++
+        else if (s === 'failed') analysisStats.failed++
+        else if (s === 'analyzing') analysisStats.analyzing++
+      })
+    }
+
     return NextResponse.json({
       interns: {
         total: totalInterns,
@@ -144,7 +168,8 @@ export async function GET(request: NextRequest) {
         invoicesCount,
         invoicesAmount,
         adminBreakdown
-      }
+      },
+      analysis: analysisStats
     })
   } catch (err: any) {
     return NextResponse.json(
