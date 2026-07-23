@@ -6,7 +6,6 @@ import { createClient } from '@/lib/supabase/client';
 import { Menu, LogOut, User, Bell, Check, UserPlus, FileCode } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from '../ui/Button';
-import { Button } from '../ui/Button';
 
 interface HeaderProps {
   onMenuClick: () => void;
