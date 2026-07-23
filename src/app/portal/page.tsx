@@ -387,7 +387,7 @@ export default function PortalPage() {
                       Join the CloudExify Internship Program. Complete your registration to get access to AI-powered project analysis and compete on the leaderboard.
                     </p>
 
-                    <a href="/signup" className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:opacity-90 text-white rounded-xl py-3 text-sm font-bold transition-all shadow-lg shadow-green-900/30">
+                    <a href="/portal/register" className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:opacity-90 text-white rounded-xl py-3 text-sm font-bold transition-all shadow-lg shadow-green-900/30">
                       Register Now
                     </a>
                   </>

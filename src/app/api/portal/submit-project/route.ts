@@ -91,6 +91,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to submit project: ' + insertError.message }, { status: 500 })
     }
 
+    // Insert Notification
+    await supabase.from('admin_notifications').insert({
+      title: 'New Project Submission',
+      message: `${internName} submitted Project #${projectNumber} (${domainCode})`,
+      type: 'project_submission'
+    })
+
     return NextResponse.json({ project, submittedCount: submittedCount + 1, maxProjects })
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Internal Server Error'
