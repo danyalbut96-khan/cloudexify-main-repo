@@ -330,48 +330,68 @@ export default function PortalPage() {
           <div className="lg:col-span-2 space-y-5">
 
             {/* Registration card */}
-            <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm p-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-800/20 to-transparent pointer-events-none" />
+            <div className={`relative overflow-hidden rounded-2xl border ${registrationOpen ? 'border-green-500/30 bg-green-900/10' : 'border-slate-800 bg-slate-900/60'} backdrop-blur-sm p-6 transition-all`}>
+              <div className={`absolute inset-0 bg-gradient-to-br ${registrationOpen ? 'from-green-500/10' : 'from-slate-800/20'} to-transparent pointer-events-none`} />
               <div className="relative">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-                    <Lock className="w-5 h-5 text-amber-400" />
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${registrationOpen ? 'bg-green-500/20 border-green-500/30' : 'bg-amber-500/10 border-amber-500/20'}`}>
+                    {registrationOpen ? <CheckCircle className="w-5 h-5 text-green-400" /> : <Lock className="w-5 h-5 text-amber-400" />}
                   </div>
                   <div>
                     <h2 className="font-bold text-white text-sm">New Registration</h2>
-                    <p className="text-xs text-amber-400 font-medium">Currently Closed</p>
+                    <p className={`text-xs font-medium ${registrationOpen ? 'text-green-400' : 'text-amber-400'}`}>
+                      {registrationOpen ? 'Currently Open' : 'Currently Closed'}
+                    </p>
                   </div>
                 </div>
 
-                <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 mb-5">
-                  <p className="text-amber-200/80 text-xs leading-relaxed font-medium">🚀 {batchMessage}</p>
-                </div>
+                {!registrationOpen ? (
+                  <>
+                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 mb-5">
+                      <p className="text-amber-200/80 text-xs leading-relaxed font-medium">🚀 {batchMessage}</p>
+                    </div>
 
-                <p className="text-slate-400 text-xs leading-relaxed mb-5">
-                  We are currently not accepting new intern registrations. If you are already registered, head over to the project submission section.
-                </p>
+                    <p className="text-slate-400 text-xs leading-relaxed mb-5">
+                      We are currently not accepting new intern registrations. If you are already registered, head over to the project submission section.
+                    </p>
 
-                {/* Notify me */}
-                <div className="space-y-2">
-                  <label className="text-xs text-slate-400 font-medium flex items-center gap-1.5">
-                    <Bell className="w-3 h-3" /> Notify me when registration opens
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="email"
-                      value={notifyEmail}
-                      onChange={e => setNotifyEmail(e.target.value)}
-                      placeholder="your@email.com"
-                      className="flex-1 bg-slate-800/60 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-                    />
-                    <button
-                      onClick={handleNotifyMe}
-                      className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-lg text-xs font-bold transition-all shadow-lg shadow-blue-500/20"
-                    >
-                      Notify Me
-                    </button>
-                  </div>
-                </div>
+                    {/* Notify me */}
+                    <div className="space-y-2">
+                      <label className="text-xs text-slate-400 font-medium flex items-center gap-1.5">
+                        <Bell className="w-3 h-3" /> Notify me when registration opens
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="email"
+                          value={notifyEmail}
+                          onChange={e => setNotifyEmail(e.target.value)}
+                          placeholder="your@email.com"
+                          className="flex-1 bg-slate-800/60 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+                        />
+                        <button
+                          onClick={handleNotifyMe}
+                          className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-lg text-xs font-bold transition-all shadow-lg shadow-blue-500/20"
+                        >
+                          Notify Me
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="bg-green-500/5 border border-green-500/20 rounded-xl p-4 mb-5">
+                      <p className="text-green-200/80 text-xs leading-relaxed font-medium">🎉 Registration is now open! Secure your spot.</p>
+                    </div>
+
+                    <p className="text-slate-400 text-xs leading-relaxed mb-5">
+                      Join the CloudExify Internship Program. Complete your registration to get access to AI-powered project analysis and compete on the leaderboard.
+                    </p>
+
+                    <a href="/signup" className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:opacity-90 text-white rounded-xl py-3 text-sm font-bold transition-all shadow-lg shadow-green-900/30">
+                      Register Now
+                    </a>
+                  </>
+                )}
               </div>
             </div>
 
