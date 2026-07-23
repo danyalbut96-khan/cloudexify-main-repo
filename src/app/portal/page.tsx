@@ -5,6 +5,8 @@ import {
   GitBranch, Search, CheckCircle, AlertCircle, Send, ChevronRight,
   Lock, Bell, BrainCircuit, Star, Trophy, Loader2, X, Plus, RefreshCw
 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { createBrowserClient } from '@supabase/ssr';
 
 const DOMAIN_LABELS: Record<string, string> = {
   PY: 'Python Programming',
@@ -47,6 +49,12 @@ type Step = 'lookup' | 'submit' | 'success';
 export default function PortalPage() {
   const [batchMessage, setBatchMessage] = useState('Batch 2 Registration Opening Soon! Stay tuned for announcements.');
   const [registrationOpen, setRegistrationOpen] = useState(false);
+  const [publicLeaderboardOpen, setPublicLeaderboardOpen] = useState(false);
+
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
   // Lookup form
   const [fullName, setFullName] = useState('');
@@ -89,16 +97,61 @@ export default function PortalPage() {
   };
 
   useEffect(() => {
+    // Initial fetch
     fetch('/api/portal/settings')
       .then(r => r.json())
       .then(d => {
         if (d.batch_coming_soon_message) setBatchMessage(d.batch_coming_soon_message);
         if (typeof d.registration_open === 'boolean') setRegistrationOpen(d.registration_open);
+        if (typeof d.public_leaderboard_open === 'boolean') setPublicLeaderboardOpen(d.public_leaderboard_open);
       })
       .catch(() => { });
 
     fetchLeaderboard();
+
+    // Real-time subscription
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'intern_analysis_settings' },
+        (payload: any) => {
+          const newConfig = payload.new;
+          if (newConfig) {
+            if (typeof newConfig.registration_open === 'boolean') setRegistrationOpen(newConfig.registration_open);
+            if (typeof newConfig.public_leaderboard_open === 'boolean') setPublicLeaderboardOpen(newConfig.public_leaderboard_open);
+            if (newConfig.batch_coming_soon_message) setBatchMessage(newConfig.batch_coming_soon_message);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleNotifyMe = async () => {
+    if (!notifyEmail || !notifyEmail.includes('@')) {
+      toast.error('Please enter a valid email address.');
+      return;
+    }
+    const t = toast.loading('Subscribing...');
+    try {
+      const res = await fetch('/api/portal/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: notifyEmail })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      toast.success(data.message || 'Subscribed successfully! We will notify you.', { id: t });
+      setNotifyEmail('');
+    } catch (err: any) {
+      toast.error(err.message || 'Subscription failed', { id: t });
+    }
+  };
 
   const handleLookup = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -312,10 +365,10 @@ export default function PortalPage() {
                       className="flex-1 bg-slate-800/60 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
                     />
                     <button
-                      onClick={() => { setNotifyEmail(''); }}
-                      className="px-3 py-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-blue-400 rounded-lg text-xs font-medium transition-colors"
+                      onClick={handleNotifyMe}
+                      className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-lg text-xs font-bold transition-all shadow-lg shadow-blue-500/20"
                     >
-                      Notify
+                      Notify Me
                     </button>
                   </div>
                 </div>
@@ -696,6 +749,7 @@ export default function PortalPage() {
         </div>
 
         {/* Public Leaderboards Section */}
+        {publicLeaderboardOpen && (
         <div className="pt-8">
           <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 backdrop-blur-sm p-6 sm:p-8 space-y-6">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent pointer-events-none" />
@@ -803,6 +857,7 @@ export default function PortalPage() {
             )}
           </div>
         </div>
+        )}
       </main>
 
       {/* Footer */}
