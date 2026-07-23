@@ -248,6 +248,7 @@ export async function POST(request: NextRequest) {
           max_projects_per_intern: body.max_projects_per_intern ? Number(body.max_projects_per_intern) : 4,
           registration_open: Boolean(body.registration_open),
           public_leaderboard_open: Boolean(body.public_leaderboard_open),
+          admin_signup_open: body.admin_signup_open !== undefined ? Boolean(body.admin_signup_open) : true,
           batch_coming_soon_message: body.batch_coming_soon_message ? String(body.batch_coming_soon_message).trim() : '',
           system_prompt_prefix: body.system_prompt_prefix ? String(body.system_prompt_prefix).trim() : '',
           updated_at: new Date().toISOString()

@@ -84,6 +84,7 @@ export default function SettingsPage() {
   const [aiMaxProjects, setAiMaxProjects] = useState(4);
   const [aiRegistrationOpen, setAiRegistrationOpen] = useState(false);
   const [aiPublicLeaderboardOpen, setAiPublicLeaderboardOpen] = useState(false);
+  const [adminSignupOpen, setAdminSignupOpen] = useState(true);
   const [aiBatchMessage, setAiBatchMessage] = useState('Batch 2 Registration Opening Soon! Stay tuned for announcements.');
   const [aiSystemPrompt, setAiSystemPrompt] = useState('');
   const [showApiKey, setShowApiKey] = useState(false);
@@ -133,6 +134,7 @@ export default function SettingsPage() {
         setAiMaxProjects(s.max_projects_per_intern ?? 4);
         setAiRegistrationOpen(s.registration_open ?? false);
         setAiPublicLeaderboardOpen(s.public_leaderboard_open ?? false);
+        setAdminSignupOpen(s.admin_signup_open ?? true);
         setAiBatchMessage(s.batch_coming_soon_message || '');
         setAiSystemPrompt(s.system_prompt_prefix || '');
       }
@@ -933,7 +935,53 @@ export default function SettingsPage() {
 
           {/* TAB 4: Security and Password */}
           {activeTab === 'security' && (
-            <Card className="border border-slate-100 p-6">
+            <div className="space-y-6">
+              <Card className="border border-slate-100 p-6">
+                <h3 className="text-sm font-black text-slate-800 border-b border-slate-100 pb-3 mb-5 flex items-center">
+                  <ShieldCheck className="h-4.5 w-4.5 mr-2 text-blue-500" />
+                  System Access
+                </h3>
+                <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-xl max-w-xl">
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-800">Admin Signup Gateway</h4>
+                    <p className="text-[10px] text-slate-500 mt-1">Enable or disable new admin registrations via /signup.</p>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      const newState = !adminSignupOpen;
+                      setAdminSignupOpen(newState);
+                      const toastId = toast.loading('Saving setting...');
+                      try {
+                        const res = await fetch('/api/settings', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            type: 'intern-analysis-settings',
+                            openrouter_api_key: aiApiKey,
+                            openrouter_model: aiModel,
+                            max_projects_per_intern: aiMaxProjects,
+                            registration_open: aiRegistrationOpen,
+                            public_leaderboard_open: aiPublicLeaderboardOpen,
+                            admin_signup_open: newState,
+                            batch_coming_soon_message: aiBatchMessage,
+                            system_prompt_prefix: aiSystemPrompt
+                          })
+                        });
+                        if (!res.ok) throw new Error('Failed to update settings');
+                        toast.success('Admin signup setting updated!', { id: toastId });
+                      } catch (err: any) {
+                        setAdminSignupOpen(!newState);
+                        toast.error(err.message || 'Update failed', { id: toastId });
+                      }
+                    }}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${adminSignupOpen ? 'bg-blue-600' : 'bg-slate-300'}`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${adminSignupOpen ? 'translate-x-6' : 'translate-x-1'}`} />
+                  </button>
+                </div>
+              </Card>
+
+              <Card className="border border-slate-100 p-6">
               <h3 className="text-sm font-black text-slate-800 border-b border-slate-100 pb-3 mb-5 flex items-center">
                 <KeyRound className="h-4.5 w-4.5 mr-2 text-blue-500" />
                 Change Dashboard Password
@@ -1021,6 +1069,7 @@ export default function SettingsPage() {
                 </div>
               </form>
             </Card>
+            </div>
           )}
 
         </div>

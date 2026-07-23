@@ -79,6 +79,9 @@ export default function DashboardPage() {
     adminBreakdown: {},
   };
 
+  const domainBreakdown: any = internData?.domainBreakdown || {};
+  const newInternsCount: number = Object.values(domainBreakdown).reduce((acc: any, curr: any) => acc + (curr?.new || 0), 0) as number;
+
   return (
     <PageWrapper title="Dashboard Overview">
       {/* 3 Main Stat Cards */}
@@ -95,7 +98,14 @@ export default function DashboardPage() {
                 <Users className="h-4 w-4 mr-1.5 text-blue-500" />
                 Intern Management
               </CardTitle>
-              <CardValue>{internData.total}</CardValue>
+              <CardValue>
+                {internData.total}
+                {newInternsCount > 0 && (
+                  <Badge variant="blue" className="ml-2 text-[10px] bg-blue-100 text-blue-700 py-0.5 border-none">
+                    +{newInternsCount} new
+                  </Badge>
+                )}
+              </CardValue>
               <p className="text-xs text-slate-400 mt-1.5 flex items-center font-medium">
                 Active Intern profiles registered
               </p>
@@ -118,7 +128,14 @@ export default function DashboardPage() {
                 <FolderGit2 className="h-4 w-4 mr-1.5 text-emerald-500" />
                 Project Tracking
               </CardTitle>
-              <CardValue>{projectData.active + projectData.completed}</CardValue>
+              <CardValue>
+                {projectData.active + projectData.completed}
+                {projectData.newProjectsCount > 0 && (
+                  <Badge variant="success" className="ml-2 text-[10px] bg-emerald-100 text-emerald-700 py-0.5 border-none">
+                    +{projectData.newProjectsCount} new
+                  </Badge>
+                )}
+              </CardValue>
               <p className="text-xs text-slate-400 mt-1.5 font-medium">
                 {projectData.active} Active | {projectData.completed} Completed
               </p>
@@ -137,7 +154,14 @@ export default function DashboardPage() {
                 <Receipt className="h-4 w-4 mr-1.5 text-indigo-500" />
                 Finance & Invoicing
               </CardTitle>
-              <CardValue>{formatPKR(projectData.invoicesAmount)}</CardValue>
+              <CardValue>
+                {formatPKR(projectData.invoicesAmount)}
+                {projectData.newInvoicesCount > 0 && (
+                  <Badge variant="neutral" className="ml-2 text-[10px] bg-indigo-100 text-indigo-700 py-0.5 border-none">
+                    +{projectData.newInvoicesCount} new
+                  </Badge>
+                )}
+              </CardValue>
               <p className="text-xs text-slate-400 mt-1.5 font-medium">
                 From {projectData.invoicesCount} generated invoices
               </p>
@@ -158,16 +182,21 @@ export default function DashboardPage() {
             Interns by Domain
           </h2>
           <div className="space-y-3.5">
-            {Object.entries(internData.domainBreakdown).map(([domain, count]: any) => (
+            {Object.entries(internData.domainBreakdown).map(([domain, counts]: any) => (
               <div key={domain} className="space-y-1">
                 <div className="flex justify-between text-xs font-semibold">
                   <span className="text-slate-600 truncate max-w-[80%]">{domain}</span>
-                  <span className="text-slate-900">{count}</span>
+                  <span className="text-slate-900 flex items-center">
+                    {counts.total}
+                    {counts.new > 0 && (
+                      <span className="ml-1.5 px-1.5 py-0.5 text-[9px] font-bold bg-green-100 text-green-700 rounded-full">+{counts.new} new</span>
+                    )}
+                  </span>
                 </div>
                 <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
                   <div
-                    className="bg-blue-600 h-1.5 rounded-full"
-                    style={{ width: `${internData.total > 0 ? (count / internData.total) * 100 : 0}%` }}
+                    className="bg-blue-600 h-1.5 rounded-full transition-all"
+                    style={{ width: `${internData.total > 0 ? (counts.total / internData.total) * 100 : 0}%` }}
                   />
                 </div>
               </div>

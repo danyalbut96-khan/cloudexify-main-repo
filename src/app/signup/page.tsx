@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, User, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, User, ShieldCheck, AlertCircle, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
@@ -14,6 +14,20 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingStatus, setIsCheckingStatus] = useState(true);
+  const [isSignupOpen, setIsSignupOpen] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/auth/signup-status')
+      .then(res => res.json())
+      .then(data => {
+        setIsSignupOpen(data.open);
+        setIsCheckingStatus(false);
+      })
+      .catch(() => {
+        setIsCheckingStatus(false);
+      });
+  }, []);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,8 +108,30 @@ export default function SignupPage() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md z-10">
         <div className="bg-slate-900/50 backdrop-blur-md py-8 px-4 border border-slate-800 shadow-xl rounded-2xl sm:px-10">
-          <form className="space-y-4" onSubmit={handleSignup}>
-            {/* Full Name */}
+          {isCheckingStatus ? (
+            <div className="flex flex-col items-center justify-center py-10 space-y-4">
+              <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
+              <p className="text-sm font-semibold text-slate-400">Checking system access...</p>
+            </div>
+          ) : !isSignupOpen ? (
+            <div className="flex flex-col items-center justify-center py-10 text-center space-y-4">
+              <div className="h-16 w-16 bg-rose-500/10 text-rose-500 flex items-center justify-center rounded-full">
+                <AlertCircle className="h-8 w-8" />
+              </div>
+              <h3 className="text-lg font-bold text-white">Registration Closed</h3>
+              <p className="text-sm text-slate-400 leading-relaxed px-4">
+                New administrator registrations are currently disabled by the system owner. Please contact support if you need access.
+              </p>
+              <div className="pt-4">
+                <Link href="/login">
+                  <Button className="px-6">Return to Login</Button>
+                </Link>
+              </div>
+            </div>
+          ) : (
+          <>
+            <form className="space-y-4" onSubmit={handleSignup}>
+              {/* Full Name */}
             <div>
               <label htmlFor="fullName" className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
                 Full Name
@@ -204,11 +240,13 @@ export default function SignupPage() {
             </Link>
           </div>
 
-          <div className="mt-5 border-t border-slate-800 pt-5">
-            <p className="text-center text-[10px] text-slate-500 leading-normal">
-              Admin registration is monitored. All creations log immediate database audit trails.
-            </p>
-          </div>
+            <div className="mt-5 border-t border-slate-800 pt-5">
+              <p className="text-center text-[10px] text-slate-500 leading-normal">
+                Admin registration is monitored. All creations log immediate database audit trails.
+              </p>
+            </div>
+          </>
+          )}
         </div>
       </div>
     </main>

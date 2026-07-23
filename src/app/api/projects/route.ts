@@ -25,6 +25,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
+    // Mark as viewed in the background
+    const idsToMark = data.filter(p => p.is_new).map(p => p.id);
+    if (idsToMark.length > 0) {
+      supabase.from('projects').update({ is_new: false }).in('id', idsToMark).then();
+    }
+
     return NextResponse.json(data)
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 })

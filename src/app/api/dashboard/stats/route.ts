@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     // 1. Query Interns & Document status
     const { data: interns, error: internsError } = await supabase
       .from('interns')
-      .select('id, domain')
+      .select('id, domain, is_new')
 
     const { data: documents, error: docsError } = await supabase
       .from('intern_documents')
@@ -34,18 +34,19 @@ export async function GET(request: NextRequest) {
     const totalInterns = interns.length
     
     // Initialize Domain Count breakdown map
-    const domainBreakdown: Record<string, number> = {
-      'Python Programming': 0,
-      'C++ Programming': 0,
-      'Java Programming': 0,
-      'Data Science & AI Basics': 0,
-      'Cybersecurity Fundamentals': 0,
-      'Full Stack Development': 0
+    const domainBreakdown: Record<string, { total: number; new: number }> = {
+      'Python Programming': { total: 0, new: 0 },
+      'C++ Programming': { total: 0, new: 0 },
+      'Java Programming': { total: 0, new: 0 },
+      'Data Science & AI Basics': { total: 0, new: 0 },
+      'Cybersecurity Fundamentals': { total: 0, new: 0 },
+      'Full Stack Development': { total: 0, new: 0 }
     }
 
     interns.forEach(i => {
       if (domainBreakdown[i.domain] !== undefined) {
-        domainBreakdown[i.domain]++
+        domainBreakdown[i.domain].total++
+        if (i.is_new) domainBreakdown[i.domain].new++
       }
     })
 
@@ -75,7 +76,7 @@ export async function GET(request: NextRequest) {
     // 2. Query Project Metrics
     const { data: projects, error: projError } = await supabase
       .from('projects')
-      .select('status')
+      .select('status, is_new')
 
     if (projError) {
       return NextResponse.json({ error: projError.message }, { status: 500 })
@@ -84,11 +85,14 @@ export async function GET(request: NextRequest) {
     let activeProjects = 0
     let completedProjects = 0
     let totalInquiries = 0
+    let newProjectsCount = 0
 
     projects.forEach(p => {
       if (p.status === 'in_progress') activeProjects++
       else if (p.status === 'completed') completedProjects++
       else if (p.status === 'inquiry') totalInquiries++
+      
+      if (p.is_new) newProjectsCount++
     })
 
     // 3. Query Proposals (Recent list & total count)
@@ -115,6 +119,7 @@ export async function GET(request: NextRequest) {
 
     const invoicesCount = invoices.length
     const invoicesAmount = invoices.reduce((sum, inv) => sum + Number(inv.amount_pkr), 0)
+    const newInvoicesCount = invoices.filter(inv => inv.is_new).length
 
     const adminBreakdown: Record<string, { count: number; amount: number }> = {}
     invoices.forEach(inv => {
@@ -163,10 +168,12 @@ export async function GET(request: NextRequest) {
         active: activeProjects,
         completed: completedProjects,
         inquiries: totalInquiries,
+        newProjectsCount,
         proposalsSentCount,
         recentProposals,
         invoicesCount,
         invoicesAmount,
+        newInvoicesCount,
         adminBreakdown
       },
       analysis: analysisStats

@@ -27,6 +27,20 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = createClient()
+    
+    // Check if signup is open
+    const { data: settings } = await supabase
+      .from('intern_analysis_settings')
+      .select('admin_signup_open')
+      .eq('id', 1)
+      .maybeSingle()
+      
+    if (settings && settings.admin_signup_open === false) {
+      return NextResponse.json(
+        { error: 'Admin registration is currently closed.' },
+        { status: 403 }
+      )
+    }
     const { data, error } = await supabase.auth.signUp({
       email: sanitizedEmail,
       password: password,

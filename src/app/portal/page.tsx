@@ -50,6 +50,7 @@ export default function PortalPage() {
   const [batchMessage, setBatchMessage] = useState('Batch 2 Registration Opening Soon! Stay tuned for announcements.');
   const [registrationOpen, setRegistrationOpen] = useState(false);
   const [publicLeaderboardOpen, setPublicLeaderboardOpen] = useState(false);
+  const [settingsLoading, setSettingsLoading] = useState(true);
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -104,8 +105,9 @@ export default function PortalPage() {
         if (d.batch_coming_soon_message) setBatchMessage(d.batch_coming_soon_message);
         if (typeof d.registration_open === 'boolean') setRegistrationOpen(d.registration_open);
         if (typeof d.public_leaderboard_open === 'boolean') setPublicLeaderboardOpen(d.public_leaderboard_open);
+        setSettingsLoading(false);
       })
-      .catch(() => { });
+      .catch(() => { setSettingsLoading(false); });
 
     fetchLeaderboard();
 
@@ -345,7 +347,12 @@ export default function PortalPage() {
                   </div>
                 </div>
 
-                {!registrationOpen ? (
+                {settingsLoading ? (
+                  <div className="flex flex-col items-center justify-center py-6 space-y-3">
+                    <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+                    <p className="text-xs text-slate-400">Loading status...</p>
+                  </div>
+                ) : !registrationOpen ? (
                   <>
                     <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 mb-5">
                       <p className="text-amber-200/80 text-xs leading-relaxed font-medium">🚀 {batchMessage}</p>
@@ -360,7 +367,7 @@ export default function PortalPage() {
                       <label className="text-xs text-slate-400 font-medium flex items-center gap-1.5">
                         <Bell className="w-3 h-3" /> Notify me when registration opens
                       </label>
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <input
                           type="email"
                           value={notifyEmail}
@@ -370,7 +377,7 @@ export default function PortalPage() {
                         />
                         <button
                           onClick={handleNotifyMe}
-                          className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-lg text-xs font-bold transition-all shadow-lg shadow-blue-500/20"
+                          className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-lg text-xs font-bold transition-all shadow-lg shadow-blue-500/20 whitespace-nowrap"
                         >
                           Notify Me
                         </button>

@@ -65,6 +65,12 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Mark as viewed in the background
+    const idsToMark = filteredData.filter(i => i.is_new).map(i => i.id);
+    if (idsToMark.length > 0) {
+      supabase.from('interns').update({ is_new: false }).in('id', idsToMark).then();
+    }
+
     return NextResponse.json(filteredData)
   } catch (err: any) {
     return NextResponse.json(
