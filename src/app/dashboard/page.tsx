@@ -15,6 +15,7 @@ import {
   BadgeAlert,
   Building,
   BrainCircuit,
+  LifeBuoy,
 } from 'lucide-react';
 import { Card, CardTitle, CardValue } from '@/components/ui/Card';
 import { PageWrapper } from '@/components/ui/PageWrapper';
@@ -79,13 +80,15 @@ export default function DashboardPage() {
     adminBreakdown: {},
   };
 
+  const supportData = stats?.support || { total: 0, open: 0, new: 0 };
+
   const domainBreakdown: any = internData?.domainBreakdown || {};
   const newInternsCount: number = Object.values(domainBreakdown).reduce((acc: any, curr: any) => acc + (curr?.new || 0), 0) as number;
 
   return (
     <PageWrapper title="Dashboard Overview">
-      {/* 3 Main Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* 4 Main Stat Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Clickable Intern Stats Card */}
         <Card
           hoverEffect
@@ -169,6 +172,39 @@ export default function DashboardPage() {
             <div className="bg-indigo-50 text-indigo-600 p-2.5 rounded-lg border border-indigo-100">
               <Receipt className="h-5 w-5" />
             </div>
+          </div>
+        </Card>
+
+        {/* Support Tickets Card */}
+        <Card
+          hoverEffect
+          onClick={() => router.push('/dashboard/support')}
+          className="border-l-4 border-l-purple-600 relative overflow-hidden"
+        >
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="flex items-center text-slate-500 font-bold">
+                <LifeBuoy className="h-4 w-4 mr-1.5 text-purple-500" />
+                Support Tickets
+              </CardTitle>
+              <CardValue>
+                {supportData.open}
+                {supportData.new > 0 && (
+                  <Badge variant="neutral" className="ml-2 text-[10px] bg-purple-100 text-purple-700 py-0.5 border-none">
+                    +{supportData.new} new
+                  </Badge>
+                )}
+              </CardValue>
+              <p className="text-xs text-slate-400 mt-1.5 font-medium">
+                {supportData.open} Open | {supportData.total} Total
+              </p>
+            </div>
+            <div className="bg-purple-50 text-purple-600 p-2.5 rounded-lg border border-purple-100">
+              <LifeBuoy className="h-5 w-5" />
+            </div>
+          </div>
+          <div className="absolute bottom-4 right-4 text-purple-500 opacity-0 hover:opacity-100 group-hover:opacity-100 transition-opacity">
+            <ArrowRight className="h-4 w-4" />
           </div>
         </Card>
       </div>

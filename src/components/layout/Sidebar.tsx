@@ -17,6 +17,7 @@ import {
   FileText,
   TrendingUp,
   BrainCircuit,
+  LifeBuoy,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '../ui/Badge';
@@ -95,6 +96,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       name: 'Audit Log',
       icon: History,
       path: '/dashboard/audit-log',
+    },
+    {
+      name: 'Support Tickets',
+      icon: LifeBuoy,
+      path: '/dashboard/support',
     },
     {
       name: 'Settings',

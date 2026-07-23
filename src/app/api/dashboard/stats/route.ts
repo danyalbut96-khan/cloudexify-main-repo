@@ -155,6 +155,17 @@ export async function GET(request: NextRequest) {
       })
     }
 
+    // 6. Query Support Ticket Stats
+    const { data: supportTickets } = await supabase
+      .from('support_tickets')
+      .select('id, status, is_new')
+
+    const supportStats = {
+      total: supportTickets?.length || 0,
+      open: supportTickets?.filter(t => t.status === 'open').length || 0,
+      new: supportTickets?.filter(t => t.is_new).length || 0,
+    }
+
     return NextResponse.json({
       interns: {
         total: totalInterns,
@@ -176,7 +187,8 @@ export async function GET(request: NextRequest) {
         newInvoicesCount,
         adminBreakdown
       },
-      analysis: analysisStats
+      analysis: analysisStats,
+      support: supportStats
     })
   } catch (err: any) {
     return NextResponse.json(

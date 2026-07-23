@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   GitBranch, Search, CheckCircle, AlertCircle, Send, ChevronRight,
-  Lock, Bell, BrainCircuit, Star, Trophy, Loader2, X, Plus, RefreshCw
+  Lock, Bell, BrainCircuit, Star, Trophy, Loader2, X, Plus, RefreshCw, MessageSquare
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createBrowserClient } from '@supabase/ssr';
@@ -300,9 +300,18 @@ export default function PortalPage() {
               <span className="text-xs text-slate-400 ml-2 font-medium">Intern Portal</span>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-            <span>Portal Active</span>
+          <div className="flex items-center gap-4">
+            <a
+              href="/portal/support"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 text-xs font-semibold transition-colors"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>Need Help? Support</span>
+            </a>
+            <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              <span>Portal Active</span>
+            </div>
           </div>
         </div>
       </header>
@@ -888,7 +897,12 @@ export default function PortalPage() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-slate-800/50 mt-16 py-6 text-center">
+      <footer className="relative z-10 border-t border-slate-800/50 mt-16 py-6 text-center space-y-2">
+        <div className="flex justify-center items-center gap-4 text-xs">
+          <a href="/portal/support" className="text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1.5 transition-colors">
+            <MessageSquare className="w-3.5 h-3.5" /> Support Center & Ticket Tracking
+          </a>
+        </div>
         <p className="text-xs text-slate-600">© 2026 CloudExify Private Limited · Internship Program</p>
       </footer>
     </div>
