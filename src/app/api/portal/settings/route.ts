@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+export const dynamic = 'force-dynamic';
 
 // Public endpoint — no auth required. Returns only non-sensitive portal config.
 export async function GET() {

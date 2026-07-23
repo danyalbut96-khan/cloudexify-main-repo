@@ -177,7 +177,7 @@ export default function InternAnalysisPage() {
       <div className="space-y-6 p-6">
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-xl p-1 w-fit">
+        <div className="flex items-center gap-1 bg-slate-100/50 border border-slate-200 rounded-xl p-1 w-fit">
           {([
             { id: 'overview', label: 'Overview', icon: BarChart3 },
             { id: 'leaderboard', label: 'Leaderboard', icon: Trophy },
@@ -190,8 +190,8 @@ export default function InternAnalysisPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   activeTab === tab.id
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                    ? 'bg-white text-blue-600 shadow-sm border border-slate-200/50'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/50'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -211,27 +211,33 @@ export default function InternAnalysisPage() {
                 { label: 'Projects Submitted', value: totalProjects, icon: FolderGit2, color: 'text-violet-400', bg: 'bg-violet-500/10' },
                 { label: 'Analyzed', value: analyzedCount, icon: CheckCircle2, color: 'text-green-400', bg: 'bg-green-500/10' },
                 { label: 'Pending / Failed', value: `${pendingCount} / ${failedCount}`, icon: Clock, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-              ].map(stat => {
+              ].map((stat, i) => {
                 const Icon = stat.icon;
+                const borderColors = ['border-l-blue-600', 'border-l-violet-600', 'border-l-green-600', 'border-l-amber-500'];
                 return (
-                  <Card key={stat.label} className="p-5 bg-slate-900 border-slate-800">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs text-slate-500 font-medium">{stat.label}</span>
-                      <div className={`w-8 h-8 rounded-lg ${stat.bg} flex items-center justify-center`}>
-                        <Icon className={`w-4 h-4 ${stat.color}`} />
+                  <Card key={stat.label} className={`border-l-4 ${borderColors[i]} relative overflow-hidden`}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center text-slate-500 font-bold text-sm mb-1.5">
+                          <Icon className={`h-4 w-4 mr-1.5 ${stat.color}`} />
+                          {stat.label}
+                        </div>
+                        <p className="text-2xl font-black text-slate-900">{stat.value}</p>
+                      </div>
+                      <div className={`${stat.bg} ${stat.color.replace('text-', 'text-').replace('-400', '-600')} p-2.5 rounded-lg border border-slate-100`}>
+                        <Icon className="h-5 w-5" />
                       </div>
                     </div>
-                    <p className="text-2xl font-black text-white">{stat.value}</p>
                   </Card>
                 );
               })}
             </div>
 
             {/* Progress + Bulk Analyze */}
-            <Card className="p-6 bg-slate-900 border-slate-800">
+            <Card className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="font-semibold text-white text-sm">Analysis Progress</h3>
+                  <h3 className="font-semibold text-slate-900 text-sm">Analysis Progress</h3>
                   <p className="text-xs text-slate-500 mt-0.5">{analyzedCount} of {totalProjects} projects analyzed</p>
                 </div>
                 <button
@@ -243,7 +249,7 @@ export default function InternAnalysisPage() {
                   {bulkAnalyzing ? 'Analyzing All…' : `Analyze All Pending (${pendingCount})`}
                 </button>
               </div>
-              <div className="h-2.5 bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-blue-500 to-violet-500 rounded-full transition-all duration-700"
                   style={{ width: `${completionPct}%` }}
@@ -251,7 +257,7 @@ export default function InternAnalysisPage() {
               </div>
               <div className="flex justify-between text-xs text-slate-500 mt-2">
                 <span>0%</span>
-                <span className="font-semibold text-white">{completionPct}% complete</span>
+                <span className="font-semibold text-slate-900">{completionPct}% complete</span>
                 <span>100%</span>
               </div>
             </Card>
@@ -266,16 +272,16 @@ export default function InternAnalysisPage() {
                 return (
                   <Card
                     key={domain.code}
-                    className="p-4 bg-slate-900 border-slate-800 cursor-pointer hover:border-slate-600 transition-all"
+                    className="p-4 cursor-pointer hover:border-slate-300 transition-all bg-white"
                     onClick={() => { setActiveDomain(domain.code); setActiveTab('leaderboard'); }}
                   >
                     <div className="flex items-center justify-between mb-3">
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded bg-gradient-to-r ${domain.color} text-white`}>{domain.code}</span>
                       <span className="text-xs text-slate-500">{domainInterns} interns</span>
                     </div>
-                    <p className="text-sm font-semibold text-white mb-1">{domain.label}</p>
+                    <p className="text-sm font-semibold text-slate-900 mb-1">{domain.label}</p>
                     <p className="text-xs text-slate-500 mb-3">{domainDone}/{domainProjs.length} analyzed</p>
-                    <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                       <div className={`h-full bg-gradient-to-r ${domain.color} rounded-full transition-all`} style={{ width: `${pct}%` }} />
                     </div>
                   </Card>
@@ -306,15 +312,15 @@ export default function InternAnalysisPage() {
             </div>
 
             {/* Leaderboard table */}
-            <Card className="bg-slate-900 border-slate-800 overflow-hidden">
+            <Card className="overflow-hidden">
               <div className={`h-1 bg-gradient-to-r ${activeDomainInfo.color}`} />
-              <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+              <div className="p-4 border-b border-slate-100 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Trophy className={`w-4 h-4 ${activeDomainInfo.text}`} />
-                  <h3 className="font-semibold text-white text-sm">{activeDomainInfo.label} Leaderboard</h3>
+                  <Trophy className={`w-4 h-4 ${activeDomainInfo.text.replace('text-', 'text-').replace('-400', '-600')}`} />
+                  <h3 className="font-semibold text-slate-900 text-sm">{activeDomainInfo.label} Leaderboard</h3>
                   <span className="text-xs text-slate-500">({leaderboard.length} interns)</span>
                 </div>
-                <button onClick={fetchProjects} className="text-slate-500 hover:text-white transition-colors">
+                <button onClick={fetchProjects} className="text-slate-400 hover:text-slate-700 transition-colors">
                   <RefreshCw className="w-4 h-4" />
                 </button>
               </div>
@@ -324,7 +330,7 @@ export default function InternAnalysisPage() {
                   No projects found for {activeDomainInfo.label} domain yet.
                 </div>
               ) : (
-                <div className="divide-y divide-slate-800">
+                <div className="divide-y divide-slate-100">
                   {leaderboard.map((intern, idx) => {
                     const isExpanded = expandedIntern === intern.intern_id;
                     const isTop3 = idx < 3;
@@ -334,21 +340,21 @@ export default function InternAnalysisPage() {
                           className="w-full text-left"
                           onClick={() => setExpandedIntern(isExpanded ? null : intern.intern_id)}
                         >
-                          <div className={`px-5 py-4 flex items-center gap-4 hover:bg-slate-800/40 transition-colors ${isTop3 ? 'bg-slate-800/20' : ''}`}>
+                          <div className={`px-5 py-4 flex items-center gap-4 hover:bg-slate-50 transition-colors ${isTop3 ? 'bg-blue-50/50' : ''}`}>
                             {/* Rank */}
                             <div className="w-10 text-center shrink-0">
                               {idx < 3 ? (
                                 <span className="text-xl">{RANK_MEDALS[idx]}</span>
                               ) : (
-                                <span className="text-sm font-bold text-slate-500">#{idx + 1}</span>
+                                <span className="text-sm font-bold text-slate-400">#{idx + 1}</span>
                               )}
                             </div>
 
                             {/* Name & reg */}
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 flex-wrap">
-                                <p className="font-semibold text-white text-sm truncate">{intern.intern_name}</p>
-                                {idx === 0 && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">TOP</span>}
+                                <p className="font-semibold text-slate-900 text-sm truncate">{intern.intern_name}</p>
+                                {idx === 0 && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 border border-amber-200">TOP</span>}
                               </div>
                               <p className="text-[10px] text-slate-500 font-mono">{intern.registration_number}</p>
                             </div>
@@ -356,20 +362,20 @@ export default function InternAnalysisPage() {
                             {/* Projects done */}
                             <div className="hidden sm:flex items-center gap-1 shrink-0">
                               {Array.from({ length: intern.maxProjects }).map((_, i) => (
-                                <div key={i} className={`w-2 h-2 rounded-full ${i < intern.analyzedCount ? `bg-gradient-to-br ${activeDomainInfo.color}` : 'bg-slate-700'}`} />
+                                <div key={i} className={`w-2 h-2 rounded-full ${i < intern.analyzedCount ? `bg-gradient-to-br ${activeDomainInfo.color}` : 'bg-slate-200'}`} />
                               ))}
                               <span className="text-xs text-slate-400 ml-1">{intern.analyzedCount}/{intern.maxProjects}</span>
                             </div>
 
                             {/* Score */}
                             <div className="text-right shrink-0">
-                              <p className={`text-lg font-black ${isTop3 ? activeDomainInfo.text : 'text-white'}`}>
+                              <p className={`text-lg font-black ${isTop3 ? activeDomainInfo.text.replace('text-', 'text-').replace('-400', '-600') : 'text-slate-900'}`}>
                                 {intern.totalScore.toFixed(1)}
                               </p>
                               <p className="text-[10px] text-slate-500">/ {intern.maxProjects * 25} pts</p>
                             </div>
 
-                            <div className="text-slate-600 shrink-0">
+                            <div className="text-slate-400 shrink-0">
                               {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                             </div>
                           </div>
@@ -377,10 +383,10 @@ export default function InternAnalysisPage() {
 
                         {/* Expanded: per-project breakdown */}
                         {isExpanded && (
-                          <div className="bg-slate-950/60 border-t border-slate-800 p-4 space-y-3">
-                            <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Project Breakdown</h4>
+                          <div className="bg-slate-50/70 border-t border-slate-100 p-4 space-y-3">
+                            <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Project Breakdown</h4>
                             {intern.projects.map(proj => (
-                              <div key={proj.id} className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 space-y-3">
+                              <div key={proj.id} className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
                                 <div className="flex items-start justify-between gap-2">
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 flex-wrap">
@@ -390,11 +396,11 @@ export default function InternAnalysisPage() {
                                         {STATUS_CONFIG[proj.analysis_status]?.label}
                                       </span>
                                     </div>
-                                    <p className="font-semibold text-white text-sm mt-0.5">{proj.project_title}</p>
+                                    <p className="font-semibold text-slate-900 text-sm mt-0.5">{proj.project_title}</p>
                                     {proj.description && <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">{proj.description}</p>}
                                   </div>
                                   <div className="flex items-center gap-2 shrink-0">
-                                    <a href={proj.repo_url} target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-blue-400 transition-colors">
+                                    <a href={proj.repo_url} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-blue-500 transition-colors">
                                       <ExternalLink className="w-3.5 h-3.5" />
                                     </a>
                                     {(proj.analysis_status === 'pending' || proj.analysis_status === 'failed') && (
@@ -408,29 +414,29 @@ export default function InternAnalysisPage() {
                                       </button>
                                     )}
                                     {proj.analysis_status === 'done' && (
-                                      <span className={`text-base font-black ${activeDomainInfo.text}`}>{proj.ai_score?.toFixed(1)}<span className="text-[10px] text-slate-500 font-normal">/25</span></span>
+                                      <span className={`text-base font-black ${activeDomainInfo.text.replace('text-', 'text-').replace('-400', '-600')}`}>{proj.ai_score?.toFixed(1)}<span className="text-[10px] text-slate-500 font-normal">/25</span></span>
                                     )}
                                   </div>
                                 </div>
 
                                 {/* AI criteria breakdown */}
                                 {proj.analysis_status === 'done' && proj.ai_feedback?.criteria && (
-                                  <div className="space-y-1.5 pt-2 border-t border-slate-800">
+                                  <div className="space-y-1.5 pt-2 border-t border-slate-100">
                                     {proj.ai_feedback.criteria.map((c: any, i: number) => (
                                       <div key={i} className="space-y-0.5">
                                         <div className="flex items-center justify-between text-xs">
-                                          <span className="text-slate-300 font-medium">{c.name}</span>
-                                          <span className={`font-bold ${c.score >= 4 ? 'text-green-400' : c.score >= 2.5 ? 'text-amber-400' : 'text-red-400'}`}>{c.score}/5</span>
+                                          <span className="text-slate-700 font-medium">{c.name}</span>
+                                          <span className={`font-bold ${c.score >= 4 ? 'text-green-600' : c.score >= 2.5 ? 'text-amber-500' : 'text-red-500'}`}>{c.score}/5</span>
                                         </div>
-                                        <div className="h-1 bg-slate-800 rounded-full overflow-hidden">
+                                        <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
                                           <div className={`h-full rounded-full bg-gradient-to-r ${activeDomainInfo.color}`} style={{ width: `${(c.score / 5) * 100}%` }} />
                                         </div>
                                         {c.comment && <p className="text-[10px] text-slate-500 leading-relaxed">{c.comment}</p>}
                                       </div>
                                     ))}
                                     {proj.ai_feedback.overall_feedback && (
-                                      <div className="mt-2 p-3 bg-slate-800/40 rounded-lg border border-slate-700/60">
-                                        <p className="text-[10px] text-slate-400 leading-relaxed"><Star className="w-3 h-3 inline mr-1 text-amber-400" />{proj.ai_feedback.overall_feedback}</p>
+                                      <div className="mt-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                                        <p className="text-[10px] text-slate-600 leading-relaxed"><Star className="w-3 h-3 inline mr-1 text-amber-500" />{proj.ai_feedback.overall_feedback}</p>
                                       </div>
                                     )}
                                   </div>
@@ -453,14 +459,14 @@ export default function InternAnalysisPage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-sm text-slate-400">{totalProjects} total projects · {pendingCount} pending</p>
-              <button onClick={fetchProjects} className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors">
+              <button onClick={fetchProjects} className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-700 transition-colors">
                 <RefreshCw className="w-3.5 h-3.5" /> Refresh
               </button>
             </div>
 
-            <Card className="bg-slate-900 border-slate-800 overflow-hidden">
+            <Card className="overflow-hidden">
               {/* Table header */}
-              <div className="grid grid-cols-12 gap-2 px-4 py-3 border-b border-slate-800 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+              <div className="grid grid-cols-12 gap-2 px-4 py-3 border-b border-slate-100 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
                 <div className="col-span-1">Status</div>
                 <div className="col-span-3">Intern</div>
                 <div className="col-span-1">Domain</div>
@@ -473,12 +479,12 @@ export default function InternAnalysisPage() {
               {projects.length === 0 ? (
                 <div className="p-10 text-center text-slate-500 text-sm">No projects submitted yet.</div>
               ) : (
-                <div className="divide-y divide-slate-800/60">
+                <div className="divide-y divide-slate-100">
                   {projects.map(proj => {
                     const domainInfo = DOMAINS.find(d => d.code === proj.domain_code);
                     const statusCfg = STATUS_CONFIG[proj.analysis_status] || STATUS_CONFIG.pending;
                     return (
-                      <div key={proj.id} className="grid grid-cols-12 gap-2 px-4 py-3.5 items-center hover:bg-slate-800/20 transition-colors">
+                      <div key={proj.id} className="grid grid-cols-12 gap-2 px-4 py-3.5 items-center hover:bg-slate-50 transition-colors">
                         {/* Status */}
                         <div className="col-span-1">
                           <span className={`inline-flex items-center gap-1 text-[9px] font-semibold px-1.5 py-0.5 rounded border ${statusCfg.color}`}>
@@ -487,23 +493,23 @@ export default function InternAnalysisPage() {
                         </div>
                         {/* Intern */}
                         <div className="col-span-3 min-w-0">
-                          <p className="text-xs font-semibold text-white truncate">{proj.intern_name}</p>
+                          <p className="text-xs font-semibold text-slate-900 truncate">{proj.intern_name}</p>
                           <p className="text-[9px] text-slate-500 font-mono truncate">{proj.registration_number}</p>
                         </div>
                         {/* Domain */}
                         <div className="col-span-1">
-                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded bg-gradient-to-r ${domainInfo?.color ?? 'from-slate-600 to-slate-500'} text-white`}>
+                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded bg-gradient-to-r ${domainInfo?.color ?? 'from-slate-500 to-slate-400'} text-white`}>
                             {proj.domain_code}
                           </span>
                         </div>
                         {/* Project # */}
                         <div className="col-span-1">
-                          <span className="text-xs text-slate-400 font-medium">#{proj.project_number}</span>
+                          <span className="text-xs text-slate-500 font-medium">#{proj.project_number}</span>
                         </div>
                         {/* Title */}
                         <div className="col-span-3 min-w-0">
-                          <p className="text-xs text-white truncate">{proj.project_title}</p>
-                          <a href={proj.repo_url} target="_blank" rel="noopener noreferrer" className="text-[9px] text-slate-500 hover:text-blue-400 transition-colors flex items-center gap-0.5">
+                          <p className="text-xs text-slate-900 truncate">{proj.project_title}</p>
+                          <a href={proj.repo_url} target="_blank" rel="noopener noreferrer" className="text-[9px] text-slate-500 hover:text-blue-500 transition-colors flex items-center gap-0.5">
                             <GitBranch className="w-2.5 h-2.5" />
                             <span className="truncate">{proj.repo_url.replace('https://github.com/', '')}</span>
                           </a>
@@ -511,11 +517,11 @@ export default function InternAnalysisPage() {
                         {/* Score */}
                         <div className="col-span-1">
                           {proj.analysis_status === 'done' && proj.ai_score !== null ? (
-                            <span className={`text-sm font-black ${domainInfo?.text ?? 'text-white'}`}>
+                            <span className={`text-sm font-black ${domainInfo?.text.replace('text-', 'text-').replace('-400', '-600') ?? 'text-slate-900'}`}>
                               {proj.ai_score.toFixed(1)}<span className="text-[9px] text-slate-500">/25</span>
                             </span>
                           ) : (
-                            <span className="text-xs text-slate-600">—</span>
+                            <span className="text-xs text-slate-400">—</span>
                           )}
                         </div>
                         {/* Action */}
