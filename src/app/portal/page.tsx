@@ -95,7 +95,7 @@ export default function PortalPage() {
         if (d.batch_coming_soon_message) setBatchMessage(d.batch_coming_soon_message);
         if (typeof d.registration_open === 'boolean') setRegistrationOpen(d.registration_open);
       })
-      .catch(() => {});
+      .catch(() => { });
 
     fetchLeaderboard();
   }, []);
@@ -372,9 +372,9 @@ export default function PortalPage() {
                 <div className="flex items-center gap-2 mt-4">
                   {(['lookup', 'submit', 'success'] as Step[]).map((s, i) => (
                     <React.Fragment key={s}>
-                      <div className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${step === s ? 'text-blue-400' : i < ['lookup','submit','success'].indexOf(step) ? 'text-green-400' : 'text-slate-600'}`}>
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold border ${step === s ? 'border-blue-500 bg-blue-500/20 text-blue-400' : i < ['lookup','submit','success'].indexOf(step) ? 'border-green-500 bg-green-500/20 text-green-400' : 'border-slate-700 text-slate-600'}`}>
-                          {i < ['lookup','submit','success'].indexOf(step) ? '✓' : i + 1}
+                      <div className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${step === s ? 'text-blue-400' : i < ['lookup', 'submit', 'success'].indexOf(step) ? 'text-green-400' : 'text-slate-600'}`}>
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold border ${step === s ? 'border-blue-500 bg-blue-500/20 text-blue-400' : i < ['lookup', 'submit', 'success'].indexOf(step) ? 'border-green-500 bg-green-500/20 text-green-400' : 'border-slate-700 text-slate-600'}`}>
+                          {i < ['lookup', 'submit', 'success'].indexOf(step) ? '✓' : i + 1}
                         </div>
                         <span className="hidden sm:inline">{s === 'lookup' ? 'Identify' : s === 'submit' ? 'Submit' : 'Done'}</span>
                       </div>
@@ -411,7 +411,7 @@ export default function PortalPage() {
                           type="text"
                           value={regNo}
                           onChange={e => setRegNo(e.target.value.toUpperCase())}
-                          placeholder="e.g. CX-2026-PY-001"
+                          placeholder="e.g. CX-INT-2026-PY-001"
                           className="w-full bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all font-mono tracking-wider"
                         />
                         <p className="text-[10px] text-slate-500 mt-1">Enter your Registration ID or type your name above to search.</p>
@@ -495,11 +495,10 @@ export default function PortalPage() {
                             type="button"
                             onClick={() => setStep('submit')}
                             disabled={lookupResult.submittedCount >= lookupResult.maxProjects}
-                            className={`mt-3 w-full flex items-center justify-center gap-2 font-semibold rounded-lg py-2.5 text-xs transition-all ${
-                              lookupResult.submittedCount >= lookupResult.maxProjects
+                            className={`mt-3 w-full flex items-center justify-center gap-2 font-semibold rounded-lg py-2.5 text-xs transition-all ${lookupResult.submittedCount >= lookupResult.maxProjects
                                 ? 'bg-slate-700/50 text-slate-500 cursor-not-allowed'
                                 : 'bg-gradient-to-r from-blue-600 to-violet-600 hover:opacity-90 text-white shadow-lg'
-                            }`}
+                              }`}
                           >
                             {lookupResult.submittedCount >= lookupResult.maxProjects
                               ? '✅ All projects submitted!'
@@ -700,7 +699,7 @@ export default function PortalPage() {
         <div className="pt-8">
           <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 backdrop-blur-sm p-6 sm:p-8 space-y-6">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent pointer-events-none" />
-            
+
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
@@ -711,7 +710,7 @@ export default function PortalPage() {
                   Real-time top 10 rankings per domain. Registration numbers are shown for privacy.
                 </p>
               </div>
-              <button 
+              <button
                 onClick={fetchLeaderboard}
                 className="w-fit flex items-center gap-1.5 px-3 py-1.5 bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg text-xs font-semibold transition-colors"
               >
@@ -725,11 +724,10 @@ export default function PortalPage() {
                 <button
                   key={code}
                   onClick={() => setLeaderboardDomain(code)}
-                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold border transition-all ${
-                    leaderboardDomain === code
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold border transition-all ${leaderboardDomain === code
                       ? `bg-gradient-to-r ${DOMAIN_COLORS[code]} text-white border-transparent shadow-lg shadow-blue-900/20`
                       : 'bg-slate-800/40 border-slate-800/80 text-slate-400 hover:text-slate-200 hover:bg-slate-800/80'
-                  }`}
+                    }`}
                 >
                   <span className="text-[10px] opacity-75">{code}</span>
                   <span>{label.replace(' Programming', '')}</span>
@@ -763,11 +761,10 @@ export default function PortalPage() {
                   const isTop3 = idx < 3;
                   const colors = DOMAIN_COLORS[leaderboardDomain];
                   return (
-                    <div 
-                      key={row.registration_number} 
-                      className={`grid grid-cols-12 gap-2 px-4 py-3.5 items-center hover:bg-slate-800/10 transition-colors ${
-                        isTop3 ? 'bg-slate-900/10' : ''
-                      }`}
+                    <div
+                      key={row.registration_number}
+                      className={`grid grid-cols-12 gap-2 px-4 py-3.5 items-center hover:bg-slate-800/10 transition-colors ${isTop3 ? 'bg-slate-900/10' : ''
+                        }`}
                     >
                       {/* Rank / Medal */}
                       <div className="col-span-2 text-center">
@@ -777,7 +774,7 @@ export default function PortalPage() {
                           <span className="text-xs font-bold text-slate-500">#{idx + 1}</span>
                         )}
                       </div>
-                      
+
                       {/* Reg Number */}
                       <div className="col-span-5">
                         <span className="text-xs sm:text-sm font-semibold text-white font-mono tracking-wide">
