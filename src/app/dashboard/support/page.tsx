@@ -71,11 +71,7 @@ export default function SupportDashboard() {
   const filteredTickets = tickets.filter(t => filter === 'all' ? true : t.status === filter);
 
   return (
-    <PageWrapper
-      title="Support Tickets"
-      description="Manage and respond to intern support requests"
-      icon={<LifeBuoy className="h-5 w-5 text-indigo-500" />}
-    >
+    <PageWrapper title="Support Tickets">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Left Col: Ticket List */}
