@@ -98,7 +98,7 @@ export default function PortalPage() {
 
   useEffect(() => {
     // Initial fetch
-    fetch('/api/portal/settings')
+    fetch('/api/portal/settings', { cache: 'no-store' })
       .then(r => r.json())
       .then(d => {
         if (d.batch_coming_soon_message) setBatchMessage(d.batch_coming_soon_message);
