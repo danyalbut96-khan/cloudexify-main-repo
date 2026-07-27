@@ -5,14 +5,17 @@ import { useRouter } from 'next/navigation'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import { Cloud, FileText, Download, CheckCircle2, Clock, XCircle, LogOut, Briefcase } from 'lucide-react'
+import { Cloud, FileText, Download, CheckCircle2, Clock, XCircle, LogOut, Briefcase, LayoutDashboard, UserCircle, Menu } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { Skeleton } from '@/components/ui/Skeleton'
+import Link from 'next/link'
 
 export default function StudentDashboardPage() {
   const router = useRouter()
   const [data, setData] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState('dashboard')
 
   useEffect(() => {
     fetchDashboardData()
@@ -38,8 +41,7 @@ export default function StudentDashboardPage() {
   }
 
   const handleLogout = async () => {
-    // A simple hack for now: delete cookie by setting expiry
-    document.cookie = "intern_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "intern_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
     toast.success('Logged out successfully')
     router.push('/portal/login')
   }
@@ -61,7 +63,7 @@ export default function StudentDashboardPage() {
   const { intern, documents, tasks } = data
 
   const renderStatusScreen = () => {
-    if (intern.status === 'Pending' || intern.status === 'Under Review') {
+    if (!intern.status || intern.status === 'Pending' || intern.status === 'Under Review') {
       return (
         <Card className="max-w-lg mx-auto mt-20 p-8 text-center shadow-xl border-blue-100 bg-white">
           <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6">
@@ -69,7 +71,7 @@ export default function StudentDashboardPage() {
           </div>
           <h2 className="text-2xl font-black text-slate-900 mb-2">Application Under Review</h2>
           <p className="text-slate-500 font-medium mb-6">
-            Hello {intern.full_name}, your application for the {intern.domain} internship is currently being reviewed by our team. We will notify you via email once a decision has been made.
+            Hello {intern.full_name}, your application for the {intern.domain} internship is currently being reviewed by our team. Please check back later.
           </p>
           <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 text-sm font-semibold text-slate-700">
             Registration Number: <span className="text-blue-600">{intern.registration_number}</span>
@@ -86,15 +88,15 @@ export default function StudentDashboardPage() {
           </div>
           <h2 className="text-2xl font-black text-slate-900 mb-2">Application Update</h2>
           <p className="text-slate-500 font-medium mb-6">
-            Dear {intern.full_name}, we appreciate your interest in Cloudexify. Unfortunately, we are unable to offer you an internship position at this time. We wish you the best in your future endeavors.
+            Dear {intern.full_name}, we appreciate your interest in Cloudexify. Unfortunately, we are unable to offer you an internship position at this time.
           </p>
         </Card>
       )
     }
 
-    // Accepted or Offer Letter Issued
+    // Accepted State
     return (
-      <div className="max-w-6xl mx-auto mt-8 px-4 sm:px-6 lg:px-8 space-y-8 pb-12">
+      <div className="max-w-6xl mx-auto space-y-8">
         {/* Welcome Banner */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
           <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl pointer-events-none"></div>
@@ -139,16 +141,16 @@ export default function StudentDashboardPage() {
                   <Card key={task.id} className="p-5 border-l-4 border-l-blue-500 hover:shadow-md transition-all">
                     <div className="flex justify-between items-start">
                       <div>
-                        <Badge variant="blue" className="mb-2">Week {task.week_number}</Badge>
+                        <Badge variant="blue" className="mb-2 bg-blue-100 text-blue-800 font-bold">Week {task.week_number}</Badge>
                         <h3 className="text-lg font-bold text-slate-800">{task.title}</h3>
                         <p className="text-sm text-slate-600 mt-2 whitespace-pre-wrap">{task.description}</p>
+                        
+                        {task.file_url && (
+                          <a href={task.file_url} target="_blank" rel="noopener noreferrer" className="inline-block mt-4 text-sm font-bold text-blue-600 hover:underline">
+                            View Attached Resource &rarr;
+                          </a>
+                        )}
                       </div>
-                      {task.due_date && (
-                        <div className="text-right flex-shrink-0 ml-4">
-                          <p className="text-xs font-bold text-slate-400 uppercase">Due Date</p>
-                          <p className="text-sm font-semibold text-slate-800">{new Date(task.due_date).toLocaleDateString()}</p>
-                        </div>
-                      )}
                     </div>
                   </Card>
                 ))}
@@ -182,26 +184,79 @@ export default function StudentDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
-      {/* Navbar */}
-      <nav className="bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-3">
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-2 rounded-lg">
-              <Cloud className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-xl font-black text-slate-900 tracking-tight">Student Portal</span>
+    <div className="flex h-screen bg-slate-50 font-sans overflow-hidden">
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div className="fixed inset-0 z-40 bg-slate-900/50 lg:hidden" onClick={() => setIsSidebarOpen(false)} />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-slate-300 transform transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="h-16 flex items-center px-6 border-b border-slate-800">
+          <div className="flex items-center space-x-2">
+            <span className="text-xl font-bold tracking-tight text-white flex items-center">
+              CloudExify<span className="text-blue-500 font-extrabold text-2xl ml-0.5">.</span>
+            </span>
           </div>
-          <Button variant="outline" size="sm" onClick={handleLogout} className="text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200 transition-colors">
+        </div>
+
+        <nav className="p-4 space-y-1.5">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-3 px-4">Menu</div>
+          
+          <button 
+            onClick={() => { setActiveTab('dashboard'); setIsSidebarOpen(false) }}
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-bold ${activeTab === 'dashboard' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 hover:text-white'}`}
+          >
+            <LayoutDashboard className="w-5 h-5" />
+            <span>Dashboard</span>
+          </button>
+          
+          <button 
+            onClick={() => { setActiveTab('profile'); setIsSidebarOpen(false) }}
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-bold ${activeTab === 'profile' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 hover:text-white'}`}
+          >
+            <UserCircle className="w-5 h-5" />
+            <span>My Profile</span>
+          </button>
+        </nav>
+
+        <div className="absolute bottom-0 left-0 w-full p-4 border-t border-slate-800">
+          <Button variant="outline" className="w-full bg-slate-800 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-700" onClick={handleLogout}>
             <LogOut className="w-4 h-4 mr-2" /> Logout
           </Button>
         </div>
-      </nav>
+      </aside>
 
-      {/* Main Content */}
-      <main>
-        {renderStatusScreen()}
-      </main>
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Top Navbar */}
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+          <button className="lg:hidden text-slate-500 hover:text-slate-700" onClick={() => setIsSidebarOpen(true)}>
+            <Menu className="w-6 h-6" />
+          </button>
+          <div className="flex-1 flex justify-end items-center space-x-4">
+            <span className="text-sm font-bold text-slate-700">{intern.full_name}</span>
+            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold">
+              {intern.full_name.charAt(0)}
+            </div>
+          </div>
+        </header>
+
+        {/* Scrollable Content */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+          {activeTab === 'dashboard' ? renderStatusScreen() : (
+            <Card className="max-w-2xl mx-auto p-8">
+              <h2 className="text-2xl font-black text-slate-900 mb-6 border-b pb-4">My Profile</h2>
+              <div className="space-y-4">
+                <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Full Name</span><span className="font-semibold text-slate-900 text-lg">{intern.full_name}</span></div>
+                <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Registration No</span><span className="font-semibold text-blue-600 bg-blue-50 px-3 py-1 inline-block rounded-md">{intern.registration_number}</span></div>
+                <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Email Address</span><span className="font-semibold text-slate-900">{intern.email}</span></div>
+                <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Domain</span><span className="font-semibold text-slate-900">{intern.domain}</span></div>
+              </div>
+            </Card>
+          )}
+        </main>
+      </div>
     </div>
   )
 }
