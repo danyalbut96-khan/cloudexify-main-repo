@@ -158,7 +158,7 @@ export default function BatchesPage() {
               <select
                 className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                onChange={(e: any) => setFormData({ ...formData, status: e.target.value })}
               >
                 <option value="accepting">Accepting Registrations</option>
                 <option value="coming">Coming Soon</option>
@@ -278,7 +278,7 @@ export default function BatchesPage() {
                 <select
                   className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={editingBatch.status}
-                  onChange={(e) => setEditingBatch({ ...editingBatch, status: e.target.value })}
+                  onChange={(e: any) => setEditingBatch({ ...editingBatch, status: e.target.value })}
                 >
                   <option value="accepting">Accepting Registrations</option>
                   <option value="coming">Coming Soon</option>
