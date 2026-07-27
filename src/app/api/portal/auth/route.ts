@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     // 1. Find intern by email and reg number
     const { data: intern, error } = await supabase
       .from('interns')
-      .select('id, full_name, email, registration_number, status, batch_id, domain')
+      .select('id, full_name, email, registration_number, batch_id, domain')
       .ilike('email', email.trim())
       .eq('registration_number', registration_number.trim().toUpperCase())
       .maybeSingle()
@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Check Batch validity
+    let batchStatus = 'active'
     if (intern.batch_id) {
       const { data: batch } = await supabase
         .from('batches')
@@ -36,8 +37,9 @@ export async function POST(request: NextRequest) {
         .eq('id', intern.batch_id)
         .maybeSingle()
 
-      // If batch has ended, we can still let them log in but maybe the frontend will show a read-only view.
-      // So we won't block login here unless we explicitly want to.
+      if (batch) {
+        batchStatus = batch.status
+      }
     }
 
     // 3. Generate JWT Token
@@ -45,7 +47,7 @@ export async function POST(request: NextRequest) {
         id: intern.id, 
         email: intern.email, 
         role: 'intern', 
-        status: intern.status 
+        status: batchStatus 
       })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
@@ -67,7 +69,7 @@ export async function POST(request: NextRequest) {
         id: intern.id,
         full_name: intern.full_name,
         email: intern.email,
-        status: intern.status,
+        status: batchStatus,
         domain: intern.domain
       }
     })
