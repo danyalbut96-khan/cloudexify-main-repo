@@ -12,7 +12,10 @@ async function isSuperAdmin(userId: string) {
   return !!data?.is_super_admin
 }
 
-export async function GET(request: NextRequest) {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY.includes('your-service-role-key')) {
+    return NextResponse.json({ error: 'CRITICAL ERROR: SUPABASE_SERVICE_ROLE_KEY is missing or invalid. Please add your actual Service Role Key to .env.local and RESTART YOUR SERVER.' }, { status: 500 })
+  }
+
   const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -58,7 +61,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ admins })
   } catch (err: any) {
     console.error('Admin API GET Error:', err);
-    return NextResponse.json({ error: err.message || JSON.stringify(err) || 'Unknown error' }, { status: 500 })
+    
+    // Completely foolproof error serialization
+    let errorMessage = 'Unknown error';
+    if (err) {
+      if (typeof err === 'string') errorMessage = err;
+      else if (err.message) errorMessage = err.message;
+      else if (err.error_description) errorMessage = err.error_description;
+      else errorMessage = String(err);
+    }
+    
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }
 
