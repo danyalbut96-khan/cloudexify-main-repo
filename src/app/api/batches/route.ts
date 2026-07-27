@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { name, start_date, end_date, status = 'coming' } = await request.json()
+    const { name, start_date, end_date, status = 'coming', documents_locked = false } = await request.json()
     if (!name || !start_date || !end_date) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     const { data: newBatch, error } = await supabase
       .from('batches')
-      .insert({ name, start_date, end_date, status })
+      .insert({ name, start_date, end_date, status, documents_locked })
       .select()
       .single()
 
@@ -81,7 +81,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   try {
-    const { id, name, start_date, end_date, status } = await request.json()
+    const { id, name, start_date, end_date, status, documents_locked } = await request.json()
     if (!id) {
       return NextResponse.json({ error: 'Batch ID is required' }, { status: 400 })
     }
@@ -92,6 +92,7 @@ export async function PATCH(request: NextRequest) {
     if (start_date) updateData.start_date = start_date
     if (end_date) updateData.end_date = end_date
     if (status) updateData.status = status
+    if (documents_locked !== undefined) updateData.documents_locked = documents_locked
 
     // If making accepting, deactivate others
     if (status === 'accepting') {

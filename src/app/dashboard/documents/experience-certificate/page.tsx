@@ -24,6 +24,8 @@ function ExperienceCertificateGenerator() {
   const [skillsGained, setSkillsGained] = useState('Next.js, TypeScript, Tailwind CSS, PostgreSQL, and Git');
   const [adminEmail, setAdminEmail] = useState('');
   const [allAdmins, setAllAdmins] = useState<any[]>([]);
+  const [batches, setBatches] = useState<any[]>([]);
+  const [selectedBatchId, setSelectedBatchId] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
 
@@ -51,6 +53,19 @@ function ExperienceCertificateGenerator() {
       }
     };
     fetchSettings();
+
+    const fetchBatches = async () => {
+      try {
+        const res = await fetch('/api/batches');
+        if (res.ok) {
+          const data = await res.json();
+          setBatches(data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchBatches();
   }, []);
 
   useEffect(() => {
@@ -78,7 +93,10 @@ function ExperienceCertificateGenerator() {
     }
     setIsSearching(true);
     try {
-      const res = await fetch(`/api/interns?search=${val}`);
+      let endpoint = `/api/interns?search=${val}`;
+      if (selectedBatchId) endpoint += `&batchId=${selectedBatchId}`;
+      
+      const res = await fetch(endpoint);
       if (res.ok) {
         const data = await res.json();
         setSearchResults(data);
@@ -149,7 +167,10 @@ function ExperienceCertificateGenerator() {
   const fetchPendingInterns = async () => {
     setIsFetchingPending(true);
     try {
-      const res = await fetch('/api/interns?limit=5000');
+      let endpoint = '/api/interns?limit=5000';
+      if (selectedBatchId) endpoint += `&batchId=${selectedBatchId}`;
+      
+      const res = await fetch(endpoint);
       if (res.ok) {
         const data = await res.json();
         const pending = data.filter((i: any) => !i.intern_documents?.experience_certificate_generated);
@@ -215,7 +236,25 @@ function ExperienceCertificateGenerator() {
         {/* Left Form */}
         <Card className="lg:col-span-5 space-y-6 border border-slate-100">
           <div>
-            <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">1. Select Intern</h2>
+            <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">1. Select Batch (Optional)</h2>
+            <select
+              value={selectedBatchId}
+              onChange={(e) => {
+                setSelectedBatchId(e.target.value);
+                setSearchQuery('');
+                setSearchResults([]);
+              }}
+              className="block w-full px-3 py-2 mb-4 text-sm border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+            >
+              <option value="">All Batches</option>
+              {batches.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name} ({b.status})
+                </option>
+              ))}
+            </select>
+
+            <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">2. Select Intern</h2>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                 <Search className="h-4.5 w-4.5" />
@@ -265,7 +304,7 @@ function ExperienceCertificateGenerator() {
           </div>
 
           <div>
-            <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">2. Evaluation Parameters</h2>
+            <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">3. Evaluation Parameters</h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-500 mb-1 flex items-center">

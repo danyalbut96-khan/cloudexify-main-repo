@@ -20,7 +20,8 @@ export default function BatchesPage() {
     name: '',
     start_date: '',
     end_date: '',
-    status: 'coming'
+    status: 'coming',
+    documents_locked: false
   })
 
   const [editingBatch, setEditingBatch] = useState<any>(null)
@@ -58,7 +59,7 @@ export default function BatchesPage() {
       if (!res.ok) throw new Error(await res.text())
 
       toast.success('Batch created successfully!')
-      setFormData({ name: '', start_date: '', end_date: '', status: 'coming' })
+      setFormData({ name: '', start_date: '', end_date: '', status: 'coming', documents_locked: false })
       fetchBatches()
     } catch (error: any) {
       toast.error(error.message || 'Failed to create batch')
@@ -165,6 +166,19 @@ export default function BatchesPage() {
                 <option value="active">Active (Ongoing)</option>
                 <option value="completed">Completed</option>
               </select>
+            </div>
+
+            <div className="flex items-center space-x-2 pt-2 border-t border-slate-100">
+              <input
+                type="checkbox"
+                id="doc-lock-new"
+                checked={formData.documents_locked}
+                onChange={(e) => setFormData({ ...formData, documents_locked: e.target.checked })}
+                className="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500"
+              />
+              <Label htmlFor="doc-lock-new" className="text-sm font-semibold text-slate-700 cursor-pointer">
+                Lock Document Downloads
+              </Label>
             </div>
 
             <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 mt-4" disabled={isSubmitting}>
@@ -288,6 +302,22 @@ export default function BatchesPage() {
                 <p className="text-[10px] text-slate-500 mt-1">
                   Warning: Setting to &apos;Accepting Registrations&apos; will automatically update any currently accepting batch to &apos;Active&apos;.
                 </p>
+              </div>
+
+              <div className="flex items-center space-x-2 p-3 bg-red-50 border border-red-100 rounded-lg mt-4">
+                <input
+                  type="checkbox"
+                  id="doc-lock-edit"
+                  checked={editingBatch.documents_locked}
+                  onChange={(e) => setEditingBatch({ ...editingBatch, documents_locked: e.target.checked })}
+                  className="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500"
+                />
+                <div className="flex flex-col">
+                  <Label htmlFor="doc-lock-edit" className="text-sm font-bold text-red-900 cursor-pointer">
+                    Lock Document Downloads
+                  </Label>
+                  <span className="text-[10px] text-red-700 leading-tight">If checked, interns in this batch cannot download their generated documents from the portal.</span>
+                </div>
               </div>
 
               <div className="pt-4 flex gap-3">

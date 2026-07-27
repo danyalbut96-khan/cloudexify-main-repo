@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     // 1. Fetch Intern Details
     const { data: intern, error: internError } = await supabase
       .from('interns')
-      .select('id, full_name, email, registration_number, status, domain, batch_id, batches(name, status, end_date)')
+      .select('id, full_name, email, registration_number, status, domain, batch_id, batches(name, status, end_date, documents_locked)')
       .eq('id', internId)
       .single()
 
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
           .select('*')
           .eq('batch_id', intern.batch_id)
           .eq('domain', intern.domain)
-          .order('week_number', { ascending: true })
+          .order('created_at', { ascending: true })
         
         if (fetchedTasks) {
           tasks = fetchedTasks

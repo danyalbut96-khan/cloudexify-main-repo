@@ -181,10 +181,10 @@ export default function StudentDashboardPage() {
             </h2>
             
             <Card className="p-0 overflow-hidden divide-y divide-slate-100">
-              <DocumentRow title="Offer Letter" url={documents?.offer_letter_url} />
-              <DocumentRow title="Internship Certificate" url={documents?.certificate_url} />
-              <DocumentRow title="Experience Letter" url={documents?.experience_certificate_url} />
-              <DocumentRow title="Recommendation Letter" url={documents?.recommendation_letter_url} />
+              <DocumentRow title="Offer Letter" url={documents?.offer_letter_url} locked={intern.batches?.documents_locked} />
+              <DocumentRow title="Internship Certificate" url={documents?.certificate_url} locked={intern.batches?.documents_locked} />
+              <DocumentRow title="Experience Letter" url={documents?.experience_certificate_url} locked={intern.batches?.documents_locked} />
+              <DocumentRow title="Recommendation Letter" url={documents?.recommendation_letter_url} locked={intern.batches?.documents_locked} />
             </Card>
           </div>
         </div>
@@ -270,7 +270,21 @@ export default function StudentDashboardPage() {
   )
 }
 
-function DocumentRow({ title, url }: { title: string, url: string | undefined | null }) {
+function DocumentRow({ title, url, locked }: { title: string, url: string | undefined | null, locked?: boolean }) {
+  if (locked) {
+    return (
+      <div className="p-4 flex items-center justify-between bg-slate-50 opacity-80 border-l-4 border-l-red-500">
+        <div>
+          <p className="text-sm font-bold text-slate-700">{title}</p>
+          <p className="text-[10px] font-bold text-red-600">Access Closed by Administrator</p>
+        </div>
+        <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
+          <XCircle className="w-4 h-4 text-red-500" />
+        </div>
+      </div>
+    )
+  }
+
   if (!url) {
     return (
       <div className="p-4 flex items-center justify-between bg-slate-50 opacity-75">

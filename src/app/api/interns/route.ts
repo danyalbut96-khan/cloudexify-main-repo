@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
   const semester = searchParams.get('semester') || ''
   const offerStatus = searchParams.get('offer_letter_status') || ''
   const certStatus = searchParams.get('certificate_status') || ''
+  const batchId = searchParams.get('batchId') || ''
 
   try {
     let query = supabase
@@ -36,6 +37,10 @@ export async function GET(request: NextRequest) {
 
     if (semester) {
       query = query.eq('semester', parseInt(semester))
+    }
+
+    if (batchId) {
+      query = query.eq('batch_id', batchId)
     }
 
     // Sort so Pending comes first, then by newest
