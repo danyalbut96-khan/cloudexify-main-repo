@@ -15,7 +15,7 @@ CREATE UNIQUE INDEX idx_one_active_batch ON public.batches (is_active) WHERE is_
 -- Enable RLS for batches
 ALTER TABLE public.batches ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow read access for all" ON public.batches FOR SELECT USING (true);
-CREATE POLICY "Allow all access for admins" ON public.batches USING (auth.uid() IN (SELECT id FROM admins));
+CREATE POLICY "Allow all access for admins" ON public.batches USING (auth.uid() IN (SELECT id FROM admin_profiles));
 
 -- Insert an initial "Batch 1"
 INSERT INTO public.batches (name, start_date, end_date, is_active)
@@ -44,4 +44,4 @@ CREATE TABLE IF NOT EXISTS public.tasks (
 
 ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow read access for all" ON public.tasks FOR SELECT USING (true);
-CREATE POLICY "Allow all access for admins" ON public.tasks USING (auth.uid() IN (SELECT id FROM admins));
+CREATE POLICY "Allow all access for admins" ON public.tasks USING (auth.uid() IN (SELECT id FROM admin_profiles));
