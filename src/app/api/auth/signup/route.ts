@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getAdminClient } from '@/lib/supabase/server'
 import { isRateLimited, sanitizeInput } from '@/lib/utils'
 import { logAction, notifyAdmin } from '@/lib/server-utils'
 import { NextRequest, NextResponse } from 'next/server'
@@ -26,10 +26,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabase = createClient()
+    const supabaseAdmin = getAdminClient()
     
     // Check if signup is open
-    const { data: settings } = await supabase
+    const { data: settings } = await supabaseAdmin
       .from('intern_analysis_settings')
       .select('admin_signup_open')
       .eq('id', 1)
@@ -41,6 +41,8 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       )
     }
+    
+    const supabase = createClient()
     const { data, error } = await supabase.auth.signUp({
       email: sanitizedEmail,
       password: password,

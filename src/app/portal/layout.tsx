@@ -81,7 +81,6 @@ export default async function PortalLayout({ children }: { children: React.React
             </p>
             <div className="flex space-x-4 text-xs text-slate-500">
               <Link href="/portal/support" className="hover:text-blue-400 transition-colors">Support Portal</Link>
-              <Link href="/login" className="hover:text-blue-400 transition-colors">Admin Login</Link>
             </div>
           </div>
         </div>
