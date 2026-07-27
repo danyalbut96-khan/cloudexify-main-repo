@@ -14,6 +14,14 @@ function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSignupOpen, setIsSignupOpen] = useState(true);
+
+  React.useEffect(() => {
+    fetch('/api/auth/signup-status')
+      .then((res) => res.json())
+      .then((data) => setIsSignupOpen(data.open))
+      .catch(() => setIsSignupOpen(true));
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,12 +122,22 @@ function LoginForm() {
       </form>
 
       <div className="mt-4 text-center">
-        <Link
-          href="/signup"
-          className="text-xs text-blue-500 hover:text-blue-400 font-semibold transition-colors"
-        >
-          Request new admin account? Sign Up
-        </Link>
+        {isSignupOpen ? (
+          <Link
+            href="/signup"
+            className="text-xs text-blue-500 hover:text-blue-400 font-semibold transition-colors"
+          >
+            Request new admin account? Sign Up
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={() => toast.error('This system is closed for signups from the back. Contact Admin.')}
+            className="text-xs text-slate-500 hover:text-slate-400 font-semibold transition-colors"
+          >
+            Request new admin account? Sign Up
+          </button>
+        )}
       </div>
 
       <div className="mt-5 border-t border-slate-800 pt-5">
@@ -140,9 +158,7 @@ export default function LoginPage() {
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md z-10">
         <div className="flex justify-center items-center space-x-2">
-          <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-            <ShieldCheck className="h-6 w-6 text-white" />
-          </div>
+          <img src="/logo.png" alt="CloudExify Logo" className="h-10 w-10 object-contain" />
           <span className="text-2xl font-bold tracking-tight text-white">
             CloudExify<span className="text-blue-500 font-extrabold text-3xl">.</span>
           </span>

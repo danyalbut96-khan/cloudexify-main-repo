@@ -91,9 +91,7 @@ export default function SignupPage() {
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md z-10">
         <div className="flex justify-center items-center space-x-2">
-          <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-            <ShieldCheck className="h-6 w-6 text-white" />
-          </div>
+          <img src="/logo.png" alt="CloudExify Logo" className="h-10 w-10 object-contain" />
           <span className="text-2xl font-bold tracking-tight text-white">
             CloudExify<span className="text-blue-500 font-extrabold text-3xl">.</span>
           </span>

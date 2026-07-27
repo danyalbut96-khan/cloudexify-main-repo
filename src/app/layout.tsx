@@ -6,8 +6,8 @@ import { Toaster } from "react-hot-toast";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CloudExify Admin Portal",
-  description: "Secure internal management dashboard for CloudExify.",
+  title: "CloudExify",
+  description: "CloudExify Portal - Technology and Innovation.",
   icons: {
     icon: "/logo.png",
   },
