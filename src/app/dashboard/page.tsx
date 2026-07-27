@@ -91,7 +91,7 @@ export default function DashboardPage() {
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100 } }
+    visible: { y: 0, opacity: 1, transition: { type: 'spring' as const, stiffness: 100 } }
   };
 
   const internData = stats?.interns || {
@@ -121,7 +121,7 @@ export default function DashboardPage() {
   const recentActivity = stats?.recentActivity || [];
 
   const domainBreakdown: any = internData?.domainBreakdown || {};
-  const newInternsCount: number = Object.values(domainBreakdown).reduce((acc: any, curr: any) => acc + (curr?.new || 0), 0) as number;
+  const newInternsCount: number = Number(Object.values(domainBreakdown).reduce((acc: any, curr: any) => acc + (curr?.new || 0), 0));
 
   return (
     <PageWrapper title="Dashboard Overview">
@@ -138,7 +138,7 @@ export default function DashboardPage() {
           
           <div className="z-10 mb-4 md:mb-0">
             <h2 className="text-xl font-bold tracking-tight">Welcome back!</h2>
-            <p className="text-blue-100 text-sm mt-1">Here is what's happening in your internship program today.</p>
+            <p className="text-blue-100 text-sm mt-1">Here is what&apos;s happening in your internship program today.</p>
           </div>
           <div className="flex space-x-3 z-10 w-full md:w-auto">
             <Button onClick={() => router.push('/dashboard/interns')} className="bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-none backdrop-blur-sm transition-all">
@@ -417,7 +417,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Invoice breakdown by admin & Employee Soon */}
-        <div className="space-y-6">
+        <motion.div variants={itemVariants} className="space-y-6">
           {/* Invoice breakdown */}
           <Card>
             <h2 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center">
