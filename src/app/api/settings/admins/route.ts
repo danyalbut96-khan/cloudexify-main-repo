@@ -17,6 +17,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'CRITICAL ERROR: SUPABASE_SERVICE_ROLE_KEY is missing or invalid. Please add your actual Service Role Key to .env.local and RESTART YOUR SERVER.' }, { status: 500 })
   }
 
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY.startsWith('eyJ')) {
+    return NextResponse.json({ error: 'CRITICAL ERROR: Your SUPABASE_SERVICE_ROLE_KEY is incorrect. You likely copied the "JWT Secret" by mistake. Please go to Supabase -> Project Settings -> API, and copy the "service_role" key (it should be very long and start with "eyJ").' }, { status: 500 })
+  }
+
   const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
