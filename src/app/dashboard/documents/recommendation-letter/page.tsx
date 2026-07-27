@@ -29,7 +29,6 @@ function RecommendationLetterGenerator() {
   const [isSearching, setIsSearching] = useState(false);
   const [previewRlId, setPreviewRlId] = useState('');
   const [companyLogoUrl, setCompanyLogoUrl] = useState('');
-  const [companyLogoUrl, setCompanyLogoUrl] = useState('');
   const [companyName, setCompanyName] = useState('CloudExify');
 
   // Bulk Generation State
