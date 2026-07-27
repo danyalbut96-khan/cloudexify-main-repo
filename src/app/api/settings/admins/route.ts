@@ -57,7 +57,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ admins })
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 })
+    console.error('Admin API GET Error:', err);
+    return NextResponse.json({ error: err.message || JSON.stringify(err) || 'Unknown error' }, { status: 500 })
   }
 }
 
@@ -105,7 +106,8 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 })
+    console.error('Admin API PUT Error:', err);
+    return NextResponse.json({ error: err.message || JSON.stringify(err) || 'Unknown error' }, { status: 500 })
   }
 }
 
@@ -134,6 +136,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 })
+    console.error('Admin API DELETE Error:', err);
+    return NextResponse.json({ error: err.message || JSON.stringify(err) || 'Unknown error' }, { status: 500 })
   }
 }
