@@ -43,4 +43,4 @@ DROP POLICY IF EXISTS "Allow read access for all" ON public.batches;
 CREATE POLICY "Allow read access for all" ON public.batches FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "Allow all access for admins" ON public.batches;
-CREATE POLICY "Allow all access for admins" ON public.batches USING (auth.uid() IN (SELECT id FROM admin_profiles));
+CREATE POLICY "Allow all access for admins" ON public.batches USING (auth.uid() IN (SELECT admin_id FROM admin_profiles)) WITH CHECK (auth.uid() IN (SELECT admin_id FROM admin_profiles));
