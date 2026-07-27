@@ -33,6 +33,7 @@ import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import toast from 'react-hot-toast';
 import { createBrowserClient } from '@supabase/ssr';
+import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
 export default function SettingsPage() {
@@ -165,13 +166,13 @@ export default function SettingsPage() {
 
   const fetchAdminTeam = async () => {
     try {
-      const res = await fetch('/api/settings/admins');
-      const data = await res.json();
-      if (res.ok) {
-        setAdminTeam(data.admins || []);
+      const supabase = createClient();
+      const { data, error } = await supabase.rpc('get_admin_team_members');
+      if (!error && data) {
+        setAdminTeam(data || []);
       } else {
-        toast.error(`Admin Team Error: ${data.error}`);
-        console.error('Admin API Error:', data.error);
+        toast.error(`Admin Team Error: ${error?.message || 'Unknown RPC Error'}`);
+        console.error('Admin RPC Error:', error);
       }
     } catch (err: any) {
       toast.error(`Fetch error: ${err.message}`);
@@ -1394,12 +1395,10 @@ export default function SettingsPage() {
                                 const newPassword = prompt(`Enter new password for ${admin.full_name}:`);
                                 if (newPassword) {
                                   const t = toast.loading('Updating password...');
-                                  fetch('/api/settings/admins', {
-                                    method: 'PUT',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ id: admin.id, action: 'password', new_password: newPassword })
-                                  }).then(res => res.json()).then(data => {
-                                    if (data.error) toast.error(data.error, { id: t });
+                                  const supabase = createClient();
+                                  supabase.rpc('update_admin_password', { target_admin_id: admin.id, new_password: newPassword })
+                                  .then(({ error }) => {
+                                    if (error) toast.error(error.message, { id: t });
                                     else toast.success('Password updated successfully', { id: t });
                                   });
                                 }
@@ -1412,12 +1411,10 @@ export default function SettingsPage() {
                               onClick={() => {
                                 const action = admin.is_active ? 'disable' : 'enable';
                                 const t = toast.loading(admin.is_active ? 'Suspending account...' : 'Restoring account...');
-                                fetch('/api/settings/admins', {
-                                  method: 'PUT',
-                                  headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify({ id: admin.id, action })
-                                }).then(res => res.json()).then(data => {
-                                  if (data.error) toast.error(data.error, { id: t });
+                                const supabase = createClient();
+                                supabase.rpc('toggle_admin_status', { target_admin_id: admin.id, action_type: action })
+                                .then(({ error }) => {
+                                  if (error) toast.error(error.message, { id: t });
                                   else {
                                     toast.success('Account status updated', { id: t });
                                     fetchAdminTeam();
@@ -1432,12 +1429,10 @@ export default function SettingsPage() {
                               onClick={() => {
                                 if (confirm(`Are you absolutely sure you want to permanently delete ${admin.full_name}? This cannot be undone.`)) {
                                   const t = toast.loading('Deleting account...');
-                                  fetch('/api/settings/admins', {
-                                    method: 'DELETE',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ id: admin.id })
-                                  }).then(res => res.json()).then(data => {
-                                    if (data.error) toast.error(data.error, { id: t });
+                                  const supabase = createClient();
+                                  supabase.rpc('delete_admin_user', { target_admin_id: admin.id })
+                                  .then(({ error }) => {
+                                    if (error) toast.error(error.message, { id: t });
                                     else {
                                       toast.success('Account deleted forever', { id: t });
                                       fetchAdminTeam();
