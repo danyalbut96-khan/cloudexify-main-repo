@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     if (intern.batch_id) {
       const { data: batch } = await supabase
         .from('batches')
-        .select('is_active, end_date')
+        .select('status, end_date')
         .eq('id', intern.batch_id)
         .maybeSingle()
 

@@ -4,13 +4,12 @@ CREATE TABLE IF NOT EXISTS public.batches (
     name TEXT NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    is_active BOOLEAN DEFAULT false,
+    status VARCHAR(20) DEFAULT 'coming',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Ensure only one batch can be active at a time (Optional but good practice, though we can enforce it in code)
--- Create a unique index for active batches to prevent multiple active batches
-CREATE UNIQUE INDEX idx_one_active_batch ON public.batches (is_active) WHERE is_active = true;
+-- Ensure only one batch can be accepting registrations at a time
+CREATE UNIQUE INDEX idx_one_accepting_batch ON public.batches (status) WHERE status = 'accepting';
 
 -- Enable RLS for batches
 ALTER TABLE public.batches ENABLE ROW LEVEL SECURITY;
@@ -18,8 +17,8 @@ CREATE POLICY "Allow read access for all" ON public.batches FOR SELECT USING (tr
 CREATE POLICY "Allow all access for admins" ON public.batches USING (auth.uid() IN (SELECT id FROM admin_profiles));
 
 -- Insert an initial "Batch 1"
-INSERT INTO public.batches (name, start_date, end_date, is_active)
-VALUES ('Batch 1', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month', true)
+INSERT INTO public.batches (name, start_date, end_date, status)
+VALUES ('Batch 1', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month', 'accepting')
 ON CONFLICT DO NOTHING;
 
 -- 2. Modify Interns Table to include batch_id

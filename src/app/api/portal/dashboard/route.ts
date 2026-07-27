@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     // 1. Fetch Intern Details
     const { data: intern, error: internError } = await supabase
       .from('interns')
-      .select('id, full_name, email, registration_number, status, domain, batch_id, batches(name, is_active, end_date)')
+      .select('id, full_name, email, registration_number, status, domain, batch_id, batches(name, status, end_date)')
       .eq('id', internId)
       .single()
 

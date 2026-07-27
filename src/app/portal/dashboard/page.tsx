@@ -116,7 +116,7 @@ export default function StudentDashboardPage() {
         </div>
 
         {/* Batch Status Alert */}
-        {intern.batches && !intern.batches.is_active && (
+        {intern.batches && intern.batches.status === 'completed' && (
           <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl flex items-center">
             <Clock className="w-5 h-5 text-amber-500 mr-3" />
             <p className="text-sm font-medium text-amber-800">

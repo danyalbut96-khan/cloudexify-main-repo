@@ -36,8 +36,7 @@ export async function POST(request: NextRequest) {
     const { data: activeBatch } = await supabase
       .from('batches')
       .select('id')
-      .eq('is_active', true)
-      .limit(1)
+      .eq('status', 'accepting')
       .maybeSingle()
 
     if (!activeBatch) {

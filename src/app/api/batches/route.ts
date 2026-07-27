@@ -42,19 +42,19 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { name, start_date, end_date, is_active } = await request.json()
+    const { name, start_date, end_date, status = 'coming' } = await request.json()
     if (!name || !start_date || !end_date) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // If this new batch is active, set all others to inactive first
-    if (is_active) {
-      await supabase.from('batches').update({ is_active: false }).neq('id', '00000000-0000-0000-0000-000000000000') // hack to update all
+    // If this new batch is accepting, set all other accepting batches to something else (e.g. active)
+    if (status === 'accepting') {
+      await supabase.from('batches').update({ status: 'active' }).eq('status', 'accepting')
     }
 
     const { data: newBatch, error } = await supabase
       .from('batches')
-      .insert({ name, start_date, end_date, is_active })
+      .insert({ name, start_date, end_date, status })
       .select()
       .single()
 
@@ -81,26 +81,33 @@ export async function PATCH(request: NextRequest) {
   }
 
   try {
-    const { id, is_active } = await request.json()
+    const { id, name, start_date, end_date, status } = await request.json()
     if (!id) {
       return NextResponse.json({ error: 'Batch ID is required' }, { status: 400 })
     }
 
-    // If making active, deactivate others
-    if (is_active) {
-      await supabase.from('batches').update({ is_active: false }).neq('id', id)
+    // Prepare update object
+    const updateData: any = {}
+    if (name) updateData.name = name
+    if (start_date) updateData.start_date = start_date
+    if (end_date) updateData.end_date = end_date
+    if (status) updateData.status = status
+
+    // If making accepting, deactivate others
+    if (status === 'accepting') {
+      await supabase.from('batches').update({ status: 'active' }).eq('status', 'accepting').neq('id', id)
     }
 
     const { data: updatedBatch, error } = await supabase
       .from('batches')
-      .update({ is_active })
+      .update(updateData)
       .eq('id', id)
       .select()
       .single()
 
     if (error) throw error
 
-    await logAction(user.email || 'Admin', `Updated Batch ${updatedBatch.name} (Active: ${is_active})`, 'batch', id)
+    await logAction(user.email || 'Admin', `Updated Batch ${updatedBatch.name} (Status: ${status || updatedBatch.status})`, 'batch', id)
 
     return NextResponse.json(updatedBatch)
   } catch (err: any) {
