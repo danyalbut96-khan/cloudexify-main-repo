@@ -16,7 +16,7 @@ SECURITY DEFINER
 AS $$
 BEGIN
   -- Check if caller is super admin
-  IF NOT EXISTS (SELECT 1 FROM public.admin_profiles WHERE admin_id = auth.uid() AND is_super_admin = true) THEN
+  IF NOT EXISTS (SELECT 1 FROM public.admin_profiles prof WHERE prof.admin_id = auth.uid() AND prof.is_super_admin = true) THEN
     RAISE EXCEPTION 'Unauthorized: Super Admin access required';
   END IF;
   
@@ -42,7 +42,7 @@ SECURITY DEFINER
 AS $$
 BEGIN
   -- Check if caller is super admin
-  IF NOT EXISTS (SELECT 1 FROM public.admin_profiles WHERE admin_id = auth.uid() AND is_super_admin = true) THEN
+  IF NOT EXISTS (SELECT 1 FROM public.admin_profiles prof WHERE prof.admin_id = auth.uid() AND prof.is_super_admin = true) THEN
     RAISE EXCEPTION 'Unauthorized: Super Admin access required';
   END IF;
   
@@ -69,7 +69,7 @@ SECURITY DEFINER
 AS $$
 BEGIN
   -- Check if caller is super admin
-  IF NOT EXISTS (SELECT 1 FROM public.admin_profiles WHERE admin_id = auth.uid() AND is_super_admin = true) THEN
+  IF NOT EXISTS (SELECT 1 FROM public.admin_profiles prof WHERE prof.admin_id = auth.uid() AND prof.is_super_admin = true) THEN
     RAISE EXCEPTION 'Unauthorized: Super Admin access required';
   END IF;
   
@@ -91,7 +91,7 @@ SECURITY DEFINER
 AS $$
 BEGIN
   -- Check if caller is super admin
-  IF NOT EXISTS (SELECT 1 FROM public.admin_profiles WHERE admin_id = auth.uid() AND is_super_admin = true) THEN
+  IF NOT EXISTS (SELECT 1 FROM public.admin_profiles prof WHERE prof.admin_id = auth.uid() AND prof.is_super_admin = true) THEN
     RAISE EXCEPTION 'Unauthorized: Super Admin access required';
   END IF;
   
