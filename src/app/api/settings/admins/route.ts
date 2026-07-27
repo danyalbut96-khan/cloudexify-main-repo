@@ -12,6 +12,7 @@ async function isSuperAdmin(userId: string) {
   return !!data?.is_super_admin
 }
 
+export async function GET(request: NextRequest) {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY.includes('your-service-role-key')) {
     return NextResponse.json({ error: 'CRITICAL ERROR: SUPABASE_SERVICE_ROLE_KEY is missing or invalid. Please add your actual Service Role Key to .env.local and RESTART YOUR SERVER.' }, { status: 500 })
   }
