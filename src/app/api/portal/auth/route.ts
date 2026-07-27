@@ -16,17 +16,20 @@ export async function POST(request: NextRequest) {
 
     const supabase = getAdminClient()
 
-    // 1. Find intern by email and reg number
-    const { data: intern, error } = await supabase
+    // 1. Find intern by email and reg number (robust query)
+    const { data: interns, error } = await supabase
       .from('interns')
       .select('id, full_name, email, registration_number, batch_id, domain')
-      .ilike('email', email.trim())
-      .eq('registration_number', registration_number.trim().toUpperCase())
-      .maybeSingle()
+      .ilike('email', `%${email.trim()}%`)
+      .ilike('registration_number', `%${registration_number.trim()}%`)
+      .limit(1)
 
-    if (error || !intern) {
-      return NextResponse.json({ error: 'Invalid Email or Registration Number.' }, { status: 401 })
+    if (error || !interns || interns.length === 0) {
+      console.error('Login failed:', { email, registration_number, error })
+      return NextResponse.json({ error: 'Invalid Email or Registration Number. Please verify your details.' }, { status: 401 })
     }
+    
+    const intern = interns[0]
 
     // 2. Check Batch validity
     let batchStatus = 'active'
