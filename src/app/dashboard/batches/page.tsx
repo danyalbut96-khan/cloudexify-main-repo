@@ -93,7 +93,7 @@ export default function BatchesPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'accepting':
-        return <Badge variant="green" className="text-[10px] px-2 py-0">Accepting</Badge>
+        return <Badge variant="success" className="text-[10px] px-2 py-0">Accepting</Badge>
       case 'active':
         return <Badge variant="blue" className="text-[10px] px-2 py-0">Active</Badge>
       case 'coming':
