@@ -22,6 +22,9 @@ import { PageWrapper } from '@/components/ui/PageWrapper';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { formatPKR, formatDate } from '@/lib/utils';
 import { Badge } from '@/components/ui/Badge';
+import { InternGrowthChart } from '@/components/dashboard/InternGrowthChart';
+import { DomainDistributionChart } from '@/components/dashboard/DomainDistributionChart';
+import { DocumentStatsChart } from '@/components/dashboard/DocumentStatsChart';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -29,19 +32,33 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+    
     const fetchStats = async () => {
       try {
         const res = await fetch('/api/dashboard/stats');
         if (!res.ok) throw new Error('Failed to load dashboard metrics');
         const data = await res.json();
-        setStats(data);
+        if (isMounted) {
+          setStats(data);
+          setIsLoading(false);
+        }
       } catch (error) {
         console.error(error);
-      } finally {
-        setIsLoading(false);
+        if (isMounted) setIsLoading(false);
       }
     };
+    
+    // Initial fetch
     fetchStats();
+
+    // Auto-refresh every 30 seconds for a real-time feel
+    const interval = setInterval(fetchStats, 30000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   if (isLoading) {
@@ -209,84 +226,80 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* Grid: Intern Domain breakdown & Document generation states */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Intern Domain breakdown */}
-        <Card className="lg:col-span-1">
-          <h2 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center">
-            <Users className="h-4.5 w-4.5 mr-2 text-slate-400" />
-            Interns by Domain
-          </h2>
-          <div className="space-y-3.5">
-            {Object.entries(internData.domainBreakdown).map(([domain, counts]: any) => (
-              <div key={domain} className="space-y-1">
-                <div className="flex justify-between text-xs font-semibold">
-                  <span className="text-slate-600 truncate max-w-[80%]">{domain}</span>
-                  <span className="text-slate-900 flex items-center">
-                    {counts.total}
-                    {counts.new > 0 && (
-                      <span className="ml-1.5 px-1.5 py-0.5 text-[9px] font-bold bg-green-100 text-green-700 rounded-full">+{counts.new} new</span>
-                    )}
-                  </span>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                  <div
-                    className="bg-blue-600 h-1.5 rounded-full transition-all"
-                    style={{ width: `${internData.total > 0 ? (counts.total / internData.total) * 100 : 0}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-            {internData.total === 0 && (
-              <p className="text-xs text-slate-400 py-6 text-center">No interns registered.</p>
-            )}
+      {/* Advanced Analytics Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        
+        {/* Intern Growth Trend */}
+        <Card className="lg:col-span-2 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100/60">
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-sm font-bold text-slate-800 flex items-center">
+              <TrendingUp className="h-4.5 w-4.5 mr-2 text-blue-500" />
+              Internship Growth Trend
+            </h2>
+            <Badge variant="blue" className="text-[10px] bg-blue-50 text-blue-600 border-none px-2 py-0.5">Live Data</Badge>
           </div>
+          <p className="text-xs text-slate-400 mb-4">Historical analysis of new intern registrations.</p>
+          <InternGrowthChart data={internData.trend || []} />
         </Card>
 
-        {/* Intern Document status mapping */}
-        <Card className="lg:col-span-2">
-          <h2 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center">
-            <Award className="h-4.5 w-4.5 mr-2 text-slate-400" />
-            Document Issuance Audit
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-2">
-            {/* Offer letter status block */}
-            <div className="bg-slate-50/70 border border-slate-100 rounded-xl p-4 text-center">
-              <FileText className="h-5 w-5 text-slate-400 mx-auto mb-1.5" />
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Offer Letters</p>
-              <p className="text-lg font-bold text-slate-800 mt-2">{internData.offerLetters.generated}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">{internData.offerLetters.pending} pending</p>
-            </div>
-
-            {/* Certificate completion */}
-            <div className="bg-slate-50/70 border border-slate-100 rounded-xl p-4 text-center">
-              <Award className="h-5 w-5 text-slate-400 mx-auto mb-1.5" />
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Certificates</p>
-              <p className="text-lg font-bold text-slate-800 mt-2">{internData.certificates.generated}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">{internData.certificates.pending} pending</p>
-            </div>
-
-            {/* Experience cert */}
-            <div className="bg-slate-50/70 border border-slate-100 rounded-xl p-4 text-center">
-              <FileText className="h-5 w-5 text-slate-400 mx-auto mb-1.5" />
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Exp Letters</p>
-              <p className="text-lg font-bold text-slate-800 mt-2">{internData.experienceCertificates.generated}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">{internData.experienceCertificates.pending} pending</p>
-            </div>
-
-            {/* Recommendation letter */}
-            <div className="bg-slate-50/70 border border-slate-100 rounded-xl p-4 text-center">
-              <FileText className="h-5 w-5 text-slate-400 mx-auto mb-1.5" />
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Rec Letters</p>
-              <p className="text-lg font-bold text-slate-800 mt-2">{internData.recommendationLetters.generated}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">{internData.recommendationLetters.pending} pending</p>
-            </div>
+        {/* Domain Distribution */}
+        <Card className="shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100/60">
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-sm font-bold text-slate-800 flex items-center">
+              <Users className="h-4.5 w-4.5 mr-2 text-indigo-500" />
+              Domain Breakdown
+            </h2>
           </div>
+          <p className="text-xs text-slate-400 mb-4">Current distribution of interns across tech stacks.</p>
+          <DomainDistributionChart data={internData.domainBreakdown} />
+        </Card>
+      </div>
+
+      {/* Grid: Document generation & Projects */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        {/* Document generation Stats Chart */}
+        <Card className="lg:col-span-2 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100/60">
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-sm font-bold text-slate-800 flex items-center">
+              <FileSignature className="h-4.5 w-4.5 mr-2 text-emerald-500" />
+              Document Issuance Audit
+            </h2>
+          </div>
+          <p className="text-xs text-slate-400 mb-4">Comparison of generated vs pending official documents.</p>
+          <DocumentStatsChart data={internData} />
+        </Card>
+
+        {/* Existing Simple Card for Document Quick numbers if needed, or we just keep the chart. 
+            Let's replace the old simple box grid with the Support Ticket breakdown or AI Stats. */}
+        <Card className="lg:col-span-1 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100/60 flex flex-col justify-center">
+            <h2 className="text-sm font-bold text-slate-800 mb-6 flex items-center">
+              <LifeBuoy className="h-4.5 w-4.5 mr-2 text-purple-500" />
+              Support Efficiency
+            </h2>
+            <div className="space-y-4">
+              <div className="bg-purple-50 rounded-xl p-4 flex justify-between items-center">
+                <div>
+                  <p className="text-xs font-bold text-purple-600 uppercase tracking-wider">Total Tickets</p>
+                  <p className="text-2xl font-black text-purple-900 mt-1">{supportData.total}</p>
+                </div>
+                <LifeBuoy className="h-8 w-8 text-purple-200" />
+              </div>
+              <div className="flex space-x-4">
+                <div className="flex-1 bg-amber-50 rounded-xl p-4">
+                  <p className="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Open</p>
+                  <p className="text-lg font-black text-amber-900">{supportData.open}</p>
+                </div>
+                <div className="flex-1 bg-emerald-50 rounded-xl p-4">
+                  <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Resolved</p>
+                  <p className="text-lg font-black text-emerald-900">{supportData.total - supportData.open}</p>
+                </div>
+              </div>
+            </div>
         </Card>
       </div>
 
       {/* Grid: Recent Proposals & Invoice Breakdown by Admin & Employee Soon */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         {/* Recent proposals sent */}
         <Card className="lg:col-span-2">
           <h2 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center justify-between">

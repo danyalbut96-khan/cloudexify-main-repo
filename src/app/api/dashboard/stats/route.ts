@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     // 1. Query Interns & Document status
     const { data: interns, error: internsError } = await supabase
       .from('interns')
-      .select('id, domain, is_new')
+      .select('id, domain, is_new, created_at')
 
     const { data: documents, error: docsError } = await supabase
       .from('intern_documents')
@@ -43,12 +43,39 @@ export async function GET(request: NextRequest) {
       'Full Stack Development': { total: 0, new: 0 }
     }
 
+    // Trend data for charts (Last 6 months)
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    const internGrowthTrend: Record<string, number> = {}
+    
+    // Pre-fill last 6 months to ensure chronological order
+    const today = new Date()
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(today.getFullYear(), today.getMonth() - i, 1)
+      const label = `${monthNames[d.getMonth()]} ${d.getFullYear().toString().slice(-2)}`
+      internGrowthTrend[label] = 0
+    }
+
     interns.forEach(i => {
+      // Domain counts
       if (domainBreakdown[i.domain] !== undefined) {
         domainBreakdown[i.domain].total++
         if (i.is_new) domainBreakdown[i.domain].new++
       }
+
+      // Time series data for charts
+      if (i.created_at) {
+        const date = new Date(i.created_at)
+        const label = `${monthNames[date.getMonth()]} ${date.getFullYear().toString().slice(-2)}`
+        if (internGrowthTrend[label] !== undefined) {
+          internGrowthTrend[label]++
+        }
+      }
     })
+
+    const internTrendArray = Object.keys(internGrowthTrend).map(key => ({
+      name: key,
+      interns: internGrowthTrend[key]
+    }))
 
     const offerLetters = { generated: 0, pending: 0 }
     const certificates = { generated: 0, pending: 0 }
@@ -173,7 +200,8 @@ export async function GET(request: NextRequest) {
         offerLetters,
         certificates,
         experienceCertificates,
-        recommendationLetters
+        recommendationLetters,
+        trend: internTrendArray
       },
       projects: {
         active: activeProjects,
