@@ -166,11 +166,15 @@ export default function SettingsPage() {
   const fetchAdminTeam = async () => {
     try {
       const res = await fetch('/api/settings/admins');
+      const data = await res.json();
       if (res.ok) {
-        const data = await res.json();
         setAdminTeam(data.admins || []);
+      } else {
+        toast.error(`Admin Team Error: ${data.error}`);
+        console.error('Admin API Error:', data.error);
       }
-    } catch (err) {
+    } catch (err: any) {
+      toast.error(`Fetch error: ${err.message}`);
       console.error(err);
     }
   };
@@ -983,38 +987,43 @@ export default function SettingsPage() {
                     <h4 className="text-xs font-bold text-slate-800">Admin Signup Gateway</h4>
                     <p className="text-[10px] text-slate-500 mt-1">Enable or disable new admin registrations via /signup.</p>
                   </div>
-                  <button
-                    onClick={async () => {
-                      const newState = !adminSignupOpen;
-                      setAdminSignupOpen(newState);
-                      const toastId = toast.loading('Saving setting...');
-                      try {
-                        const res = await fetch('/api/settings', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            type: 'intern-analysis-settings',
-                            openrouter_api_key: aiApiKey,
-                            openrouter_model: aiModel,
-                            max_projects_per_intern: aiMaxProjects,
-                            registration_open: aiRegistrationOpen,
-                            public_leaderboard_open: aiPublicLeaderboardOpen,
-                            admin_signup_open: newState,
-                            batch_coming_soon_message: aiBatchMessage,
-                            system_prompt_prefix: aiSystemPrompt
-                          })
-                        });
-                        if (!res.ok) throw new Error('Failed to update settings');
-                        toast.success('Admin signup setting updated!', { id: toastId });
-                      } catch (err: any) {
-                        setAdminSignupOpen(!newState);
-                        toast.error(err.message || 'Update failed', { id: toastId });
-                      }
-                    }}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${adminSignupOpen ? 'bg-blue-600' : 'bg-slate-300'}`}
-                  >
-                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${adminSignupOpen ? 'translate-x-6' : 'translate-x-1'}`} />
-                  </button>
+                  <div className="flex items-center">
+                    <span className={`text-xs font-bold mr-3 ${adminSignupOpen ? 'text-green-600' : 'text-slate-400'}`}>
+                      {adminSignupOpen ? "Now it's open" : "Now it's closed"}
+                    </span>
+                    <button
+                      onClick={async () => {
+                        const newState = !adminSignupOpen;
+                        setAdminSignupOpen(newState);
+                        const toastId = toast.loading('Saving setting...');
+                        try {
+                          const res = await fetch('/api/settings', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              type: 'intern-analysis-settings',
+                              openrouter_api_key: aiApiKey,
+                              openrouter_model: aiModel,
+                              max_projects_per_intern: aiMaxProjects,
+                              registration_open: aiRegistrationOpen,
+                              public_leaderboard_open: aiPublicLeaderboardOpen,
+                              admin_signup_open: newState,
+                              batch_coming_soon_message: aiBatchMessage,
+                              system_prompt_prefix: aiSystemPrompt
+                            })
+                          });
+                          if (!res.ok) throw new Error('Failed to update settings');
+                          toast.success('Admin signup setting updated!', { id: toastId });
+                        } catch (err: any) {
+                          setAdminSignupOpen(!newState);
+                          toast.error(err.message || 'Update failed', { id: toastId });
+                        }
+                      }}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${adminSignupOpen ? 'bg-blue-600' : 'bg-slate-300'}`}
+                    >
+                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${adminSignupOpen ? 'translate-x-6' : 'translate-x-1'}`} />
+                    </button>
+                  </div>
                 </div>
               </Card>
 
