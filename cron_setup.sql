@@ -51,6 +51,10 @@ SELECT cron.schedule(
   $$ DELETE FROM public.interns WHERE status = 'Rejected' AND rejected_at < NOW() - INTERVAL '7 days'; $$
 );
 
--- 5. Alter tasks table for flexible duration_label
+-- 5. Alter tasks table for flexible duration_label and ensure file_url exists
 ALTER TABLE public.tasks DROP COLUMN IF EXISTS week_number;
 ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS duration_label TEXT NOT NULL DEFAULT 'Project';
+ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS file_url TEXT;
+
+-- 6. Reload PostgREST schema cache so the API recognizes the new columns instantly
+NOTIFY pgrst, 'reload schema';
