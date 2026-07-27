@@ -127,6 +127,23 @@ export async function GET(request: NextRequest) {
 
     const generatedAt = new Date().toISOString()
 
+    // 7.5 Upload to Supabase Storage
+    const fileName = `offer-letters/${intern.id}.pdf`
+    const { error: uploadError } = await adminClient.storage
+      .from('intern-documents')
+      .upload(fileName, pdfBuffer, {
+        contentType: 'application/pdf',
+        upsert: true
+      })
+
+    let pdfUrl = null
+    if (!uploadError) {
+      const { data: publicUrlData } = adminClient.storage
+        .from('intern-documents')
+        .getPublicUrl(fileName)
+      pdfUrl = publicUrlData.publicUrl
+    }
+
     // 8. Update Intern Document generated status
     const { error: docUpdateError } = await adminClient
       .from('intern_documents')
@@ -136,7 +153,8 @@ export async function GET(request: NextRequest) {
         offer_letter_date: generatedAt,
         offer_letter_number: offerLetterNumber,
         offer_letter_generated_at: generatedAt,
-        offer_letter_generated_by: user.email
+        offer_letter_generated_by: user.email,
+        offer_letter_url: pdfUrl
       }, { onConflict: 'intern_id' })
 
     if (docUpdateError) {

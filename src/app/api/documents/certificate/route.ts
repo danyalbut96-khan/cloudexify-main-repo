@@ -112,13 +112,31 @@ export async function GET(request: NextRequest) {
     const pdfBuffer = await pdf(docElement as any).toBuffer()
     const generatedAt = new Date().toISOString()
 
+    // Upload to Supabase Storage
+    const fileName = `certificates/${intern.id}.pdf`
+    const { error: uploadError } = await supabase.storage
+      .from('intern-documents')
+      .upload(fileName, pdfBuffer, {
+        contentType: 'application/pdf',
+        upsert: true
+      })
+
+    let pdfUrl = null
+    if (!uploadError) {
+      const { data: publicUrlData } = supabase.storage
+        .from('intern-documents')
+        .getPublicUrl(fileName)
+      pdfUrl = publicUrlData.publicUrl
+    }
+
     // 7. Update Intern Document generated status
     const { error: docUpdateError } = await supabase
       .from('intern_documents')
       .upsert({
         intern_id: internId,
         certificate_generated: true,
-        certificate_date: generatedAt
+        certificate_date: generatedAt,
+        certificate_url: pdfUrl
       }, { onConflict: 'intern_id' })
 
     if (docUpdateError) {
