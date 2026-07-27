@@ -1,9 +1,9 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAdminClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
   try {
-    const supabase = createClient()
+    const supabase = getAdminClient()
     
     // Fetch all analyzed projects
     const { data: projects, error } = await supabase

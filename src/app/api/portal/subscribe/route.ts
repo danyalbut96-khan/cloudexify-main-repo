@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAdminClient } from '@/lib/supabase/server'
 import { isRateLimited } from '@/lib/utils'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Valid email is required' }, { status: 400 })
     }
 
-    const supabase = createClient()
+    const supabase = getAdminClient()
     
     // Insert into waitlist_subscribers
     const { error } = await supabase

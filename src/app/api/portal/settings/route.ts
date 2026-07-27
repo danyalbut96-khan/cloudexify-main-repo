@@ -1,11 +1,11 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAdminClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 export const dynamic = 'force-dynamic';
 
 // Public endpoint — no auth required. Returns only non-sensitive portal config.
 export async function GET() {
   try {
-    const supabase = createClient()
+    const supabase = getAdminClient()
     const { data } = await supabase
       .from('intern_analysis_settings')
       .select('registration_open, batch_coming_soon_message, max_projects_per_intern, public_leaderboard_open')

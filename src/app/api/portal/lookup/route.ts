@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAdminClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Please enter a name or registration number to search.' }, { status: 400 })
     }
 
-    const supabase = createClient()
+    const supabase = getAdminClient()
 
     // Scenario A: Only full_name is provided (Search Suggestions)
     if (rawName && !rawRegNo) {

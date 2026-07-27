@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAdminClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 const DOMAIN_CODES: Record<string, string> = {
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'All fields are required.' }, { status: 400 })
     }
 
-    const supabase = createClient()
+    const supabase = getAdminClient()
 
     // Verify registration is open
     const { data: settings, error: settingsError } = await supabase
