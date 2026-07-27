@@ -22,6 +22,10 @@ export default function PortalSupportPage() {
   const [searchTicketNo, setSearchTicketNo] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [foundTicket, setFoundTicket] = useState<any>(null);
+  
+  // Reply state
+  const [replyText, setReplyText] = useState('');
+  const [isReplying, setIsReplying] = useState(false);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +67,36 @@ export default function PortalSupportPage() {
       toast.error(err.message, { id: t });
     } finally {
       setIsSearching(false);
+    }
+  };
+
+  const handleReply = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!foundTicket || !replyText.trim()) return;
+
+    setIsReplying(true);
+    const t = toast.loading('Sending reply...');
+    try {
+      const res = await fetch('/api/support', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: foundTicket.id,
+          reply_text: replyText,
+          sender: 'user',
+          status: 'open'
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      toast.success('Reply sent successfully!', { id: t });
+      setFoundTicket({ ...foundTicket, ...data.ticket });
+      setReplyText('');
+    } catch (err: any) {
+      toast.error(err.message, { id: t });
+    } finally {
+      setIsReplying(false);
     }
   };
 
@@ -172,26 +206,98 @@ export default function PortalSupportPage() {
                   </div>
                 </div>
                 
-                <div>
-                  <h4 className="text-xs font-bold text-slate-500 uppercase mb-2">Your Message</h4>
-                  <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap bg-slate-950 p-4 rounded-xl border border-slate-800/50">
-                    {foundTicket.description}
-                  </p>
+                <div className="space-y-6">
+                  {/* Legacy User Message */}
+                  {(!foundTicket.messages || foundTicket.messages.length === 0) && (
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-500 uppercase mb-2">Your Message</h4>
+                      <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap bg-slate-950 p-4 rounded-xl border border-slate-800/50">
+                        {foundTicket.description}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Legacy Admin Reply */}
+                  {(!foundTicket.messages || foundTicket.messages.length === 0) && (
+                    foundTicket.admin_reply ? (
+                      <div>
+                        <h4 className="text-xs font-bold text-blue-400 uppercase mb-2 flex items-center gap-1.5">
+                          <CheckCircle className="w-3.5 h-3.5" /> Support Reply
+                        </h4>
+                        <p className="text-sm text-blue-100 leading-relaxed whitespace-pre-wrap bg-blue-900/20 p-4 rounded-xl border border-blue-500/20">
+                          {foundTicket.admin_reply}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-amber-400/90 text-sm">
+                        <Clock className="w-5 h-5 shrink-0" />
+                        <p>Our support team is reviewing your ticket and will reply soon. Check back later!</p>
+                      </div>
+                    )
+                  )}
+
+                  {/* New Chat History */}
+                  {foundTicket.messages && foundTicket.messages.length === 0 && (
+                     <div className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-amber-400/90 text-sm">
+                        <Clock className="w-5 h-5 shrink-0" />
+                        <p>Our support team is reviewing your ticket and will reply soon. Check back later!</p>
+                     </div>
+                  )}
+
+                  {foundTicket.messages && foundTicket.messages.map((msg: any, idx: number) => {
+                    if (msg.sender === 'user') {
+                      return (
+                        <div key={idx}>
+                          <h4 className="text-xs font-bold text-slate-500 uppercase mb-2 flex items-center justify-between">
+                            <span>Your Message</span>
+                            <span className="text-[10px] text-slate-600 font-normal">{new Date(msg.timestamp).toLocaleString()}</span>
+                          </h4>
+                          <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap bg-slate-950 p-4 rounded-xl border border-slate-800/50">
+                            {msg.text}
+                          </p>
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div key={idx}>
+                          <h4 className="text-xs font-bold text-blue-400 uppercase mb-2 flex items-center justify-between">
+                            <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5" /> Support Reply</span>
+                            <span className="text-[10px] text-blue-500/50 font-normal">{new Date(msg.timestamp).toLocaleString()}</span>
+                          </h4>
+                          <p className="text-sm text-blue-100 leading-relaxed whitespace-pre-wrap bg-blue-900/20 p-4 rounded-xl border border-blue-500/20">
+                            {msg.text}
+                          </p>
+                        </div>
+                      );
+                    }
+                  })}
                 </div>
 
-                {foundTicket.admin_reply ? (
-                  <div>
-                    <h4 className="text-xs font-bold text-blue-400 uppercase mb-2 flex items-center gap-1.5">
-                      <CheckCircle className="w-3.5 h-3.5" /> Support Reply
-                    </h4>
-                    <p className="text-sm text-blue-100 leading-relaxed whitespace-pre-wrap bg-blue-900/20 p-4 rounded-xl border border-blue-500/20">
-                      {foundTicket.admin_reply}
-                    </p>
+                {/* Reply Form */}
+                {foundTicket.status !== 'closed' ? (
+                  <div className="pt-6 border-t border-slate-800">
+                    <form onSubmit={handleReply} className="space-y-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">Add a Reply</label>
+                        <textarea
+                          required
+                          value={replyText}
+                          onChange={e => setReplyText(e.target.value)}
+                          rows={3}
+                          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:border-blue-500 outline-none transition-colors resize-none"
+                          placeholder="Type your reply here..."
+                        />
+                      </div>
+                      <div className="flex justify-end">
+                        <Button type="submit" isLoading={isReplying} className="px-6">
+                          Send Reply
+                        </Button>
+                      </div>
+                    </form>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-amber-400/90 text-sm">
-                    <Clock className="w-5 h-5 shrink-0" />
-                    <p>Our support team is reviewing your ticket and will reply soon. Check back later!</p>
+                  <div className="pt-6 border-t border-slate-800 text-center">
+                    <p className="text-sm text-slate-500">This ticket has been closed. If you have a new issue, please submit a new ticket.</p>
                   </div>
                 )}
               </div>

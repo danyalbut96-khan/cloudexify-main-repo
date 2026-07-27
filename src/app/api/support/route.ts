@@ -124,25 +124,57 @@ export async function PUT(request: NextRequest) {
 
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const isAdmin = !!user;
 
   try {
     const body = await request.json()
     const id = body.id
-    const adminReply = sanitizeInput(body.admin_reply || '')
-    const status = body.status || 'answered'
+    const replyText = sanitizeInput(body.reply_text || '')
+    const sender = body.sender // 'admin' or 'user'
+    let status = body.status
 
-    if (!id) {
-      return NextResponse.json({ error: 'Ticket ID required' }, { status: 400 })
+    if (!id || !replyText || !sender) {
+      return NextResponse.json({ error: 'Ticket ID, reply text, and sender are required' }, { status: 400 })
     }
+
+    if (sender === 'admin' && !isAdmin) {
+      return NextResponse.json({ error: 'Unauthorized to send admin reply' }, { status: 401 })
+    }
+
+    // Fetch the current ticket to get the messages array
+    const { data: currentTicket, error: fetchError } = await supabase
+      .from('support_tickets')
+      .select('messages, status, ticket_number')
+      .eq('id', id)
+      .single()
+      
+    if (fetchError || !currentTicket) {
+       return NextResponse.json({ error: 'Ticket not found' }, { status: 404 })
+    }
+
+    const messages = currentTicket.messages || []
+    
+    messages.push({
+      sender,
+      text: replyText,
+      timestamp: new Date().toISOString()
+    })
+
+    // Auto-update status and is_new based on who is replying
+    if (sender === 'admin') {
+       status = status || 'answered'
+    } else {
+       status = 'open' // Reopen ticket if user replies
+    }
+    
+    const isNew = sender === 'user'
 
     const { data, error } = await supabase
       .from('support_tickets')
       .update({
-        admin_reply: adminReply,
-        status: status
+        messages,
+        status,
+        is_new: isNew
       })
       .eq('id', id)
       .select()
@@ -150,12 +182,14 @@ export async function PUT(request: NextRequest) {
 
     if (error) throw error
 
-    await logAction(
-      user.email!,
-      `Replied to support ticket ${data.ticket_number}`,
-      'support',
-      data.id
-    )
+    if (isAdmin) {
+      await logAction(
+        user.email!,
+        `Replied to support ticket ${data.ticket_number}`,
+        'support',
+        data.id
+      )
+    }
 
     return NextResponse.json({ ticket: data })
   } catch (err: any) {

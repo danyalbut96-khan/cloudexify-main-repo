@@ -48,7 +48,8 @@ export default function SupportDashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: selectedTicket.id,
-          admin_reply: replyText,
+          reply_text: replyText,
+          sender: 'admin',
           status: replyStatus
         })
       });
@@ -65,6 +66,32 @@ export default function SupportDashboard() {
       toast.error(err.message, { id: t });
     } finally {
       setIsReplying(false);
+    }
+  };
+
+  const handleToggleStatus = async () => {
+    if (!selectedTicket) return;
+    const newStatus = selectedTicket.status === 'closed' ? 'open' : 'closed';
+    const t = toast.loading(`Marking ticket as ${newStatus}...`);
+    try {
+      const res = await fetch('/api/support', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: selectedTicket.id,
+          reply_text: `[System: Ticket marked as ${newStatus} by admin]`,
+          sender: 'admin',
+          status: newStatus
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      toast.success(`Ticket ${newStatus}!`, { id: t });
+      setTickets(prev => prev.map(tick => tick.id === selectedTicket.id ? { ...tick, ...data.ticket } : tick));
+      setSelectedTicket({ ...selectedTicket, ...data.ticket });
+      setReplyStatus(newStatus === 'closed' ? 'closed' : 'answered');
+    } catch (err: any) {
+      toast.error(err.message, { id: t });
     }
   };
 
@@ -100,7 +127,7 @@ export default function SupportDashboard() {
               filteredTickets.map(ticket => (
                 <div 
                   key={ticket.id}
-                  onClick={() => { setSelectedTicket(ticket); setReplyText(ticket.admin_reply || ''); setReplyStatus(ticket.status === 'open' ? 'answered' : ticket.status); }}
+                  onClick={() => { setSelectedTicket(ticket); setReplyText(''); setReplyStatus(ticket.status === 'open' ? 'answered' : ticket.status); }}
                   className={`p-4 rounded-xl border transition-all cursor-pointer ${selectedTicket?.id === ticket.id ? 'bg-indigo-50 border-indigo-200 shadow-sm' : 'bg-white border-slate-200 hover:border-indigo-300'}`}
                 >
                   <div className="flex justify-between items-start mb-2">
@@ -135,27 +162,36 @@ export default function SupportDashboard() {
                   </div>
                   <p className="text-sm font-mono text-slate-500">{selectedTicket.ticket_number} • Created {new Date(selectedTicket.created_at).toLocaleString()}</p>
                 </div>
+                <Button 
+                  variant={selectedTicket.status === 'closed' ? 'primary' : 'outline'}
+                  size="sm"
+                  onClick={handleToggleStatus}
+                >
+                  {selectedTicket.status === 'closed' ? 'Reopen Ticket' : 'Close Ticket'}
+                </Button>
               </div>
 
               <div className="p-6 flex-1 overflow-y-auto space-y-6">
-                {/* User Message */}
-                <div className="flex gap-4">
-                  <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
-                    <span className="text-indigo-700 font-bold text-xs">{selectedTicket.user_name.charAt(0).toUpperCase()}</span>
-                  </div>
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-slate-900">{selectedTicket.user_name}</span>
-                      <span className="text-xs text-slate-500">&lt;{selectedTicket.user_email}&gt;</span>
+                {/* Legacy User Message */}
+                {(!selectedTicket.messages || selectedTicket.messages.length === 0) && (
+                  <div className="flex gap-4">
+                    <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+                      <span className="text-indigo-700 font-bold text-xs">{selectedTicket.user_name.charAt(0).toUpperCase()}</span>
                     </div>
-                    <div className="bg-white border border-slate-200 p-4 rounded-xl rounded-tl-none shadow-sm text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
-                      {selectedTicket.description}
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm text-slate-900">{selectedTicket.user_name}</span>
+                        <span className="text-xs text-slate-500">&lt;{selectedTicket.user_email}&gt;</span>
+                      </div>
+                      <div className="bg-white border border-slate-200 p-4 rounded-xl rounded-tl-none shadow-sm text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
+                        {selectedTicket.description}
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
 
-                {/* Admin Reply History */}
-                {selectedTicket.admin_reply && (
+                {/* Legacy Admin Reply */}
+                {(!selectedTicket.messages || selectedTicket.messages.length === 0) && selectedTicket.admin_reply && (
                   <div className="flex gap-4 flex-row-reverse">
                     <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
                       <LifeBuoy className="w-4 h-4 text-white" />
@@ -171,6 +207,45 @@ export default function SupportDashboard() {
                     </div>
                   </div>
                 )}
+
+                {/* New Chat History */}
+                {selectedTicket.messages && selectedTicket.messages.map((msg: any, idx: number) => {
+                  if (msg.sender === 'user') {
+                    return (
+                      <div key={idx} className="flex gap-4">
+                        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+                          <span className="text-indigo-700 font-bold text-xs">{selectedTicket.user_name.charAt(0).toUpperCase()}</span>
+                        </div>
+                        <div className="flex-1 space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-sm text-slate-900">{selectedTicket.user_name}</span>
+                            <span className="text-xs text-slate-500">{new Date(msg.timestamp).toLocaleString()}</span>
+                          </div>
+                          <div className="bg-white border border-slate-200 p-4 rounded-xl rounded-tl-none shadow-sm text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
+                            {msg.text}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div key={idx} className="flex gap-4 flex-row-reverse">
+                        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
+                          <LifeBuoy className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="flex-1 space-y-1 flex flex-col items-end">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-sm text-slate-900">Support Admin</span>
+                            <span className="text-xs text-slate-500">{new Date(msg.timestamp).toLocaleString()}</span>
+                          </div>
+                          <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl rounded-tr-none shadow-sm text-sm text-blue-900 whitespace-pre-wrap leading-relaxed text-right">
+                            {msg.text}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                })}
               </div>
 
               {/* Reply Form */}
