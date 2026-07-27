@@ -9,6 +9,7 @@ import {
   XCircle, Loader2, GitBranch, ChevronDown, ChevronUp, BarChart3,
   Zap, RefreshCw, ExternalLink, AlertCircle, Medal, Star
 } from 'lucide-react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts';
 
 const DOMAINS = [
   { code: 'PY', label: 'Python', color: 'from-blue-500 to-cyan-500', bg: 'bg-blue-500/10', border: 'border-blue-500/20', text: 'text-blue-400' },
@@ -132,6 +133,12 @@ export default function InternAnalysisPage() {
   const uniqueInterns = new Set(projects.map(p => p.intern_id)).size;
   const completionPct = totalProjects > 0 ? Math.round((analyzedCount / totalProjects) * 100) : 0;
 
+  const pieData = [
+    { name: 'Analyzed', value: analyzedCount, color: '#10b981' }, // emerald-500
+    { name: 'Pending', value: pendingCount, color: '#f59e0b' },   // amber-500
+    { name: 'Failed', value: failedCount, color: '#ef4444' }      // red-500
+  ].filter(d => d.value > 0);
+
   // Build intern summaries for leaderboard
   const buildLeaderboard = (domainCode: string): InternSummary[] => {
     const domainProjects = projects.filter(p => p.domain_code === domainCode);
@@ -235,21 +242,7 @@ export default function InternAnalysisPage() {
 
             {/* Progress + Bulk Analyze */}
             <Card className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="font-semibold text-slate-900 text-sm">Analysis Progress</h3>
-                  <p className="text-xs text-slate-500 mt-0.5">{analyzedCount} of {totalProjects} projects analyzed</p>
-                </div>
-                <button
-                  onClick={analyzeAllPending}
-                  disabled={bulkAnalyzing || pendingCount === 0}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-xs font-semibold transition-all shadow-lg shadow-blue-900/30"
-                >
-                  {bulkAnalyzing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
-                  {bulkAnalyzing ? 'Analyzing All…' : `Analyze All Pending (${pendingCount})`}
-                </button>
-              </div>
-              <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+              <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden mb-2">
                 <div
                   className="h-full bg-gradient-to-r from-blue-500 to-violet-500 rounded-full transition-all duration-700"
                   style={{ width: `${completionPct}%` }}

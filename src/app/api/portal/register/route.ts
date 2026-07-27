@@ -32,6 +32,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Registration is currently closed.' }, { status: 403 })
     }
 
+    // Get the currently active batch
+    const { data: activeBatch } = await supabase
+      .from('batches')
+      .select('id')
+      .eq('is_active', true)
+      .limit(1)
+      .maybeSingle()
+
+    if (!activeBatch) {
+      return NextResponse.json({ error: 'No active batch is currently accepting registrations.' }, { status: 400 })
+    }
+
     // Check if email already registered
     const { data: existingIntern } = await supabase
       .from('interns')
@@ -82,7 +94,8 @@ export async function POST(request: NextRequest) {
         domain: domain,
         skill_level: skillLevel,
         available_hours: parseInt(availableHours, 10),
-        referral_source: referralSource
+        referral_source: referralSource,
+        batch_id: activeBatch.id
       })
       .select()
       .single()
