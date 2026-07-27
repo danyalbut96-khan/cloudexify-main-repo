@@ -274,20 +274,7 @@ export default function StudentDashboardPage() {
 }
 
 function DocumentRow({ title, url, locked }: { title: string, url: string | undefined | null, locked?: boolean }) {
-  if (locked) {
-    return (
-      <div className="p-4 flex items-center justify-between bg-slate-50 opacity-80 border-l-4 border-l-red-500">
-        <div>
-          <p className="text-sm font-bold text-slate-700">{title}</p>
-          <p className="text-[10px] font-bold text-red-600">Access Closed by Administrator</p>
-        </div>
-        <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
-          <XCircle className="w-4 h-4 text-red-500" />
-        </div>
-      </div>
-    )
-  }
-
+  // If no URL exists, it hasn't been generated yet.
   if (!url) {
     return (
       <div className="p-4 flex items-center justify-between bg-slate-50 opacity-75">
@@ -297,6 +284,21 @@ function DocumentRow({ title, url, locked }: { title: string, url: string | unde
         </div>
         <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center">
           <Download className="w-4 h-4 text-slate-400" />
+        </div>
+      </div>
+    )
+  }
+
+  // If it IS generated, but the batch is locked by admin
+  if (locked) {
+    return (
+      <div className="p-4 flex items-center justify-between bg-slate-50 border-l-4 border-l-amber-500">
+        <div>
+          <p className="text-sm font-bold text-slate-700">{title}</p>
+          <p className="text-[10px] font-bold text-amber-600">Generated (Download Locked by Admin)</p>
+        </div>
+        <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center cursor-not-allowed" title="Download is currently locked by the administrator">
+          <Download className="w-4 h-4 text-amber-500 opacity-50" />
         </div>
       </div>
     )
