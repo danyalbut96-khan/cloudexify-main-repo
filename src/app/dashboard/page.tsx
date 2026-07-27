@@ -25,6 +25,9 @@ import { Badge } from '@/components/ui/Badge';
 import { InternGrowthChart } from '@/components/dashboard/InternGrowthChart';
 import { DomainDistributionChart } from '@/components/dashboard/DomainDistributionChart';
 import { DocumentStatsChart } from '@/components/dashboard/DocumentStatsChart';
+import { Button } from '@/components/ui/Button';
+import { motion } from 'framer-motion';
+import { formatDistanceToNow } from 'date-fns';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -64,18 +67,32 @@ export default function DashboardPage() {
   if (isLoading) {
     return (
       <PageWrapper title="Dashboard Overview">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+          <Skeleton className="h-44 w-full" />
           <Skeleton className="h-44 w-full" />
           <Skeleton className="h-44 w-full" />
           <Skeleton className="h-44 w-full" />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Skeleton className="h-96 w-full" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Skeleton className="h-96 w-full lg:col-span-2" />
           <Skeleton className="h-96 w-full" />
         </div>
       </PageWrapper>
     );
   }
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100 } }
+  };
 
   const internData = stats?.interns || {
     total: 0,
@@ -84,6 +101,7 @@ export default function DashboardPage() {
     certificates: { generated: 0, pending: 0 },
     experienceCertificates: { generated: 0, pending: 0 },
     recommendationLetters: { generated: 0, pending: 0 },
+    trend: []
   };
 
   const projectData = stats?.projects || {
@@ -95,15 +113,43 @@ export default function DashboardPage() {
     invoicesCount: 0,
     invoicesAmount: 0,
     adminBreakdown: {},
+    newProjectsCount: 0,
+    newInvoicesCount: 0
   };
 
   const supportData = stats?.support || { total: 0, open: 0, new: 0 };
+  const recentActivity = stats?.recentActivity || [];
 
   const domainBreakdown: any = internData?.domainBreakdown || {};
   const newInternsCount: number = Object.values(domainBreakdown).reduce((acc: any, curr: any) => acc + (curr?.new || 0), 0) as number;
 
   return (
     <PageWrapper title="Dashboard Overview">
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-6"
+      >
+        {/* Quick Actions Command Center */}
+        <motion.div variants={itemVariants} className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 text-white shadow-xl shadow-blue-900/10 flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
+          <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white opacity-5 rounded-full blur-2xl pointer-events-none"></div>
+          <div className="absolute bottom-0 left-20 w-32 h-32 bg-blue-400 opacity-20 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div className="z-10 mb-4 md:mb-0">
+            <h2 className="text-xl font-bold tracking-tight">Welcome back!</h2>
+            <p className="text-blue-100 text-sm mt-1">Here is what's happening in your internship program today.</p>
+          </div>
+          <div className="flex space-x-3 z-10 w-full md:w-auto">
+            <Button onClick={() => router.push('/dashboard/interns')} className="bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-none backdrop-blur-sm transition-all">
+              <Users className="w-4 h-4 mr-2" /> Add Intern
+            </Button>
+            <Button onClick={() => router.push('/dashboard/documents/offer-letter')} className="bg-white hover:bg-slate-50 text-blue-700 font-bold shadow-lg transition-transform hover:scale-105 active:scale-95">
+              <FileSignature className="w-4 h-4 mr-2" /> Generate Document
+            </Button>
+          </div>
+        </motion.div>
+
       {/* 4 Main Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Clickable Intern Stats Card */}
@@ -230,72 +276,86 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         
         {/* Intern Growth Trend */}
-        <Card className="lg:col-span-2 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100/60">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="text-sm font-bold text-slate-800 flex items-center">
-              <TrendingUp className="h-4.5 w-4.5 mr-2 text-blue-500" />
-              Internship Growth Trend
-            </h2>
-            <Badge variant="blue" className="text-[10px] bg-blue-50 text-blue-600 border-none px-2 py-0.5">Live Data</Badge>
-          </div>
-          <p className="text-xs text-slate-400 mb-4">Historical analysis of new intern registrations.</p>
-          <InternGrowthChart data={internData.trend || []} />
-        </Card>
+        <motion.div variants={itemVariants} className="lg:col-span-2">
+          <Card className="h-full shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100/60">
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-sm font-bold text-slate-800 flex items-center">
+                <TrendingUp className="h-4.5 w-4.5 mr-2 text-blue-500" />
+                Internship Growth Trend
+              </h2>
+              <Badge variant="blue" className="text-[10px] bg-blue-50 text-blue-600 border-none px-2 py-0.5 animate-pulse">Live Data</Badge>
+            </div>
+            <p className="text-xs text-slate-400 mb-4">Historical analysis of new intern registrations.</p>
+            <InternGrowthChart data={internData.trend || []} />
+          </Card>
+        </motion.div>
 
         {/* Domain Distribution */}
-        <Card className="shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100/60">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="text-sm font-bold text-slate-800 flex items-center">
-              <Users className="h-4.5 w-4.5 mr-2 text-indigo-500" />
-              Domain Breakdown
-            </h2>
-          </div>
-          <p className="text-xs text-slate-400 mb-4">Current distribution of interns across tech stacks.</p>
-          <DomainDistributionChart data={internData.domainBreakdown} />
-        </Card>
+        <motion.div variants={itemVariants}>
+          <Card className="h-full shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100/60">
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-sm font-bold text-slate-800 flex items-center">
+                <Users className="h-4.5 w-4.5 mr-2 text-indigo-500" />
+                Domain Breakdown
+              </h2>
+            </div>
+            <p className="text-xs text-slate-400 mb-4">Current distribution of interns across tech stacks.</p>
+            <DomainDistributionChart data={internData.domainBreakdown} />
+          </Card>
+        </motion.div>
       </div>
 
-      {/* Grid: Document generation & Projects */}
+      {/* Grid: Document generation & Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         {/* Document generation Stats Chart */}
-        <Card className="lg:col-span-2 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100/60">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="text-sm font-bold text-slate-800 flex items-center">
-              <FileSignature className="h-4.5 w-4.5 mr-2 text-emerald-500" />
-              Document Issuance Audit
-            </h2>
-          </div>
-          <p className="text-xs text-slate-400 mb-4">Comparison of generated vs pending official documents.</p>
-          <DocumentStatsChart data={internData} />
-        </Card>
-
-        {/* Existing Simple Card for Document Quick numbers if needed, or we just keep the chart. 
-            Let's replace the old simple box grid with the Support Ticket breakdown or AI Stats. */}
-        <Card className="lg:col-span-1 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100/60 flex flex-col justify-center">
-            <h2 className="text-sm font-bold text-slate-800 mb-6 flex items-center">
-              <LifeBuoy className="h-4.5 w-4.5 mr-2 text-purple-500" />
-              Support Efficiency
-            </h2>
-            <div className="space-y-4">
-              <div className="bg-purple-50 rounded-xl p-4 flex justify-between items-center">
-                <div>
-                  <p className="text-xs font-bold text-purple-600 uppercase tracking-wider">Total Tickets</p>
-                  <p className="text-2xl font-black text-purple-900 mt-1">{supportData.total}</p>
-                </div>
-                <LifeBuoy className="h-8 w-8 text-purple-200" />
-              </div>
-              <div className="flex space-x-4">
-                <div className="flex-1 bg-amber-50 rounded-xl p-4">
-                  <p className="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Open</p>
-                  <p className="text-lg font-black text-amber-900">{supportData.open}</p>
-                </div>
-                <div className="flex-1 bg-emerald-50 rounded-xl p-4">
-                  <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Resolved</p>
-                  <p className="text-lg font-black text-emerald-900">{supportData.total - supportData.open}</p>
-                </div>
-              </div>
+        <motion.div variants={itemVariants} className="lg:col-span-2">
+          <Card className="h-full shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100/60">
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-sm font-bold text-slate-800 flex items-center">
+                <FileSignature className="h-4.5 w-4.5 mr-2 text-emerald-500" />
+                Document Issuance Audit
+              </h2>
             </div>
-        </Card>
+            <p className="text-xs text-slate-400 mb-4">Comparison of generated vs pending official documents.</p>
+            <DocumentStatsChart data={internData} />
+          </Card>
+        </motion.div>
+
+        {/* Recent Activity Feed */}
+        <motion.div variants={itemVariants}>
+          <Card className="h-full shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100/60 flex flex-col">
+              <div className="flex justify-between items-center mb-5">
+                <h2 className="text-sm font-bold text-slate-800 flex items-center">
+                  <BadgeAlert className="h-4.5 w-4.5 mr-2 text-purple-500" />
+                  Recent Activity
+                </h2>
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+                </span>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto pr-2 space-y-4">
+                {recentActivity.length > 0 ? (
+                  recentActivity.map((log: any) => (
+                    <div key={log.id} className="relative pl-4 border-l-2 border-slate-100 pb-1 last:pb-0">
+                      <div className="absolute w-2 h-2 bg-purple-500 rounded-full -left-[5px] top-1.5 ring-4 ring-white"></div>
+                      <p className="text-xs font-semibold text-slate-800">{log.action}</p>
+                      <div className="flex justify-between mt-1">
+                        <p className="text-[10px] font-medium text-slate-500 truncate max-w-[120px]">{log.actor_email}</p>
+                        <p className="text-[9px] font-bold text-slate-400">{formatDistanceToNow(new Date(log.timestamp), { addSuffix: true })}</p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-40 text-slate-400 text-xs">
+                    <LifeBuoy className="h-8 w-8 mb-2 opacity-20" />
+                    No recent activity
+                  </div>
+                )}
+              </div>
+          </Card>
+        </motion.div>
       </div>
 
       {/* Grid: Recent Proposals & Invoice Breakdown by Admin & Employee Soon */}
@@ -426,8 +486,9 @@ export default function DashboardPage() {
               HR modules for tracking employees, generating official offer letters, issuing appointment letters, and managing experience certificates will be integrated soon.
             </p>
           </Card>
-        </div>
+        </motion.div>
       </div>
+      </motion.div>
     </PageWrapper>
   );
 }

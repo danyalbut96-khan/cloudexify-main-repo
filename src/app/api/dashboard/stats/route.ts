@@ -193,6 +193,13 @@ export async function GET(request: NextRequest) {
       new: supportTickets?.filter(t => t.is_new).length || 0,
     }
 
+    // 7. Query Recent Activity (Audit Logs)
+    const { data: recentActivity } = await supabase
+      .from('audit_logs')
+      .select('*')
+      .order('timestamp', { ascending: false })
+      .limit(6)
+
     return NextResponse.json({
       interns: {
         total: totalInterns,
@@ -216,7 +223,8 @@ export async function GET(request: NextRequest) {
         adminBreakdown
       },
       analysis: analysisStats,
-      support: supportStats
+      support: supportStats,
+      recentActivity: recentActivity || []
     })
   } catch (err: any) {
     return NextResponse.json(
