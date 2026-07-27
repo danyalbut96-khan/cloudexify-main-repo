@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Search, FileText, Download, UserCheck, Calendar, ShieldCheck } from 'lucide-react';
+import { Search, FileText, Download, UserCheck, Calendar, ShieldCheck, Zap, Users } from 'lucide-react';
 import { PageWrapper } from '@/components/ui/PageWrapper';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -33,6 +33,12 @@ function OfferLetterGenerator() {
   const [companyEmail, setCompanyEmail] = useState('hello@cloudexify.site');
   const [companyPhone, setCompanyPhone] = useState('+92 341 1949277');
   const [previewDocId, setPreviewDocId] = useState('');
+
+  // Bulk Generation State
+  const [pendingInterns, setPendingInterns] = useState<any[]>([]);
+  const [isFetchingPending, setIsFetchingPending] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState({ current: 0, total: 0 });
+  const [isBulkGenerating, setIsBulkGenerating] = useState(false);
 
   // Fetch all admins for dropdown signature slots
   useEffect(() => {
@@ -156,6 +162,67 @@ function OfferLetterGenerator() {
     signature_url: null
   };
 
+  const fetchPendingInterns = async () => {
+    setIsFetchingPending(true);
+    try {
+      const res = await fetch('/api/interns?limit=5000'); // Fetch a large batch
+      if (res.ok) {
+        const data = await res.json();
+        const pending = data.filter((i: any) => !i.intern_documents?.offer_letter_generated);
+        setPendingInterns(pending);
+        if (pending.length > 0) {
+          toast.success(`Found ${pending.length} interns pending offer letters.`);
+        } else {
+          toast.success('All interns already have offer letters!');
+        }
+      }
+    } catch (err) {
+      toast.error('Failed to fetch pending interns');
+    } finally {
+      setIsFetchingPending(false);
+    }
+  };
+
+  const handleBulkGenerate = async () => {
+    if (pendingInterns.length === 0) return toast.error('No pending interns found. Fetch them first.');
+    if (!adminEmail) return toast.error('Please select an authorized admin to sign.');
+
+    setIsBulkGenerating(true);
+    setBulkProgress({ current: 0, total: pendingInterns.length });
+
+    let successCount = 0;
+    let failCount = 0;
+
+    for (let i = 0; i < pendingInterns.length; i++) {
+      const intern = pendingInterns[i];
+      try {
+        const res = await fetch('/api/documents/offer-letter/store', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            internId: intern.id,
+            joiningDate,
+            adminEmail
+          })
+        });
+
+        if (res.ok) {
+          successCount++;
+        } else {
+          failCount++;
+          console.error(`Failed for ${intern.full_name}`);
+        }
+      } catch (err) {
+        failCount++;
+      }
+      setBulkProgress({ current: i + 1, total: pendingInterns.length });
+    }
+
+    setIsBulkGenerating(false);
+    toast.success(`Bulk generation complete! Success: ${successCount}, Failed: ${failCount}`);
+    setPendingInterns([]);
+  };
+
   return (
     <PageWrapper title="Offer Letter Generator">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -255,7 +322,7 @@ function OfferLetterGenerator() {
             variant="primary"
             onClick={handleGenerate}
             isLoading={isGenerating}
-            disabled={!selectedIntern || !adminEmail}
+            disabled={!selectedIntern || !adminEmail || isBulkGenerating}
             className="w-full py-2.5 font-bold shadow-lg shadow-blue-200"
           >
             <Download className="h-4 w-4 mr-2" />
@@ -263,8 +330,72 @@ function OfferLetterGenerator() {
           </Button>
         </Card>
 
+        {/* Bulk Actions Card */}
+        <Card className="lg:col-span-5 space-y-5 border border-purple-100 bg-gradient-to-br from-purple-50/50 to-white mt-0">
+          <div>
+            <h2 className="text-sm font-bold text-purple-900 uppercase tracking-wider mb-2 flex items-center">
+              <Zap className="h-4 w-4 mr-1.5 text-purple-600" />
+              Bulk Generation
+            </h2>
+            <p className="text-[10px] text-slate-500 mb-4 leading-relaxed">
+              Generate and automatically save offer letter PDFs for ALL pending interns directly to Supabase storage.
+            </p>
+
+            <div className="space-y-3">
+              <Button
+                variant="outline"
+                onClick={fetchPendingInterns}
+                isLoading={isFetchingPending}
+                disabled={isBulkGenerating}
+                className="w-full text-xs py-2 border-purple-200 text-purple-700 hover:bg-purple-50"
+              >
+                <Users className="h-3.5 w-3.5 mr-2" />
+                Find Pending Interns ({pendingInterns.length})
+              </Button>
+
+              {pendingInterns.length > 0 && (
+                <div className="bg-white border border-purple-100 rounded-xl p-4 shadow-sm space-y-4">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="font-semibold text-slate-700">Ready to Process:</span>
+                    <Badge variant="purple">{pendingInterns.length} Interns</Badge>
+                  </div>
+                  
+                  {isBulkGenerating && (
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                        <span>Processing...</span>
+                        <span>{bulkProgress.current} / {bulkProgress.total}</span>
+                      </div>
+                      <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                        <div 
+                          className="bg-purple-500 h-2 rounded-full transition-all duration-300" 
+                          style={{ width: `${(bulkProgress.current / bulkProgress.total) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <Button
+                    onClick={handleBulkGenerate}
+                    disabled={isBulkGenerating || !adminEmail}
+                    className="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-200 text-xs font-bold"
+                  >
+                    {isBulkGenerating ? (
+                      <span className="flex items-center">Generating... Please wait...</span>
+                    ) : (
+                      <span className="flex items-center"><Zap className="h-3.5 w-3.5 mr-2" /> Generate All to Storage</span>
+                    )}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-6">
         {/* Right Side: High Fidelity CSS Real-time Preview */}
-        <div className="lg:col-span-7 space-y-2">
+        <div className="lg:col-span-12 space-y-2">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Live Document Preview</p>
           <div className="bg-white border border-slate-100 shadow-[0_4px_16px_rgba(0,0,0,0.03)] rounded-2xl p-10 min-h-[640px] text-[10px] text-slate-600 leading-relaxed font-sans relative aspect-[1/1.41] select-none text-slate-700">
             {/* Letterhead Logo Header */}
