@@ -23,6 +23,27 @@ export async function logAction(
   }
 }
 
+// Server-side notification helper (triggers realtime if configured)
+export async function notifyAdmin(
+  title: string,
+  message: string,
+  type: string
+) {
+  try {
+    const adminClient = getAdminClient()
+    const { error } = await adminClient.from('admin_notifications').insert({
+      title,
+      message,
+      type
+    })
+    if (error) {
+      console.error('Notification insertion error:', error)
+    }
+  } catch (error) {
+    console.error('Failed to send notification:', error)
+  }
+}
+
 export class StreamLogger {
   private writer: WritableStreamDefaultWriter<any> | null = null;
   private encoder = new TextEncoder();

@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { isRateLimited, sanitizeInput } from '@/lib/utils'
-import { logAction } from '@/lib/server-utils'
+import { logAction, notifyAdmin } from '@/lib/server-utils'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
@@ -34,6 +34,13 @@ export async function POST(request: NextRequest) {
       'Logged into CloudExify Admin Dashboard',
       'auth',
       data.user.id
+    )
+
+    // Send Realtime Notification
+    await notifyAdmin(
+      'Admin Login',
+      `${sanitizedEmail} logged into the dashboard.`,
+      'login'
     )
 
     return NextResponse.json({ user: data.user, session: data.session })

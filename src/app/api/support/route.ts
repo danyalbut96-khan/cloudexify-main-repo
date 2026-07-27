@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { isRateLimited, sanitizeInput } from '@/lib/utils'
-import { logAction } from '@/lib/server-utils'
+import { logAction, notifyAdmin } from '@/lib/server-utils'
 import { NextRequest, NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
@@ -101,14 +101,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create ticket. Please try again.' }, { status: 500 })
     }
 
-    // Insert admin notification
-    await supabase.from('admin_notifications').insert({
-      title: 'New Support Ticket',
-      message: `${name} opened ticket ${ticketNumber}: ${subject}`,
-      type: 'system',
-      link: '/dashboard/support',
-      is_read: false
-    })
+    // Trigger Realtime Notification
+    await notifyAdmin(
+      'New Support Ticket',
+      `${name} opened ticket ${ticketNumber}: ${subject}`,
+      'support_ticket'
+    )
 
     return NextResponse.json({ ticket: data })
   } catch (err: any) {
@@ -188,6 +186,13 @@ export async function PUT(request: NextRequest) {
         `Replied to support ticket ${data.ticket_number}`,
         'support',
         data.id
+      )
+    } else {
+      // Trigger notification if user replied
+      await notifyAdmin(
+        'New Support Reply',
+        `User replied to ticket ${data.ticket_number}`,
+        'support_reply'
       )
     }
 

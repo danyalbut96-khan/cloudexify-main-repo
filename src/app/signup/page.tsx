@@ -21,13 +21,17 @@ export default function SignupPage() {
     fetch('/api/auth/signup-status')
       .then(res => res.json())
       .then(data => {
-        setIsSignupOpen(data.open);
-        setIsCheckingStatus(false);
+        if (!data.open) {
+          router.push('/login?message=closed');
+        } else {
+          setIsSignupOpen(true);
+          setIsCheckingStatus(false);
+        }
       })
       .catch(() => {
         setIsCheckingStatus(false);
       });
-  }, []);
+  }, [router]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -36,7 +36,7 @@ import { useRouter } from 'next/navigation';
 
 export default function SettingsPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'branding' | 'profile' | 'sheets' | 'security' | 'intern-analysis'>('branding');
+  const [activeTab, setActiveTab] = useState<'branding' | 'profile' | 'sheets' | 'security' | 'intern-analysis' | 'apis'>('branding');
   const [loading, setLoading] = useState(true);
 
   // Loading states for actions
@@ -518,6 +518,15 @@ export default function SettingsPage() {
           >
             <BrainCircuit className="h-4 w-4" />
             <span>Intern Analysis</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('apis')}
+            className={`flex items-center space-x-2.5 px-4 py-2.5 rounded-lg text-xs font-semibold tracking-wide uppercase transition-colors text-left shrink-0 ${activeTab === 'apis' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
+              }`}
+          >
+            <SettingsIcon className="h-4 w-4" />
+            <span>Connected APIs</span>
           </button>
         </div>
 
@@ -1159,8 +1168,8 @@ export default function SettingsPage() {
         </div>
       )}
 
-      {/* TAB 5: Intern Analysis Settings */}
-      {activeTab === 'intern-analysis' && (
+      {/* TAB 5: Connected APIs Configuration */}
+      {activeTab === 'apis' && (
         <div className="flex-1 space-y-6">
 
           {/* Section 1: API Configuration */}
@@ -1302,6 +1311,12 @@ export default function SettingsPage() {
               </button>
             </div>
           </Card>
+        </div>
+      )}
+
+      {/* TAB 6: Intern Analysis Settings */}
+      {activeTab === 'intern-analysis' && (
+        <div className="flex-1 space-y-6">
 
           {/* Section 2: Per-Domain Scoring Criteria */}
           <Card className="border border-slate-100 p-6">

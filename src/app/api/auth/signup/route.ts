@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { isRateLimited, sanitizeInput } from '@/lib/utils'
-import { logAction } from '@/lib/server-utils'
+import { logAction, notifyAdmin } from '@/lib/server-utils'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
@@ -61,6 +61,13 @@ export async function POST(request: NextRequest) {
       `Registered a new administrator account: ${sanitizedName}`,
       'auth',
       data.user?.id || ''
+    )
+    
+    // Realtime Notification
+    await notifyAdmin(
+      'New Admin Registration',
+      `${sanitizedName} (${sanitizedEmail}) has created an admin account.`,
+      'registration'
     )
 
     return NextResponse.json({ user: data.user, session: data.session })

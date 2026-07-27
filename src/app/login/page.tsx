@@ -64,6 +64,12 @@ function LoginForm() {
           <span>You were logged out due to inactivity.</span>
         </div>
       )}
+      {message === 'closed' && (
+        <div className="mb-5 p-3 rounded-lg border border-rose-500/20 bg-rose-500/10 text-rose-500 text-xs font-semibold flex items-center space-x-2">
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          <span>New administrator registrations are currently disabled by the system owner.</span>
+        </div>
+      )}
 
       <form className="space-y-6" onSubmit={handleLogin}>
         <div>
