@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Download, Filter, Eye, Award, FileSpreadsheet, RefreshCw, X, FileText, ArrowUpRight } from 'lucide-react';
+import { Search, Download, Filter, Eye, Award, FileSpreadsheet, RefreshCw, X, FileText, ArrowUpRight, CheckCircle, XCircle } from 'lucide-react';
 import { PageWrapper } from '@/components/ui/PageWrapper';
 import { TableSkeleton } from '@/components/ui/Skeleton';
 import { Badge } from '@/components/ui/Badge';
@@ -165,6 +165,26 @@ export default function InternsPage() {
     }
   };
 
+  const updateInternStatus = async (id: string, newStatus: 'Accepted' | 'Rejected') => {
+    const actionToast = toast.loading(`Marking as ${newStatus}...`);
+    try {
+      const res = await fetch(`/api/interns/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.error || 'Failed to update status');
+      
+      toast.success(`Intern ${newStatus} successfully!`, { id: actionToast });
+      setSelectedIntern({ ...selectedIntern, status: newStatus });
+      fetchInterns();
+    } catch (err: any) {
+      toast.error(err.message || 'Status update failed', { id: actionToast });
+    }
+  };
+
   const domainOptions = [
     'Python Programming',
     'C++ Programming',
@@ -285,6 +305,7 @@ export default function InternsPage() {
             <table className="min-w-full divide-y divide-slate-100 text-left">
               <thead className="bg-slate-50 text-slate-400 text-xs font-bold uppercase tracking-wider">
                 <tr>
+                  <th className="px-6 py-3.5">Status</th>
                   <th className="px-6 py-3.5">Reg No</th>
                   <th className="px-6 py-3.5">Name</th>
                   <th className="px-6 py-3.5">Email</th>
@@ -299,6 +320,11 @@ export default function InternsPage() {
               <tbody className="divide-y divide-slate-100 text-xs text-slate-600 font-medium">
                 {interns.map((intern) => (
                   <tr key={intern.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-6 py-4">
+                      <Badge variant={intern.status === 'Accepted' ? 'success' : intern.status === 'Rejected' ? 'danger' : 'warning'}>
+                        {intern.status || 'Pending'}
+                      </Badge>
+                    </td>
                     <td className="px-6 py-4 font-bold text-slate-900">{intern.registration_number}</td>
                     <td className="px-6 py-4 text-slate-950 font-semibold">{intern.full_name}</td>
                     <td className="px-6 py-4 truncate max-w-[150px]">{intern.email}</td>
@@ -307,23 +333,35 @@ export default function InternsPage() {
                     
                     {/* Offer Letter status */}
                     <td className="px-6 py-4">
-                      <Badge variant={intern.intern_documents?.offer_letter_generated ? 'success' : 'danger'}>
-                        {intern.intern_documents?.offer_letter_generated ? 'Generated' : 'Pending'}
-                      </Badge>
+                      {intern.status === 'Pending' || intern.status === 'Rejected' ? (
+                         <span className="text-slate-400 font-medium">Nil</span>
+                      ) : (
+                        <Badge variant={intern.intern_documents?.offer_letter_generated ? 'success' : 'danger'}>
+                          {intern.intern_documents?.offer_letter_generated ? 'Generated' : 'Pending'}
+                        </Badge>
+                      )}
                     </td>
 
                     {/* Certificate status */}
                     <td className="px-6 py-4">
-                      <Badge variant={intern.intern_documents?.certificate_generated ? 'success' : 'danger'}>
-                        {intern.intern_documents?.certificate_generated ? 'Generated' : 'Pending'}
-                      </Badge>
+                      {intern.status === 'Pending' || intern.status === 'Rejected' ? (
+                         <span className="text-slate-400 font-medium">Nil</span>
+                      ) : (
+                        <Badge variant={intern.intern_documents?.certificate_generated ? 'success' : 'danger'}>
+                          {intern.intern_documents?.certificate_generated ? 'Generated' : 'Pending'}
+                        </Badge>
+                      )}
                     </td>
 
                     {/* Rec Letter status */}
                     <td className="px-6 py-4">
-                      <Badge variant={intern.intern_documents?.recommendation_letter_generated ? 'success' : 'danger'}>
-                        {intern.intern_documents?.recommendation_letter_generated ? 'Generated' : 'Pending'}
-                      </Badge>
+                      {intern.status === 'Pending' || intern.status === 'Rejected' ? (
+                         <span className="text-slate-400 font-medium">Nil</span>
+                      ) : (
+                        <Badge variant={intern.intern_documents?.recommendation_letter_generated ? 'success' : 'danger'}>
+                          {intern.intern_documents?.recommendation_letter_generated ? 'Generated' : 'Pending'}
+                        </Badge>
+                      )}
                     </td>
 
                     {/* Actions button */}
@@ -412,9 +450,34 @@ export default function InternsPage() {
               </div>
             </div>
 
+            {/* Review Actions */}
+            {(!selectedIntern.status || selectedIntern.status === 'Pending') && (
+              <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-5 mb-6">
+                <h4 className="text-sm font-bold text-blue-900 mb-2">Review Application</h4>
+                <p className="text-xs text-blue-700/80 mb-4">Please verify the intern's details above. Accepting will unlock their student portal and allow official document generation.</p>
+                <div className="flex gap-3">
+                  <Button 
+                    onClick={() => updateInternStatus(selectedIntern.id, 'Accepted')}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm flex items-center gap-1.5"
+                  >
+                    <CheckCircle className="w-4 h-4" /> Accept Intern
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => updateInternStatus(selectedIntern.id, 'Rejected')}
+                    className="border-red-200 text-red-600 hover:bg-red-50 flex items-center gap-1.5"
+                  >
+                    <XCircle className="w-4 h-4" /> Reject
+                  </Button>
+                </div>
+              </div>
+            )}
+
             {/* 2. Documents History Tracker and Actions */}
-            <div>
-              <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4">Official Document Status</h4>
+            <div className={selectedIntern.status !== 'Accepted' ? 'opacity-50 pointer-events-none' : ''}>
+              <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4">
+                Official Document Status {selectedIntern.status !== 'Accepted' && '(Locked)'}
+              </h4>
               
               <div className="space-y-3.5">
                 {/* Offer Letter */}

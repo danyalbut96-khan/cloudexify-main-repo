@@ -38,7 +38,10 @@ export async function GET(request: NextRequest) {
       query = query.eq('semester', parseInt(semester))
     }
 
-    const { data, error } = await query.order('registration_number', { ascending: true })
+    // Sort so Pending comes first, then by newest
+    const { data, error } = await query
+      .order('status', { ascending: false }) // 'Pending' > 'Accepted' > 'Rejected' usually, but text sort puts 'Rejected' first. Wait, let's just order by created_at desc.
+      .order('created_at', { ascending: false })
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })

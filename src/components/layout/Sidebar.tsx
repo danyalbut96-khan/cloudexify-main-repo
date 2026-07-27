@@ -84,9 +84,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       isComingSoon: true,
     },
     {
-      name: 'Projects',
+      name: 'Tasks & Projects',
       icon: FolderGit2,
-      path: '/dashboard/projects',
+      path: '/dashboard/tasks',
     },
     {
       name: 'Proposals',

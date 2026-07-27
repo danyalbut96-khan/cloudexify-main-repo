@@ -33,3 +33,43 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     )
   }
 }
+
+export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1'
+  if (isRateLimited(ip)) {
+    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
+  }
+
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  try {
+    const body = await request.json()
+    const { status } = body
+
+    if (!['Pending', 'Accepted', 'Rejected'].includes(status)) {
+      return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
+    }
+
+    const { data, error } = await supabase
+      .from('interns')
+      .update({ status })
+      .eq('id', params.id)
+      .select()
+      .single()
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 })
+    }
+
+    return NextResponse.json({ success: true, intern: data })
+  } catch (err: any) {
+    return NextResponse.json(
+      { error: err.message || 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}

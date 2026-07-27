@@ -20,8 +20,20 @@ export interface Intern {
   available_hours?: number;
   referral_source?: string;
   city?: string;
+  status: 'Pending' | 'Accepted' | 'Rejected';
   created_at: string;
   intern_documents?: InternDocuments;
+}
+
+export interface Task {
+  id: string;
+  batch_id: string;
+  domain: string;
+  week_number: number;
+  title: string;
+  description?: string;
+  file_url?: string;
+  created_at: string;
 }
 
 export interface InternDocuments {
