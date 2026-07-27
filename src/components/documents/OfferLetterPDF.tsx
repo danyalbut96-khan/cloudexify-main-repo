@@ -7,10 +7,13 @@ import { formatDate } from '@/lib/utils';
 const styles = StyleSheet.create({
   page: {
     padding: 40,
+    paddingTop: 50,
     fontFamily: 'Helvetica',
     fontSize: 9.5,
-    lineHeight: 1.4,
+    lineHeight: 1.5,
     color: '#334155',
+    borderTopWidth: 8,
+    borderTopColor: '#6366F1', // Premium Indigo accent bar
   },
   headerContainer: {
     flexDirection: 'row',
@@ -35,18 +38,21 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   logoPlaceholder: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#2563EB',
+    fontFamily: 'Helvetica-Bold',
+    color: '#1E1B4B',
+    letterSpacing: -0.5,
   },
   title: {
-    fontSize: 16,
+    fontSize: 18,
+    fontFamily: 'Helvetica-Bold',
     fontWeight: 'bold',
     color: '#0F172A',
     textAlign: 'center',
     marginBottom: 15,
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 2,
   },
   date: {
     marginBottom: 10,
@@ -57,14 +63,16 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   recipientName: {
-    fontSize: 10,
+    fontSize: 12,
+    fontFamily: 'Helvetica-Bold',
     fontWeight: 'bold',
     color: '#0F172A',
-    marginBottom: 2,
+    marginBottom: 3,
   },
   recipientDetails: {
-    fontSize: 8.5,
+    fontSize: 9,
     color: '#475569',
+    marginBottom: 2,
   },
   body: {
     marginBottom: 12,
@@ -263,7 +271,7 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
             {logoSrc ? (
               <Image style={{ maxHeight: 52, maxWidth: 160, objectFit: 'contain' }} src={logoSrc} />
             ) : (
-              <Text style={styles.logoPlaceholder}>{cName}</Text>
+              <Text style={styles.logoPlaceholder}>{cName}.</Text>
             )}
           </View>
           <View style={styles.companyInfo}>
@@ -282,7 +290,8 @@ export const OfferLetterPDF: React.FC<OfferLetterProps> = ({
         {/* Recipient */}
         <View style={styles.recipient}>
           <Text style={styles.recipientName}>{intern.full_name}</Text>
-          {intern.city && <Text style={styles.recipientDetails}></Text>}
+          <Text style={styles.recipientDetails}>Registration No: {intern.registration_number}</Text>
+          {intern.city && <Text style={styles.recipientDetails}>{intern.city}</Text>}
         </View>
 
         {/* Body */}
