@@ -7,13 +7,17 @@ VALUES ('tasks', 'tasks', true)
 ON CONFLICT (id) DO NOTHING;
 
 -- 3. Set up Storage Policies for Tasks bucket
+DROP POLICY IF EXISTS "Tasks Public Access" ON storage.objects;
+DROP POLICY IF EXISTS "Tasks Admin Upload Access" ON storage.objects;
+DROP POLICY IF EXISTS "Tasks Admin Delete Access" ON storage.objects;
+
 -- Allow public read access to tasks bucket
-CREATE POLICY "Public Access" 
+CREATE POLICY "Tasks Public Access" 
 ON storage.objects FOR SELECT 
 USING (bucket_id = 'tasks');
 
 -- Allow admins to insert/upload files to tasks bucket
-CREATE POLICY "Admin Upload Access" 
+CREATE POLICY "Tasks Admin Upload Access" 
 ON storage.objects FOR INSERT 
 WITH CHECK (
   bucket_id = 'tasks' 
@@ -21,7 +25,7 @@ WITH CHECK (
 );
 
 -- Allow admins to delete files
-CREATE POLICY "Admin Delete Access" 
+CREATE POLICY "Tasks Admin Delete Access" 
 ON storage.objects FOR DELETE 
 USING (
   bucket_id = 'tasks' 
@@ -33,7 +37,12 @@ USING (
 CREATE EXTENSION IF NOT EXISTS pg_cron;
 
 -- Remove the job if it already exists to avoid conflicts
-SELECT cron.unschedule('delete_rejected_interns_job');
+DO $$
+BEGIN
+  PERFORM cron.unschedule('delete_rejected_interns_job');
+EXCEPTION WHEN OTHERS THEN
+  -- ignore error if job doesn't exist
+END $$;
 
 -- Schedule the job to run every day at midnight
 SELECT cron.schedule(
