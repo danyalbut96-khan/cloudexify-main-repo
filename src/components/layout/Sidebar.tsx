@@ -56,6 +56,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       submenuKey: 'interns',
       submenu: [
         { name: 'All Interns', path: '/dashboard/interns', icon: Users },
+        { name: 'Batch Management', path: '/dashboard/batches', icon: CalendarRange },
+        { name: 'Intern Analysis', path: '/dashboard/intern-analysis', icon: BrainCircuit },
+        { name: 'Tasks & Projects', path: '/dashboard/tasks', icon: FolderGit2 },
         { name: 'Generate Offer Letter', path: '/dashboard/documents/offer-letter', icon: FileText },
         { name: 'Generate Certificate', path: '/dashboard/documents/certificate', icon: FileText },
         { name: 'Generate Experience Cert', path: '/dashboard/documents/experience-certificate', icon: FileText },
@@ -68,25 +71,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       path: '/dashboard/leadgen',
     },
     {
-      name: 'Intern Analysis',
-      icon: BrainCircuit,
-      path: '/dashboard/intern-analysis',
-    },
-    {
-      name: 'Batch Management',
-      icon: CalendarRange,
-      path: '/dashboard/batches',
-    },
-    {
       name: 'Employees',
       icon: Briefcase,
       path: '#',
       isComingSoon: true,
-    },
-    {
-      name: 'Tasks & Projects',
-      icon: FolderGit2,
-      path: '/dashboard/tasks',
     },
     {
       name: 'Proposals',

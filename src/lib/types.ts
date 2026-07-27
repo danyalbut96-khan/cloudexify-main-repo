@@ -29,7 +29,7 @@ export interface Task {
   id: string;
   batch_id: string;
   domain: string;
-  week_number: number;
+  duration_label: string;
   title: string;
   description?: string;
   file_url?: string;

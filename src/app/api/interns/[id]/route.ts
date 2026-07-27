@@ -54,9 +54,16 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
     }
 
+    const updateData: any = { status }
+    if (status === 'Rejected') {
+      updateData.rejected_at = new Date().toISOString()
+    } else {
+      updateData.rejected_at = null
+    }
+
     const { data, error } = await supabase
       .from('interns')
-      .update({ status })
+      .update(updateData)
       .eq('id', params.id)
       .select()
       .single()

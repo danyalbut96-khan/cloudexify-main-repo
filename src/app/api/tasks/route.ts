@@ -54,16 +54,16 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { batch_id, domain, week_number, title, description, file_url } = body
+    const { batch_id, domain, duration_label, title, description, file_url } = body
 
-    if (!batch_id || !domain || !title || !week_number) {
+    if (!batch_id || !domain || !title || !duration_label) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
     const { data, error } = await supabase
       .from('tasks')
       .insert([
-        { batch_id, domain, week_number, title, description, file_url }
+        { batch_id, domain, duration_label, title, description, file_url }
       ])
       .select()
       .single()

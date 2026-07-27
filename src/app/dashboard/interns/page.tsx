@@ -451,7 +451,7 @@ export default function InternsPage() {
             </div>
 
             {/* Review Actions */}
-            {(!selectedIntern.status || selectedIntern.status === 'Pending') && (
+            {(!selectedIntern.status || selectedIntern.status === 'Pending' || selectedIntern.status === 'Rejected') && (
               <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-5 mb-6">
                 <h4 className="text-sm font-bold text-blue-900 mb-2">Review Application</h4>
                 <p className="text-xs text-blue-700/80 mb-4">Please verify the intern&apos;s details above. Accepting will unlock their student portal and allow official document generation.</p>

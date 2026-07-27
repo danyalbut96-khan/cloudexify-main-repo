@@ -86,10 +86,19 @@ export default function StudentDashboardPage() {
           <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-6">
             <XCircle className="w-8 h-8 text-red-600" />
           </div>
-          <h2 className="text-2xl font-black text-slate-900 mb-2">Application Update</h2>
-          <p className="text-slate-500 font-medium mb-6">
-            Dear {intern.full_name}, we appreciate your interest in Cloudexify. Unfortunately, we are unable to offer you an internship position at this time.
+          <h2 className="text-2xl font-black text-slate-900 mb-2">Application Status Update</h2>
+          <p className="text-slate-600 font-medium mb-4 leading-relaxed">
+            Dear <strong>{intern.full_name}</strong>,
+            <br/><br/>
+            Thank you for applying to the <strong>{intern.domain}</strong> internship program at CloudExify. We sincerely appreciate the time and effort you invested in your application.
+            <br/><br/>
+            After careful review of your profile, we regret to inform you that we are unable to move forward with your application at this time. This was a difficult decision, as we received many highly qualified applications this cohort.
+            <br/><br/>
+            Please do not let this discourage you. We encourage you to continue developing your skills and hope you will re-apply for future opportunities with us. We wish you the absolute best in your professional journey!
           </p>
+          <div className="text-xs text-slate-400 font-semibold border-t pt-4">
+            CloudExify Talent Acquisition Team
+          </div>
         </Card>
       )
     }
@@ -141,7 +150,7 @@ export default function StudentDashboardPage() {
                   <Card key={task.id} className="p-5 border-l-4 border-l-blue-500 hover:shadow-md transition-all">
                     <div className="flex justify-between items-start">
                       <div>
-                        <Badge variant="blue" className="mb-2 bg-blue-100 text-blue-800 font-bold">Week {task.week_number}</Badge>
+                        <Badge variant="blue" className="mb-2 bg-blue-100 text-blue-800 font-bold">{task.duration_label}</Badge>
                         <h3 className="text-lg font-bold text-slate-800">{task.title}</h3>
                         <p className="text-sm text-slate-600 mt-2 whitespace-pre-wrap">{task.description}</p>
                         
