@@ -15,7 +15,7 @@ export default function BatchesPage() {
   const [batches, setBatches] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  
+
   const [formData, setFormData] = useState({
     name: '',
     start_date: '',
@@ -47,16 +47,16 @@ export default function BatchesPage() {
   const handleCreateBatch = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
+
     try {
       const res = await fetch('/api/batches', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       })
-      
+
       if (!res.ok) throw new Error(await res.text())
-      
+
       toast.success('Batch created successfully!')
       setFormData({ name: '', start_date: '', end_date: '', status: 'coming' })
       fetchBatches()
@@ -71,15 +71,18 @@ export default function BatchesPage() {
     e.preventDefault()
     if (!editingBatch) return
     setIsSavingEdit(true)
-    
+
     try {
       const res = await fetch('/api/batches', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editingBatch)
       })
-      
-      if (!res.ok) throw new Error('Failed to update batch')
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null)
+        throw new Error(errData?.error || 'Failed to update batch')
+      }
       toast.success('Batch updated successfully!')
       setEditingBatch(null)
       fetchBatches()
@@ -108,7 +111,7 @@ export default function BatchesPage() {
   return (
     <PageWrapper title="Batch Management">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
+
         {/* Create Batch Form */}
         <Card className="lg:col-span-1 shadow-sm border border-slate-200">
           <div className="mb-6">
@@ -122,40 +125,40 @@ export default function BatchesPage() {
           <form onSubmit={handleCreateBatch} className="space-y-4">
             <div className="space-y-2">
               <Label>Batch Name</Label>
-              <Input 
-                placeholder="e.g., Summer 2026 Batch" 
-                required 
+              <Input
+                placeholder="e.g., Summer 2026 Batch"
+                required
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                onChange={(e: { target: { value: any } }) => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label>Start Date</Label>
-              <Input 
-                type="date" 
-                required 
+              <Input
+                type="date"
+                required
                 value={formData.start_date}
-                onChange={(e) => setFormData({...formData, start_date: e.target.value})}
+                onChange={(e: { target: { value: any } }) => setFormData({ ...formData, start_date: e.target.value })}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label>End Date</Label>
-              <Input 
-                type="date" 
-                required 
+              <Input
+                type="date"
+                required
                 value={formData.end_date}
-                onChange={(e) => setFormData({...formData, end_date: e.target.value})}
+                onChange={(e: { target: { value: any } }) => setFormData({ ...formData, end_date: e.target.value })}
               />
             </div>
 
             <div className="space-y-2">
               <Label>Status</Label>
-              <select 
+              <select
                 className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.status}
-                onChange={(e) => setFormData({...formData, status: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
               >
                 <option value="accepting">Accepting Registrations</option>
                 <option value="coming">Coming Soon</option>
@@ -205,9 +208,9 @@ export default function BatchesPage() {
                     </div>
                   </div>
                   <div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       className="text-xs flex items-center"
                       onClick={() => setEditingBatch(batch)}
                     >
@@ -230,7 +233,7 @@ export default function BatchesPage() {
                 <Pencil className="w-5 h-5 mr-2 text-indigo-600" />
                 Edit Batch
               </h2>
-              <button 
+              <button
                 onClick={() => setEditingBatch(null)}
                 className="text-slate-400 hover:text-slate-600 transition-colors"
               >
@@ -241,41 +244,41 @@ export default function BatchesPage() {
             <form onSubmit={handleEditBatch} className="space-y-4">
               <div className="space-y-2">
                 <Label>Batch Name</Label>
-                <Input 
-                  required 
+                <Input
+                  required
                   value={editingBatch.name}
-                  onChange={(e) => setEditingBatch({...editingBatch, name: e.target.value})}
+                  onChange={(e: { target: { value: any } }) => setEditingBatch({ ...editingBatch, name: e.target.value })}
                 />
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Start Date</Label>
-                  <Input 
-                    type="date" 
-                    required 
+                  <Input
+                    type="date"
+                    required
                     value={editingBatch.start_date}
-                    onChange={(e) => setEditingBatch({...editingBatch, start_date: e.target.value})}
+                    onChange={(e: { target: { value: any } }) => setEditingBatch({ ...editingBatch, start_date: e.target.value })}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label>End Date</Label>
-                  <Input 
-                    type="date" 
-                    required 
+                  <Input
+                    type="date"
+                    required
                     value={editingBatch.end_date}
-                    onChange={(e) => setEditingBatch({...editingBatch, end_date: e.target.value})}
+                    onChange={(e: { target: { value: any } }) => setEditingBatch({ ...editingBatch, end_date: e.target.value })}
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label>Status</Label>
-                <select 
+                <select
                   className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={editingBatch.status}
-                  onChange={(e) => setEditingBatch({...editingBatch, status: e.target.value})}
+                  onChange={(e) => setEditingBatch({ ...editingBatch, status: e.target.value })}
                 >
                   <option value="accepting">Accepting Registrations</option>
                   <option value="coming">Coming Soon</option>
@@ -288,17 +291,17 @@ export default function BatchesPage() {
               </div>
 
               <div className="pt-4 flex gap-3">
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   className="flex-1"
                   onClick={() => setEditingBatch(null)}
                 >
                   Cancel
                 </Button>
-                <Button 
-                  type="submit" 
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700" 
+                <Button
+                  type="submit"
+                  className="flex-1 bg-indigo-600 hover:bg-indigo-700"
                   disabled={isSavingEdit}
                 >
                   {isSavingEdit ? 'Saving...' : <><Save className="w-4 h-4 mr-2" /> Save Changes</>}
