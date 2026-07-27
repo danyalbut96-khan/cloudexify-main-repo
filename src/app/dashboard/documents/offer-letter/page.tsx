@@ -357,7 +357,7 @@ function OfferLetterGenerator() {
                 <div className="bg-white border border-purple-100 rounded-xl p-4 shadow-sm space-y-4">
                   <div className="flex justify-between items-center text-xs">
                     <span className="font-semibold text-slate-700">Ready to Process:</span>
-                    <Badge variant="purple">{pendingInterns.length} Interns</Badge>
+                    <Badge variant="blue">{pendingInterns.length} Interns</Badge>
                   </div>
                   
                   {isBulkGenerating && (

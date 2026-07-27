@@ -13,6 +13,7 @@ function getLogoBase64(): string | null {
   try {
     const logoPath = join(process.cwd(), 'public/', 'logo.png')
     const buffer = readFileSync(logoPath)
+    if (buffer.length < 500) return null // Ignore invalid placeholder files
     return `data:image/png;base64,${buffer.toString('base64')}`
   } catch {
     return null
