@@ -18,6 +18,7 @@ import {
   TrendingUp,
   BrainCircuit,
   LifeBuoy,
+  CalendarRange,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '../ui/Badge';
@@ -70,6 +71,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       name: 'Intern Analysis',
       icon: BrainCircuit,
       path: '/dashboard/intern-analysis',
+    },
+    {
+      name: 'Batch Management',
+      icon: CalendarRange,
+      path: '/dashboard/batches',
     },
     {
       name: 'Employees',

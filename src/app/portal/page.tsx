@@ -302,13 +302,20 @@ export default function PortalPage() {
           </div>
           <div className="flex items-center gap-4">
             <a
+              href="/portal/login"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-indigo-500 to-violet-600 hover:opacity-90 text-white text-xs font-bold transition-all shadow-lg shadow-violet-900/30"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span>Login</span>
+            </a>
+            <a
               href="/portal/support"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 text-xs font-semibold transition-colors"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 text-xs font-semibold transition-colors"
             >
               <MessageSquare className="w-3.5 h-3.5" />
-              <span>Need Help? Support</span>
+              <span>Support</span>
             </a>
-            <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500">
+            <div className="hidden md:flex items-center gap-2 text-xs text-slate-500">
               <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
               <span>Portal Active</span>
             </div>

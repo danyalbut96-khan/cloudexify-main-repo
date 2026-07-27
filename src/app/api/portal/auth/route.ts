@@ -20,8 +20,8 @@ export async function POST(request: NextRequest) {
     const { data: intern, error } = await supabase
       .from('interns')
       .select('id, full_name, email, registration_number, status, batch_id, domain')
-      .eq('email', email)
-      .eq('registration_number', registration_number)
+      .ilike('email', email.trim())
+      .eq('registration_number', registration_number.trim().toUpperCase())
       .maybeSingle()
 
     if (error || !intern) {
