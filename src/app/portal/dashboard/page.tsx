@@ -155,9 +155,12 @@ export default function StudentDashboardPage() {
                         <p className="text-sm text-slate-600 mt-2 whitespace-pre-wrap">{task.description}</p>
                         
                         {task.file_url && (
-                          <a href={task.file_url} target="_blank" rel="noopener noreferrer" className="inline-block mt-4 text-sm font-bold text-blue-600 hover:underline">
-                            View Attached Resource &rarr;
-                          </a>
+                          <div className="mt-5 border-t border-slate-100 pt-4">
+                            <a href={task.file_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-700 text-sm font-bold py-2.5 px-4 rounded-lg transition-all shadow-sm">
+                              <Download className="w-4 h-4" />
+                              View & Download Detailed Task Document
+                            </a>
+                          </div>
                         )}
                       </div>
                     </div>

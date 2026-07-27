@@ -21,6 +21,7 @@ export default function AdminTasksPage() {
   const [fileUrl, setFileUrl] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
   const domainOptions = [
     'Python Programming',
@@ -53,7 +54,7 @@ export default function AdminTasksPage() {
     fetchInitialData();
   }, []);
 
-  const handleCreateTask = async (e: React.FormEvent) => {
+  const handleCreateOrUpdateTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!batchId || !domain || !title || !durationLabel) {
       toast.error('Please fill in all required fields');
@@ -81,26 +82,58 @@ export default function AdminTasksPage() {
         finalFileUrl = publicUrl;
       }
 
-      const res = await fetch('/api/tasks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ batch_id: batchId, domain, duration_label: durationLabel, title, description, file_url: finalFileUrl })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (editingTaskId) {
+        // Update existing task
+        const res = await fetch('/api/tasks', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: editingTaskId, batch_id: batchId, domain, duration_label: durationLabel, title, description, file_url: finalFileUrl })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        toast.success('Task updated successfully!');
+      } else {
+        // Create new task
+        const res = await fetch('/api/tasks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ batch_id: batchId, domain, duration_label: durationLabel, title, description, file_url: finalFileUrl })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        toast.success('Task created successfully!');
+      }
       
-      toast.success('Task created successfully!');
-      setTitle('');
-      setDescription('');
-      setDurationLabel('');
-      setFileUrl('');
-      setFile(null);
+      resetForm();
       fetchInitialData();
     } catch (err: any) {
-      toast.error(err.message || 'Failed to create task');
+      toast.error(err.message || (editingTaskId ? 'Failed to update task' : 'Failed to create task'));
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const resetForm = () => {
+    setEditingTaskId(null);
+    setTitle('');
+    setDescription('');
+    setDurationLabel('');
+    setFileUrl('');
+    setFile(null);
+    setBatchId('');
+    setDomain('');
+  };
+
+  const handleEditClick = (task: any) => {
+    setEditingTaskId(task.id);
+    setBatchId(task.batch_id || '');
+    setDomain(task.domain || '');
+    setDurationLabel(task.duration_label || '');
+    setTitle(task.title || '');
+    setDescription(task.description || '');
+    setFileUrl(task.file_url || '');
+    setFile(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDeleteTask = async (id: string) => {
@@ -119,14 +152,21 @@ export default function AdminTasksPage() {
     <PageWrapper title="Tasks & Projects Management">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Task Creation Form */}
+        {/* Task Creation/Edit Form */}
         <div className="lg:col-span-1">
-          <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-            <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-              <Plus className="w-5 h-5 text-blue-600" /> Upload New Task
-            </h3>
+          <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm sticky top-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <Plus className="w-5 h-5 text-blue-600" /> {editingTaskId ? 'Edit Task' : 'Upload New Task'}
+              </h3>
+              {editingTaskId && (
+                <button onClick={resetForm} className="text-xs text-blue-600 hover:underline font-bold">
+                  Cancel Edit
+                </button>
+              )}
+            </div>
             
-            <form onSubmit={handleCreateTask} className="space-y-4">
+            <form onSubmit={handleCreateOrUpdateTask} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">Target Batch</label>
                 <select 
@@ -216,7 +256,7 @@ export default function AdminTasksPage() {
               </div>
 
               <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" isLoading={isSubmitting}>
-                Publish Task to Portal
+                {editingTaskId ? 'Update Task' : 'Publish Task to Portal'}
               </Button>
             </form>
           </div>
@@ -237,12 +277,22 @@ export default function AdminTasksPage() {
           ) : (
             tasks.map(task => (
               <div key={task.id} className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md transition-shadow relative">
-                <button 
-                  onClick={() => handleDeleteTask(task.id)}
-                  className="absolute top-4 right-4 text-slate-300 hover:text-red-500 transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                <div className="absolute top-4 right-4 flex gap-2">
+                  <button 
+                    onClick={() => handleEditClick(task)}
+                    className="text-slate-300 hover:text-blue-500 transition-colors"
+                    title="Edit Task"
+                  >
+                    <BookOpen className="w-4 h-4" />
+                  </button>
+                  <button 
+                    onClick={() => handleDeleteTask(task.id)}
+                    className="text-slate-300 hover:text-red-500 transition-colors"
+                    title="Delete Task"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
                 
                 <div className="flex items-center gap-2 mb-2">
                   <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded uppercase">{task.duration_label}</span>
