@@ -59,24 +59,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid domain selected.' }, { status: 400 })
     }
 
-    // Auto-increment registration number
+    // Auto-increment registration number (Global sequence ignoring domain codes)
     const prefix = `CX-INT-2026-${domainCode}-`
-    const { data: latestInterns } = await supabase
+    const { data: allInterns } = await supabase
       .from('interns')
       .select('registration_number')
-      .like('registration_number', `${prefix}%`)
-      .order('registration_number', { ascending: false })
-      .limit(1)
 
-    let increment = 1
-    if (latestInterns && latestInterns.length > 0) {
-      const highestNumStr = latestInterns[0].registration_number.replace(prefix, '')
-      const highestNum = parseInt(highestNumStr, 10)
-      if (!isNaN(highestNum)) {
-        increment = highestNum + 1
+    let maxNum = 0
+    if (allInterns && allInterns.length > 0) {
+      for (const currentIntern of allInterns) {
+        // Extract the trailing digits. e.g. "CX-INT-2025-541" -> 541, "CX-INT-2026-PY-001" -> 1
+        const match = currentIntern.registration_number.match(/-(\d+)$/)
+        if (match && match[1]) {
+          const num = parseInt(match[1], 10)
+          if (!isNaN(num) && num > maxNum) {
+            maxNum = num
+          }
+        }
       }
     }
 
+    const increment = maxNum > 0 ? maxNum + 1 : 1
     const registrationNumber = `${prefix}${increment.toString().padStart(3, '0')}`
 
     // Insert Intern

@@ -50,6 +50,7 @@ export default function PortalPage() {
   const [batchMessage, setBatchMessage] = useState('Batch 2 Registration Opening Soon! Stay tuned for announcements.');
   const [registrationOpen, setRegistrationOpen] = useState(false);
   const [publicLeaderboardOpen, setPublicLeaderboardOpen] = useState(false);
+  const [comingBatch, setComingBatch] = useState<any>(null);
   const [settingsLoading, setSettingsLoading] = useState(true);
 
   const supabase = createBrowserClient(
@@ -105,6 +106,7 @@ export default function PortalPage() {
         if (d.batch_coming_soon_message) setBatchMessage(d.batch_coming_soon_message);
         if (typeof d.registration_open === 'boolean') setRegistrationOpen(d.registration_open);
         if (typeof d.public_leaderboard_open === 'boolean') setPublicLeaderboardOpen(d.public_leaderboard_open);
+        if (d.coming_batch) setComingBatch(d.coming_batch);
         setSettingsLoading(false);
       })
       .catch(() => { setSettingsLoading(false); });
@@ -370,9 +372,21 @@ export default function PortalPage() {
                   </div>
                 ) : !registrationOpen ? (
                   <>
-                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 mb-5">
-                      <p className="text-amber-200/80 text-xs leading-relaxed font-medium">🚀 {batchMessage}</p>
-                    </div>
+                    {comingBatch ? (
+                      <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-5 text-center">
+                        <p className="text-blue-300 font-bold mb-1 flex items-center justify-center gap-2">
+                          <Star className="w-4 h-4" /> Upcoming: {comingBatch.name}
+                        </p>
+                        <p className="text-blue-200/70 text-xs font-medium">
+                          Estimated Start: {new Date(comingBatch.start_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                        </p>
+                        <p className="text-blue-400/50 text-[10px] mt-2 italic">Registration dates will be announced soon. Stay tuned!</p>
+                      </div>
+                    ) : (
+                      <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 mb-5">
+                        <p className="text-amber-200/80 text-xs leading-relaxed font-medium">🚀 {batchMessage}</p>
+                      </div>
+                    )}
 
                     <p className="text-slate-400 text-xs leading-relaxed mb-5">
                       We are currently not accepting new intern registrations. If you are already registered, head over to the project submission section.

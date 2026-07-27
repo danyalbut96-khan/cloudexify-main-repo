@@ -12,11 +12,19 @@ export async function GET() {
       .eq('id', 1)
       .maybeSingle()
 
+    // 2. Fetch the "coming" batch if any
+    const { data: comingBatch } = await supabase
+      .from('batches')
+      .select('name, start_date, end_date')
+      .eq('status', 'coming')
+      .maybeSingle()
+
     return NextResponse.json({
       registration_open: data?.registration_open ?? false,
       public_leaderboard_open: data?.public_leaderboard_open ?? false,
       batch_coming_soon_message: data?.batch_coming_soon_message ?? 'Batch 2 Registration Opening Soon!',
       max_projects_per_intern: data?.max_projects_per_intern ?? 4,
+      coming_batch: comingBatch || null,
     })
   } catch {
     return NextResponse.json({
@@ -24,6 +32,7 @@ export async function GET() {
       public_leaderboard_open: false,
       batch_coming_soon_message: 'Batch 2 Registration Opening Soon!',
       max_projects_per_intern: 4,
+      coming_batch: null,
     })
   }
 }
