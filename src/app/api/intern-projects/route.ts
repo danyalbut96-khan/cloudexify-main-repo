@@ -47,6 +47,31 @@ export async function PATCH(request: NextRequest) {
       .single()
 
     if (error) throw error
+
+    // Automated Grading & Certificate Generation if approved and marks >= 4 (out of 10)
+    if (analysis_status === 'approved' && marks !== null && marks >= 4) {
+      let grade = 'Good';
+      if (marks >= 8) grade = 'Excellent';
+      else if (marks >= 6) grade = 'Very Good';
+      
+      try {
+        const storeUrl = new URL('/api/documents/experience-certificate/store', request.url).toString();
+        await fetch(storeUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            internId: data.intern_id,
+            completionDate: new Date().toISOString().split('T')[0],
+            adminEmail: user.email,
+            performanceGrade: grade,
+            skillsGained: 'Manual grading: Demonstrated technical proficiency, problem solving, and successful implementation.'
+          })
+        });
+      } catch (err) {
+        console.error('Automated cert generation failed:', err);
+      }
+    }
+
     return NextResponse.json(data)
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 })

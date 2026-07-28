@@ -202,6 +202,31 @@ ${criteriaList}
       return NextResponse.json({ error: 'Failed to save analysis result.' }, { status: 500 })
     }
 
+    // 9. Automated Grading & Experience Certificate Generation
+    if (totalScore >= 10) {
+      let grade = 'Good';
+      if (totalScore >= 20) grade = 'Excellent';
+      else if (totalScore >= 15) grade = 'Very Good';
+      
+      try {
+        const storeUrl = new URL('/api/documents/experience-certificate/store', request.url).toString();
+        // Since we are calling our own API, we pass dummy admin email as "AI System"
+        await fetch(storeUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            internId: project.intern_id,
+            completionDate: new Date().toISOString().split('T')[0],
+            adminEmail: 'ai-system@cloudexify.com',
+            performanceGrade: grade,
+            skillsGained: 'Automated AI grading: Demonstrated technical proficiency, problem solving, and successful implementation.'
+          })
+        });
+      } catch (err) {
+        console.error('Automated cert generation failed:', err);
+      }
+    }
+
     return NextResponse.json({ project: updated, feedback: parsedFeedback })
   } catch (err: unknown) {
     // Mark as failed on any unhandled error
