@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     // 1. Fetch Intern Details
     const { data: intern, error: internError } = await supabase
       .from('interns')
-      .select('id, full_name, email, registration_number, status, domain, batch_id, batches(name, status, end_date, documents_locked)')
+      .select('id, full_name, email, whatsapp, university, semester, registration_number, status, domain, batch_id, batches(name, status, end_date, documents_locked)')
       .eq('id', internId)
       .single()
 
@@ -60,11 +60,18 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // 4. Fetch submitted projects count
+    const { count: projectCount } = await supabase
+      .from('intern_projects')
+      .select('id', { count: 'exact', head: true })
+      .eq('intern_id', internId)
+
     return NextResponse.json({
       success: true,
       intern,
       documents: documents || null,
-      tasks
+      tasks,
+      submitted_projects_count: projectCount || 0
     })
 
   } catch (err: unknown) {

@@ -43,15 +43,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No active batch is currently accepting registrations.' }, { status: 400 })
     }
 
-    // Check if email already registered
+    // Check if email already registered for the same batch
     const { data: existingIntern } = await supabase
       .from('interns')
       .select('id')
       .eq('email', email)
+      .eq('batch_id', activeBatch.id)
       .maybeSingle()
 
     if (existingIntern) {
-      return NextResponse.json({ error: 'This email is already registered.' }, { status: 409 })
+      return NextResponse.json({ error: 'You have already registered for this batch.' }, { status: 409 })
     }
 
     const domainCode = DOMAIN_CODES[domain]
