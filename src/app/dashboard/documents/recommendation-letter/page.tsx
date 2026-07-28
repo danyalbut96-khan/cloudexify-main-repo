@@ -21,7 +21,7 @@ function RecommendationLetterGenerator() {
   const [selectedIntern, setSelectedIntern] = useState<any>(null);
   const [completionDate, setCompletionDate] = useState(new Date().toISOString().split('T')[0]);
   const [customText, setCustomText] = useState(
-    'During the internship, they exhibited exceptional leadership skills and built a robust serverless database connector that optimized API load speeds by 30%.'
+    'During the internship, they exhibited strong problem-solving abilities, a proactive learning attitude, and a high level of dedication to their assigned tasks. They successfully met all project milestones, demonstrating both independent initiative and excellent teamwork.'
   );
   const [adminEmail, setAdminEmail] = useState('');
   const [allAdmins, setAllAdmins] = useState<any[]>([]);
@@ -251,9 +251,15 @@ function RecommendationLetterGenerator() {
             <select
               value={selectedBatchId}
               onChange={(e) => {
-                setSelectedBatchId(e.target.value);
+                const batchId = e.target.value;
+                setSelectedBatchId(batchId);
                 setSearchQuery('');
                 setSearchResults([]);
+
+                const batch = batches.find((b: any) => b.id === batchId);
+                if (batch && batch.end_date) {
+                  setCompletionDate(batch.end_date.split('T')[0]);
+                }
               }}
               className="block w-full px-3 py-2 mb-4 text-sm border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
             >

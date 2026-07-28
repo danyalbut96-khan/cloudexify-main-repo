@@ -240,9 +240,15 @@ function ExperienceCertificateGenerator() {
             <select
               value={selectedBatchId}
               onChange={(e) => {
-                setSelectedBatchId(e.target.value);
+                const batchId = e.target.value;
+                setSelectedBatchId(batchId);
                 setSearchQuery('');
                 setSearchResults([]);
+
+                const batch = batches.find((b: any) => b.id === batchId);
+                if (batch && batch.end_date) {
+                  setCompletionDate(batch.end_date.split('T')[0]);
+                }
               }}
               className="block w-full px-3 py-2 mb-4 text-sm border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
             >
