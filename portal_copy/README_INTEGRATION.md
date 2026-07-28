@@ -38,3 +38,9 @@ Once tested and confirmed working on the new domain, you can safely delete `src/
    - `vercel.json`: Vercel configuration (for cron jobs or deployment settings).
    - `tailwind.config.ts` & `postcss.config.mjs`: Styling configuration.
    - `.env.local`: Has the environment variables used here. (Make sure you add these to your new repo's environment settings).
+
+6. **Additional Required Files (Just Added):**
+   - `public/`: Contains logo.png which is used in the portal layouts.
+   - `src/hooks/`: Custom hooks used across the app.
+   - `src/app/globals.css` & `src/app/layout.tsx`: These contain the root styling and the Toaster component which makes the toast notifications work in the portal.
+   - `src/app/api/batches` & `src/app/api/support`: These APIs are also called by the student portal frontend, so they have been included.
