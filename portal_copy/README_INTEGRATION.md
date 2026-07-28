@@ -44,3 +44,6 @@ Once tested and confirmed working on the new domain, you can safely delete `src/
    - `src/hooks/`: Custom hooks used across the app.
    - `src/app/globals.css` & `src/app/layout.tsx`: These contain the root styling and the Toaster component which makes the toast notifications work in the portal.
    - `src/app/api/batches` & `src/app/api/support`: These APIs are also called by the student portal frontend, so they have been included.
+
+7. **Database Scripts:**
+   - `supabase/`: This folder contains all the SQL migrations, tables, and setup scripts needed for the project. These files have been neatly organized into the `supabase/migrations` folder. You can use these files to understand the database structure or apply changes in your new Supabase project.
