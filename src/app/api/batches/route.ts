@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { name, start_date, end_date, status = 'coming', documents_locked = false } = await request.json()
+    const { name, start_date, end_date, status = 'coming', documents_locked = false, duration, mode, projects, compensation, certificate } = await request.json()
     if (!name || !start_date || !end_date) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     const { data: newBatch, error } = await supabase
       .from('batches')
-      .insert({ name, start_date, end_date, status, documents_locked })
+      .insert({ name, start_date, end_date, status, documents_locked, duration, mode, projects, compensation, certificate })
       .select()
       .single()
 
@@ -81,18 +81,23 @@ export async function PATCH(request: NextRequest) {
   }
 
   try {
-    const { id, name, start_date, end_date, status, documents_locked } = await request.json()
+    const { id, name, start_date, end_date, status, documents_locked, duration, mode, projects, compensation, certificate } = await request.json()
     if (!id) {
       return NextResponse.json({ error: 'Batch ID is required' }, { status: 400 })
     }
 
     // Prepare update object
     const updateData: any = {}
-    if (name) updateData.name = name
-    if (start_date) updateData.start_date = start_date
-    if (end_date) updateData.end_date = end_date
-    if (status) updateData.status = status
+    if (name !== undefined) updateData.name = name
+    if (start_date !== undefined) updateData.start_date = start_date
+    if (end_date !== undefined) updateData.end_date = end_date
+    if (status !== undefined) updateData.status = status
     if (documents_locked !== undefined) updateData.documents_locked = documents_locked
+    if (duration !== undefined) updateData.duration = duration
+    if (mode !== undefined) updateData.mode = mode
+    if (projects !== undefined) updateData.projects = projects
+    if (compensation !== undefined) updateData.compensation = compensation
+    if (certificate !== undefined) updateData.certificate = certificate
 
     // If making accepting, deactivate others
     if (status === 'accepting') {
