@@ -27,6 +27,12 @@ export default function WaitlistPage() {
     }
   };
 
+  const handleCopyEmails = () => {
+    const emails = subscribers.map(s => s.email).join(', ');
+    navigator.clipboard.writeText(emails);
+    toast.success(`${subscribers.length} emails copied to clipboard!`);
+  };
+
   useEffect(() => {
     fetchWaitlist();
   }, []);
@@ -48,7 +54,16 @@ export default function WaitlistPage() {
           </div>
         </Card>
         
-        <Card className="p-4 border-slate-100 shadow-sm md:col-span-2 flex flex-col justify-center">
+        <Card className="p-4 border-slate-100 shadow-sm md:col-span-2 flex flex-col justify-center gap-3">
+          <div className="flex justify-end">
+            <button
+              onClick={handleCopyEmails}
+              disabled={subscribers.length === 0}
+              className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg text-sm font-semibold hover:bg-blue-100 transition-colors disabled:opacity-50 flex items-center gap-2"
+            >
+              <Mail className="w-4 h-4" /> Copy All Emails
+            </button>
+          </div>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
               <Search className="h-4.5 w-4.5" />
