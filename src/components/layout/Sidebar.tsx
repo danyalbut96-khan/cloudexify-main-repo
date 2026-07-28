@@ -62,6 +62,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         { name: 'Tasks', path: '/dashboard/tasks', icon: FolderGit2 },
         { name: 'Feedback', path: '/dashboard/feedback', icon: FileText },
         { name: 'Testimonials', path: '/dashboard/testimonials', icon: FileText },
+        { name: 'Waitlist Subscribers', path: '/dashboard/waitlist', icon: Users },
         { name: 'Generate Offer Letter', path: '/dashboard/documents/offer-letter', icon: FileText },
         { name: 'Generate Certificate', path: '/dashboard/documents/certificate', icon: FileText },
         { name: 'Generate Experience Cert', path: '/dashboard/documents/experience-certificate', icon: FileText },
