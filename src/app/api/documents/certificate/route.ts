@@ -109,16 +109,20 @@ export async function GET(request: NextRequest) {
       certificateNumber,
     })
 
-    const pdfBuffer = await pdf(docElement as any).toBuffer()
+    const pdfStream = await pdf(docElement as any).toBuffer() as any
+    const chunks: Buffer[] = []
+    for await (const chunk of pdfStream) {
+      chunks.push(chunk as Buffer)
+    }
+    const finalPdfBuffer = Buffer.concat(chunks)
     const generatedAt = new Date().toISOString()
 
     // Upload to Supabase Storage
     const adminClient = getAdminClient()
     const fileName = `certificates/${intern.id}.pdf`
-    const pdfCopy = Buffer.from(pdfBuffer as any)
     const { error: uploadError } = await adminClient.storage
       .from('intern-documents')
-      .upload(fileName, pdfCopy, {
+      .upload(fileName, finalPdfBuffer, {
         contentType: 'application/pdf',
         upsert: true
       })
@@ -171,7 +175,7 @@ export async function GET(request: NextRequest) {
     )
 
     // 9. Return Stream response
-    return new NextResponse(pdfBuffer as any, {
+    return new NextResponse(finalPdfBuffer, {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="Internship_Certificate_${intern.registration_number}.pdf"`,
