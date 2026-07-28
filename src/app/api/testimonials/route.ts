@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   try {
     const { data: testimonials, error } = await supabase
       .from('testimonials')
-      .select('*')
+      .select('*, interns(full_name, email)')
       .order('created_at', { ascending: false })
 
     if (error) throw error

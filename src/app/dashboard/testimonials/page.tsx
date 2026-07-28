@@ -55,9 +55,8 @@ export default function TestimonialsPage() {
   };
 
   const filteredTestimonials = testimonials.filter(t => 
-    t.name?.toLowerCase().includes(search.toLowerCase()) ||
-    t.role?.toLowerCase().includes(search.toLowerCase()) ||
-    t.company?.toLowerCase().includes(search.toLowerCase())
+    t.interns?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+    t.batch_name?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -71,7 +70,7 @@ export default function TestimonialsPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name, role, or company..."
+            placeholder="Search by name or batch..."
             className="block w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
@@ -106,8 +105,8 @@ export default function TestimonialsPage() {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <p className="font-bold text-slate-900">{t.name}</p>
-                      <p className="text-[10px] text-slate-500">{t.role} {t.company && `@ ${t.company}`}</p>
+                      <p className="font-bold text-slate-900">{t.interns?.full_name || 'Unknown Intern'}</p>
+                      <p className="text-[10px] text-slate-500">{t.batch_name || 'No Batch'}</p>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-1">
@@ -122,7 +121,7 @@ export default function TestimonialsPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-start gap-2">
                         <MessageSquare className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                        <p className="text-sm text-slate-700 whitespace-pre-wrap">{t.content}</p>
+                        <p className="text-sm text-slate-700 whitespace-pre-wrap">{t.review_text}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-slate-500">

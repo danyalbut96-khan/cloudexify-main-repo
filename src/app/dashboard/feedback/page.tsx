@@ -33,8 +33,8 @@ export default function FeedbackPage() {
   }, []);
 
   const filteredFeedbacks = feedbacks.filter(f => 
-    f.intern_name?.toLowerCase().includes(search.toLowerCase()) ||
-    f.registration_number?.toLowerCase().includes(search.toLowerCase())
+    f.interns?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+    f.interns?.registration_number?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -63,8 +63,6 @@ export default function FeedbackPage() {
               <thead className="bg-slate-50 text-slate-400 text-xs font-bold uppercase tracking-wider">
                 <tr>
                   <th className="px-6 py-3.5">Intern</th>
-                  <th className="px-6 py-3.5">Domain</th>
-                  <th className="px-6 py-3.5">Rating</th>
                   <th className="px-6 py-3.5 w-1/2">Feedback</th>
                   <th className="px-6 py-3.5">Date</th>
                 </tr>
@@ -73,26 +71,13 @@ export default function FeedbackPage() {
                 {filteredFeedbacks.map((fb) => (
                   <tr key={fb.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-4">
-                      <p className="font-bold text-slate-900">{fb.intern_name}</p>
-                      <p className="text-[10px] text-slate-500">{fb.registration_number}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <Badge variant="neutral">{fb.domain_code}</Badge>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center space-x-1">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-4 h-4 ${i < fb.rating ? 'text-amber-400 fill-amber-400' : 'text-slate-200'}`}
-                          />
-                        ))}
-                      </div>
+                      <p className="font-bold text-slate-900">{fb.interns?.full_name || 'Unknown'}</p>
+                      <p className="text-[10px] text-slate-500">{fb.interns?.registration_number || 'N/A'}</p>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-start gap-2">
                         <MessageSquare className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                        <p className="text-sm text-slate-700 whitespace-pre-wrap">{fb.comments}</p>
+                        <p className="text-sm text-slate-700 whitespace-pre-wrap">{fb.feedback_text}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-slate-500">
@@ -102,7 +87,7 @@ export default function FeedbackPage() {
                 ))}
                 {filteredFeedbacks.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
+                    <td colSpan={3} className="px-6 py-12 text-center text-slate-400">
                       No feedback submitted yet.
                     </td>
                   </tr>
