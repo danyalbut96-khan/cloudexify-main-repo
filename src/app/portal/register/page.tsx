@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, BookOpen, Clock, Building2, ChevronDown, CheckCircle, Loader2, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
@@ -33,6 +33,18 @@ export default function RegisterPage() {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [comingBatches, setComingBatches] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/batches')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setComingBatches(data.filter((b: any) => b.status === 'coming'));
+        }
+      })
+      .catch(() => {});
+  }, []);
   const [successData, setSuccessData] = useState<{ intern: any; message: string } | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -119,6 +131,22 @@ export default function RegisterPage() {
         </div>
 
         <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800 shadow-xl rounded-2xl p-6 sm:p-10">
+          {comingBatches.length > 0 && (
+            <div className="mb-8 space-y-3">
+              {comingBatches.map(batch => (
+                <div key={batch.id} className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 flex items-start gap-3">
+                  <Clock className="w-5 h-5 text-blue-400 mt-0.5 shrink-0" />
+                  <div>
+                    <h3 className="text-sm font-bold text-blue-100">Upcoming Batch: {batch.name}</h3>
+                    <p className="text-xs text-blue-200/70 mt-1">
+                      Starting on {new Date(batch.start_date).toLocaleDateString()}. Apply today to secure your spot for the upcoming cohort!
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

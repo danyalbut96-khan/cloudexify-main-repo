@@ -16,6 +16,9 @@ export default function StudentDashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('dashboard')
+  const [isEditingProfile, setIsEditingProfile] = useState(false)
+  const [editProfileForm, setEditProfileForm] = useState({ full_name: '', email: '', whatsapp: '', university: '', semester: '' })
+  const [isSavingProfile, setIsSavingProfile] = useState(false)
 
   useEffect(() => {
     fetchDashboardData()
@@ -33,6 +36,15 @@ export default function StudentDashboardPage() {
       if (!res.ok) throw new Error(json.error)
       
       setData(json)
+      if (json.intern) {
+        setEditProfileForm({
+          full_name: json.intern.full_name || '',
+          email: json.intern.email || '',
+          whatsapp: json.intern.whatsapp || '',
+          university: json.intern.university || '',
+          semester: json.intern.semester || ''
+        })
+      }
     } catch (error: any) {
       toast.error(error.message)
     } finally {
@@ -44,6 +56,28 @@ export default function StudentDashboardPage() {
     document.cookie = "intern_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
     toast.success('Logged out successfully')
     router.push('/portal/login')
+  }
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSavingProfile(true)
+    try {
+      const res = await fetch('/api/portal/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editProfileForm)
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error)
+      
+      toast.success(json.message)
+      setIsEditingProfile(false)
+      fetchDashboardData()
+    } catch (err: any) {
+      toast.error(err.message)
+    } finally {
+      setIsSavingProfile(false)
+    }
   }
 
   if (isLoading) {
@@ -136,9 +170,9 @@ export default function StudentDashboardPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8">
           {/* Main Tasks Section */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6">
             <h2 className="text-xl font-bold text-slate-900 flex items-center">
               <Briefcase className="w-5 h-5 mr-2 text-blue-600" />
               Your Monthly Tasks
@@ -176,20 +210,91 @@ export default function StudentDashboardPage() {
             )}
           </div>
 
-          {/* Documents Sidebar */}
+          
+        </div>
+      </div>
+    )
+  }
+
+  const renderProfileScreen = () => {
+    return (
+      <Card className="max-w-3xl mx-auto p-8 shadow-sm">
+        <div className="flex justify-between items-center mb-6 border-b pb-4">
+          <h2 className="text-2xl font-black text-slate-900">My Profile</h2>
+          {!isEditingProfile && (
+            <Button variant="outline" onClick={() => setIsEditingProfile(true)}>Edit Profile</Button>
+          )}
+        </div>
+        
+        {isEditingProfile ? (
+          <form onSubmit={handleSaveProfile} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">Full Name</label>
+                <input required value={editProfileForm.full_name} onChange={e => setEditProfileForm(p => ({...p, full_name: e.target.value}))} className="w-full border rounded-lg px-3 py-2 text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">Email Address</label>
+                <input required type="email" value={editProfileForm.email} onChange={e => setEditProfileForm(p => ({...p, email: e.target.value}))} className="w-full border rounded-lg px-3 py-2 text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">WhatsApp</label>
+                <input required value={editProfileForm.whatsapp} onChange={e => setEditProfileForm(p => ({...p, whatsapp: e.target.value}))} className="w-full border rounded-lg px-3 py-2 text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">University</label>
+                <input required value={editProfileForm.university} onChange={e => setEditProfileForm(p => ({...p, university: e.target.value}))} className="w-full border rounded-lg px-3 py-2 text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">Semester</label>
+                <input required type="number" value={editProfileForm.semester} onChange={e => setEditProfileForm(p => ({...p, semester: e.target.value}))} className="w-full border rounded-lg px-3 py-2 text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">Domain (Cannot be changed)</label>
+                <input disabled value={intern.domain} className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-500 cursor-not-allowed" />
+              </div>
+            </div>
+            <div className="flex justify-end space-x-3 pt-4 border-t mt-6">
+              <Button type="button" variant="ghost" onClick={() => setIsEditingProfile(false)}>Cancel</Button>
+              <Button type="submit" disabled={isSavingProfile}>{isSavingProfile ? 'Saving...' : 'Save Changes'}</Button>
+            </div>
+          </form>
+        ) : (
           <div className="space-y-6">
-            <h2 className="text-xl font-bold text-slate-900 flex items-center">
-              <FileText className="w-5 h-5 mr-2 text-emerald-600" />
-              Official Documents
-            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Full Name</span><span className="font-semibold text-slate-900 text-lg">{intern.full_name}</span></div>
+              <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Registration No</span><span className="font-semibold text-blue-600 bg-blue-50 px-3 py-1 inline-block rounded-md">{intern.registration_number}</span></div>
+              <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Email Address</span><span className="font-semibold text-slate-900">{intern.email}</span></div>
+              <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">WhatsApp</span><span className="font-semibold text-slate-900">{intern.whatsapp || 'N/A'}</span></div>
+              <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">University</span><span className="font-semibold text-slate-900">{intern.university || 'N/A'}</span></div>
+              <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Semester</span><span className="font-semibold text-slate-900">{intern.semester || 'N/A'}</span></div>
+              <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Domain</span><span className="font-semibold text-slate-900">{intern.domain}</span></div>
+            </div>
             
-            <Card className="p-0 overflow-hidden divide-y divide-slate-100">
-              <DocumentRow title="Offer Letter" url={documents?.offer_letter_url} locked={intern.batches?.documents_locked} />
-              <DocumentRow title="Internship Certificate" url={documents?.certificate_url} locked={intern.batches?.documents_locked} />
-              <DocumentRow title="Experience Letter" url={documents?.experience_certificate_url} locked={intern.batches?.documents_locked} />
-              <DocumentRow title="Recommendation Letter" url={documents?.recommendation_letter_url} locked={intern.batches?.documents_locked} />
-            </Card>
+            <div className="mt-8 bg-blue-50/50 rounded-xl p-6 border border-blue-100 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-black text-slate-900">Project Submissions</h3>
+                <p className="text-sm text-slate-500 mt-1">Total projects you have submitted so far.</p>
+              </div>
+              <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-2xl font-black text-white shadow-lg shadow-blue-200">
+                {data.submitted_projects_count || 0}
+              </div>
+            </div>
           </div>
+        )}
+      </Card>
+    )
+  }
+
+  const renderDocumentsScreen = () => {
+    return (
+      <div className="max-w-4xl mx-auto space-y-6">
+        <h2 className="text-2xl font-black text-slate-900 mb-6">My Documents</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <DocumentCard title="Offer Letter" url={documents?.offer_letter_url} locked={intern.batches?.documents_locked} icon={<FileText className="w-6 h-6 text-blue-500" />} />
+          <DocumentCard title="Internship Certificate" url={documents?.certificate_url} locked={intern.batches?.documents_locked} icon={<CheckCircle2 className="w-6 h-6 text-emerald-500" />} />
+          <DocumentCard title="Experience Letter" url={documents?.experience_certificate_url} locked={intern.batches?.documents_locked} icon={<Briefcase className="w-6 h-6 text-purple-500" />} />
+          <DocumentCard title="Recommendation Letter" url={documents?.recommendation_letter_url} locked={intern.batches?.documents_locked} icon={<UserCircle className="w-6 h-6 text-amber-500" />} />
         </div>
       </div>
     )
@@ -221,6 +326,14 @@ export default function StudentDashboardPage() {
           >
             <LayoutDashboard className="w-5 h-5" />
             <span>Dashboard</span>
+          </button>
+          
+          <button 
+            onClick={() => { setActiveTab('documents'); setIsSidebarOpen(false) }}
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-bold ${activeTab === 'documents' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 hover:text-white'}`}
+          >
+            <FileText className="w-5 h-5" />
+            <span>Documents</span>
           </button>
           
           <button 
@@ -256,63 +369,74 @@ export default function StudentDashboardPage() {
 
         {/* Scrollable Content */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          {activeTab === 'dashboard' ? renderStatusScreen() : (
-            <Card className="max-w-2xl mx-auto p-8">
-              <h2 className="text-2xl font-black text-slate-900 mb-6 border-b pb-4">My Profile</h2>
-              <div className="space-y-4">
-                <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Full Name</span><span className="font-semibold text-slate-900 text-lg">{intern.full_name}</span></div>
-                <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Registration No</span><span className="font-semibold text-blue-600 bg-blue-50 px-3 py-1 inline-block rounded-md">{intern.registration_number}</span></div>
-                <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Email Address</span><span className="font-semibold text-slate-900">{intern.email}</span></div>
-                <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Domain</span><span className="font-semibold text-slate-900">{intern.domain}</span></div>
-              </div>
-            </Card>
-          )}
+          {activeTab === 'dashboard' && renderStatusScreen()}
+          {activeTab === 'documents' && renderDocumentsScreen()}
+          {activeTab === 'profile' && renderProfileScreen()}
         </main>
       </div>
     </div>
   )
 }
 
-function DocumentRow({ title, url, locked }: { title: string, url: string | undefined | null, locked?: boolean }) {
-  // If no URL exists, it hasn't been generated yet.
+function DocumentCard({ title, url, locked, icon }: { title: string, url: string | undefined | null, locked?: boolean, icon: React.ReactNode }) {
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!url || locked) return;
+    try {
+      toast.loading('Downloading...', { id: 'download' });
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = `${title.replace(/\s+/g, '_')}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(downloadUrl);
+      toast.success('Download complete', { id: 'download' });
+    } catch (err) {
+      toast.error('Download failed', { id: 'download' });
+    }
+  }
+
   if (!url) {
     return (
-      <div className="p-4 flex items-center justify-between bg-slate-50 opacity-75">
-        <div>
-          <p className="text-sm font-semibold text-slate-700">{title}</p>
-          <p className="text-[10px] font-medium text-slate-400">Not generated yet</p>
+      <Card className="p-6 border border-slate-200 bg-slate-50/50 opacity-75 flex flex-col justify-between h-48">
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-slate-200 rounded-xl">{icon}</div>
+          <div><h3 className="font-bold text-slate-700">{title}</h3><p className="text-xs text-slate-400">Not generated yet</p></div>
         </div>
-        <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center">
-          <Download className="w-4 h-4 text-slate-400" />
-        </div>
-      </div>
+      </Card>
     )
   }
 
-  // If it IS generated, but the batch is locked by admin
   if (locked) {
     return (
-      <div className="p-4 flex items-center justify-between bg-slate-50 border-l-4 border-l-amber-500">
-        <div>
-          <p className="text-sm font-bold text-slate-700">{title}</p>
-          <p className="text-[10px] font-bold text-amber-600">Generated (Download Locked by Admin)</p>
+      <Card className="p-6 border border-amber-200 bg-amber-50/30 flex flex-col justify-between h-48 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-2 h-full bg-amber-400" />
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-amber-100 rounded-xl">{icon}</div>
+          <div><h3 className="font-bold text-slate-800">{title}</h3><p className="text-xs font-semibold text-amber-600">Locked by Admin</p></div>
         </div>
-        <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center cursor-not-allowed" title="Download is currently locked by the administrator">
-          <Download className="w-4 h-4 text-amber-500 opacity-50" />
-        </div>
-      </div>
+      </Card>
     )
   }
 
   return (
-    <div className="p-4 flex items-center justify-between bg-white hover:bg-blue-50/50 transition-colors group cursor-pointer" onClick={() => window.open(url, '_blank')}>
-      <div>
-        <p className="text-sm font-bold text-slate-900 group-hover:text-blue-700 transition-colors">{title}</p>
-        <p className="text-[10px] font-bold text-emerald-600">Available to download</p>
+    <Card className="p-6 border border-slate-200 hover:border-blue-300 hover:shadow-lg transition-all flex flex-col justify-between h-48 bg-white group">
+      <div className="flex items-center gap-3">
+        <div className="p-3 bg-blue-50 group-hover:bg-blue-100 transition-colors rounded-xl">{icon}</div>
+        <div><h3 className="font-bold text-slate-800">{title}</h3><p className="text-xs font-semibold text-emerald-600">Ready to view/download</p></div>
       </div>
-      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center group-hover:bg-blue-600 group-hover:shadow-md transition-all">
-        <Download className="w-4 h-4 text-blue-600 group-hover:text-white" />
+      <div className="flex items-center gap-3 mt-6">
+        <button onClick={() => window.open(url, '_blank')} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+          View
+        </button>
+        <button onClick={handleDownload} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2 shadow-sm shadow-blue-200">
+          <Download className="w-4 h-4" /> Download
+        </button>
       </div>
-    </div>
+    </Card>
   )
 }
