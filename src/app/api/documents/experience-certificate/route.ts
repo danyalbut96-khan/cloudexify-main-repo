@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getAdminClient } from '@/lib/supabase/server'
 import { isRateLimited } from '@/lib/utils'
 import { logAction } from '@/lib/server-utils'
 import { pdf } from '@react-pdf/renderer'
@@ -95,24 +95,26 @@ export async function GET(request: NextRequest) {
     const pdfBuffer = await pdf(docElement as any).toBuffer()
 
     // Upload to Supabase Storage
+    const adminClient = getAdminClient()
     const fileName = `experience-certificates/${intern.id}.pdf`
-    const { error: uploadError } = await supabase.storage
+    const pdfCopy = Buffer.from(pdfBuffer)
+    const { error: uploadError } = await adminClient.storage
       .from('intern-documents')
-      .upload(fileName, pdfBuffer, {
+      .upload(fileName, pdfCopy, {
         contentType: 'application/pdf',
         upsert: true
       })
 
     let pdfUrl = null
     if (!uploadError) {
-      const { data: publicUrlData } = supabase.storage
+      const { data: publicUrlData } = adminClient.storage
         .from('intern-documents')
         .getPublicUrl(fileName)
       pdfUrl = publicUrlData.publicUrl
     }
 
     // 6. Update Intern Document generated status
-    const { error: docUpdateError } = await supabase
+    const { error: docUpdateError } = await adminClient
       .from('intern_documents')
       .upsert({
         intern_id: internId,
@@ -142,6 +144,7 @@ export async function GET(request: NextRequest) {
       }
     })
   } catch (err: unknown) {
+    console.error('Error generating single experience cert:', err)
     const message = err instanceof Error ? err.message : 'Error generating PDF'
     return NextResponse.json({ error: message }, { status: 500 })
   }

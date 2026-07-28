@@ -129,9 +129,10 @@ export async function GET(request: NextRequest) {
 
     // 7.5 Upload to Supabase Storage
     const fileName = `offer-letters/${intern.id}.pdf`
+    const pdfCopy = Buffer.from(pdfBuffer)
     const { error: uploadError } = await adminClient.storage
       .from('intern-documents')
-      .upload(fileName, pdfBuffer, {
+      .upload(fileName, pdfCopy, {
         contentType: 'application/pdf',
         upsert: true
       })
@@ -195,6 +196,7 @@ export async function GET(request: NextRequest) {
       }
     })
   } catch (err: unknown) {
+    console.error('Error generating single offer letter:', err)
     const message = err instanceof Error ? err.message : 'Error generating PDF'
     return NextResponse.json({ error: message }, { status: 500 })
   }
