@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
     // Upload to Supabase Storage
     const adminClient = getAdminClient()
     const fileName = `certificates/${intern.id}.pdf`
-    const pdfCopy = Buffer.from(pdfBuffer)
+    const pdfCopy = Buffer.from(pdfBuffer as any)
     const { error: uploadError } = await adminClient.storage
       .from('intern-documents')
       .upload(fileName, pdfCopy, {
