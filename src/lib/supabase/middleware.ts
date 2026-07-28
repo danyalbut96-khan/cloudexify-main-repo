@@ -59,10 +59,10 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
 
-  // Redirect root '/' to /portal
+  // Redirect root '/' to /dashboard
   if (pathname === '/') {
     const url = request.nextUrl.clone()
-    url.pathname = '/portal'
+    url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 
