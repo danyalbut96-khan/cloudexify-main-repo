@@ -21,7 +21,12 @@ export default function BatchesPage() {
     start_date: '',
     end_date: '',
     status: 'coming',
-    documents_locked: false
+    documents_locked: false,
+    duration: '',
+    mode: '',
+    projects: '',
+    compensation: '',
+    certificate: ''
   })
 
   const [editingBatch, setEditingBatch] = useState<any>(null)
@@ -59,7 +64,7 @@ export default function BatchesPage() {
       if (!res.ok) throw new Error(await res.text())
 
       toast.success('Batch created successfully!')
-      setFormData({ name: '', start_date: '', end_date: '', status: 'coming', documents_locked: false })
+      setFormData({ name: '', start_date: '', end_date: '', status: 'coming', documents_locked: false, duration: '', mode: '', projects: '', compensation: '', certificate: '' })
       fetchBatches()
     } catch (error: any) {
       toast.error(error.message || 'Failed to create batch')
@@ -166,6 +171,49 @@ export default function BatchesPage() {
                 <option value="active">Active (Ongoing)</option>
                 <option value="completed">Completed</option>
               </select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Duration Text</Label>
+                <Input
+                  placeholder="e.g. 1 Month or 3 Months"
+                  value={formData.duration}
+                  onChange={(e: { target: { value: any } }) => setFormData({ ...formData, duration: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Mode Text</Label>
+                <Input
+                  placeholder="e.g. 100% Remote"
+                  value={formData.mode}
+                  onChange={(e: { target: { value: any } }) => setFormData({ ...formData, mode: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Projects Text</Label>
+                <Input
+                  placeholder="e.g. 4 Real-world Client Projects"
+                  value={formData.projects}
+                  onChange={(e: { target: { value: any } }) => setFormData({ ...formData, projects: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Compensation Text</Label>
+                <Input
+                  placeholder="e.g. Unpaid"
+                  value={formData.compensation}
+                  onChange={(e: { target: { value: any } }) => setFormData({ ...formData, compensation: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2 col-span-2">
+                <Label>Certificate Text</Label>
+                <Input
+                  placeholder="e.g. Verified Certificate + LOR"
+                  value={formData.certificate}
+                  onChange={(e: { target: { value: any } }) => setFormData({ ...formData, certificate: e.target.value })}
+                />
+              </div>
             </div>
 
             <div className="flex items-center space-x-2 pt-2 border-t border-slate-100">
@@ -302,6 +350,49 @@ export default function BatchesPage() {
                 <p className="text-[10px] text-slate-500 mt-1">
                   Warning: Setting to &apos;Accepting Registrations&apos; will automatically update any currently accepting batch to &apos;Active&apos;.
                 </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Duration Text</Label>
+                  <Input
+                    placeholder="e.g. 1 Month or 3 Months"
+                    value={editingBatch.duration || ''}
+                    onChange={(e: { target: { value: any } }) => setEditingBatch({ ...editingBatch, duration: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Mode Text</Label>
+                  <Input
+                    placeholder="e.g. 100% Remote"
+                    value={editingBatch.mode || ''}
+                    onChange={(e: { target: { value: any } }) => setEditingBatch({ ...editingBatch, mode: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Projects Text</Label>
+                  <Input
+                    placeholder="e.g. 4 Real-world Client Projects"
+                    value={editingBatch.projects || ''}
+                    onChange={(e: { target: { value: any } }) => setEditingBatch({ ...editingBatch, projects: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Compensation Text</Label>
+                  <Input
+                    placeholder="e.g. Unpaid"
+                    value={editingBatch.compensation || ''}
+                    onChange={(e: { target: { value: any } }) => setEditingBatch({ ...editingBatch, compensation: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2 col-span-2">
+                  <Label>Certificate Text</Label>
+                  <Input
+                    placeholder="e.g. Verified Certificate + LOR"
+                    value={editingBatch.certificate || ''}
+                    onChange={(e: { target: { value: any } }) => setEditingBatch({ ...editingBatch, certificate: e.target.value })}
+                  />
+                </div>
               </div>
 
               <div className="flex items-center space-x-2 p-3 bg-red-50 border border-red-100 rounded-lg mt-4">
