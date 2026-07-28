@@ -31,3 +31,10 @@ This folder (`portal_copy`) contains all the necessary files to migrate the Stud
    - You can link the "Apply Now" buttons to: `<Link href="/portal/register">Apply Now</Link>`
 
 Once tested and confirmed working on the new domain, you can safely delete `src/app/portal` and `src/app/api/portal` from the Admin Repository!
+
+5. **Configuration Files:**
+   I have included important root configuration files in this `portal_copy` folder so you can see the dependencies and build configurations required for the portal to work flawlessly:
+   - `package.json`: Contains all the dependencies (copy the required ones to your new project).
+   - `vercel.json`: Vercel configuration (for cron jobs or deployment settings).
+   - `tailwind.config.ts` & `postcss.config.mjs`: Styling configuration.
+   - `.env.local`: Has the environment variables used here. (Make sure you add these to your new repo's environment settings).
