@@ -22,6 +22,8 @@ export default function AdminTasksPage() {
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   const domainOptions = [
     'Python Programming',
@@ -87,7 +89,17 @@ export default function AdminTasksPage() {
         const res = await fetch('/api/tasks', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: editingTaskId, batch_id: batchId, domain, duration_label: durationLabel, title, description, file_url: finalFileUrl })
+          body: JSON.stringify({ 
+            id: editingTaskId, 
+            batch_id: batchId, 
+            domain, 
+            duration_label: durationLabel, 
+            title, 
+            description, 
+            file_url: finalFileUrl,
+            start_date: startDate || null,
+            end_date: endDate || null
+          })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
@@ -97,7 +109,16 @@ export default function AdminTasksPage() {
         const res = await fetch('/api/tasks', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ batch_id: batchId, domain, duration_label: durationLabel, title, description, file_url: finalFileUrl })
+          body: JSON.stringify({ 
+            batch_id: batchId, 
+            domain, 
+            duration_label: durationLabel, 
+            title, 
+            description, 
+            file_url: finalFileUrl,
+            start_date: startDate || null,
+            end_date: endDate || null
+          })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
@@ -122,6 +143,8 @@ export default function AdminTasksPage() {
     setFile(null);
     setBatchId('');
     setDomain('');
+    setStartDate('');
+    setEndDate('');
   };
 
   const handleEditClick = (task: any) => {
@@ -132,6 +155,8 @@ export default function AdminTasksPage() {
     setTitle(task.title || '');
     setDescription(task.description || '');
     setFileUrl(task.file_url || '');
+    setStartDate(task.start_date ? new Date(task.start_date).toISOString().slice(0, 16) : '');
+    setEndDate(task.end_date ? new Date(task.end_date).toISOString().slice(0, 16) : '');
     setFile(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -228,6 +253,29 @@ export default function AdminTasksPage() {
                 />
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Start Date & Time</label>
+                  <input 
+                    type="datetime-local" 
+                    value={startDate} 
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 text-slate-700"
+                  />
+                  <p className="text-[10px] text-slate-400 mt-1">Leave blank to open immediately</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">End Date & Time</label>
+                  <input 
+                    type="datetime-local" 
+                    value={endDate} 
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 text-slate-700"
+                  />
+                  <p className="text-[10px] text-slate-400 mt-1">Leave blank to never close</p>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">Upload Document (Optional)</label>
                 <div className="flex items-center gap-2">
@@ -294,10 +342,16 @@ export default function AdminTasksPage() {
                   </button>
                 </div>
                 
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
                   <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded uppercase">{task.duration_label}</span>
                   <span className="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2 py-1 rounded uppercase">{task.domain}</span>
                   <span className="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-1 rounded uppercase">{task.batches?.name}</span>
+                  
+                  {(task.start_date || task.end_date) && (
+                    <span className="bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold px-2 py-1 rounded uppercase ml-auto">
+                      {task.start_date ? new Date(task.start_date).toLocaleDateString() : 'Now'} - {task.end_date ? new Date(task.end_date).toLocaleDateString() : 'Forever'}
+                    </span>
+                  )}
                 </div>
                 
                 <h4 className="text-base font-bold text-slate-900 mb-1">{task.title}</h4>
