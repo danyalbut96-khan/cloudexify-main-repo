@@ -28,6 +28,11 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
     };
     fetchUser();
 
+    // Request Notification permission
+    if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+      Notification.requestPermission();
+    }
+
     const fetchNotifications = async () => {
       const { data } = await supabase
         .from('admin_notifications')
@@ -47,6 +52,13 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
         (payload: any) => {
           setNotifications((prev) => [payload.new, ...prev].slice(0, 10));
           toast.success(`New Alert: ${payload.new.title}`, { icon: '🔔' });
+          
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('CloudExify Admin Alert', {
+              body: payload.new.title,
+              icon: '/icon.png' // Make sure you have a favicon or icon
+            });
+          }
         }
       )
       .subscribe();

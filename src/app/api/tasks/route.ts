@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { batch_id, domain, duration_label, title, description, file_url } = body
+    const { batch_id, domain, duration_label, title, description, file_url, start_date, end_date } = body
 
     if (!batch_id || !domain || !title || !duration_label) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase
       .from('tasks')
       .insert([
-        { batch_id, domain, duration_label, title, description, file_url }
+        { batch_id, domain, duration_label, title, description, file_url, start_date: start_date || null, end_date: end_date || null }
       ])
       .select()
       .single()
@@ -137,7 +137,7 @@ export async function PATCH(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { id, batch_id, domain, duration_label, title, description, file_url } = body
+    const { id, batch_id, domain, duration_label, title, description, file_url, start_date, end_date } = body
 
     if (!id) {
       return NextResponse.json({ error: 'Missing task ID' }, { status: 400 })
@@ -150,6 +150,8 @@ export async function PATCH(request: NextRequest) {
     if (title !== undefined) updateData.title = title
     if (description !== undefined) updateData.description = description
     if (file_url !== undefined) updateData.file_url = file_url
+    if (start_date !== undefined) updateData.start_date = start_date || null
+    if (end_date !== undefined) updateData.end_date = end_date || null
 
     const { data, error } = await supabase
       .from('tasks')
