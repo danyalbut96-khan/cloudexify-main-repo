@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   const adminClient = getAdminClient()
 
   try {
-    const { internId, completionDate, adminEmail, customText } = await request.json()
+    const { internId, completionDate, startDate, adminEmail, customText } = await request.json()
 
     if (!internId) {
       return NextResponse.json({ error: 'Missing internId parameter' }, { status: 400 })
@@ -97,6 +97,7 @@ export async function POST(request: NextRequest) {
       adminDesignation,
       signatureUrl,
       completionDate: completionDate || new Date().toISOString().split('T')[0],
+      startDate: startDate || new Date(new Date(completionDate).getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       customText,
       logoBase64,
       recommendationLetterNumber,

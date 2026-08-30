@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const internId = searchParams.get('internId') || ''
   const completionDate = searchParams.get('completionDate') || new Date().toISOString().split('T')[0]
+  const startDate = searchParams.get('startDate') || new Date(new Date(completionDate).getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
   const adminEmail = searchParams.get('adminEmail') || user.email || ''
   const customText = searchParams.get('customText') || undefined
 
@@ -105,6 +106,7 @@ export async function GET(request: NextRequest) {
       adminDesignation,
       signatureUrl,
       completionDate,
+      startDate,
       customText,
       logoBase64,
       recommendationLetterNumber,

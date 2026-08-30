@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const internId = searchParams.get('internId') || ''
   const completionDate = searchParams.get('completionDate') || new Date().toISOString().split('T')[0]
+  const startDate = searchParams.get('startDate') || new Date(new Date(completionDate).getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
   const adminEmail = searchParams.get('adminEmail') || user.email || ''
   const performanceGrade = (searchParams.get('performanceGrade') || 'Excellent') as 'Excellent' | 'Very Good' | 'Good'
   const skillsGained = searchParams.get('skillsGained') || 'Git, GitHub, HTML/CSS, JavaScript, and Team Collaboration'
@@ -87,7 +88,8 @@ export async function GET(request: NextRequest) {
       adminDesignation,
       signatureUrl,
       completionDate,
-      performanceGrade,
+      startDate,
+      performanceGrade: performanceGrade as any,
       skillsGained,
       logoBase64,
     })

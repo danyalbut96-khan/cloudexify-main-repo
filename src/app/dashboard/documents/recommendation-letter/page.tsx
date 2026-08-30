@@ -147,6 +147,7 @@ function RecommendationLetterGenerator() {
     try {
       const params = new URLSearchParams({
         internId: selectedIntern.id,
+        startDate,
         completionDate,
         adminEmail,
         customText
@@ -220,6 +221,7 @@ function RecommendationLetterGenerator() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             internId: intern.id,
+            startDate,
             completionDate,
             adminEmail,
             customText
@@ -556,23 +558,21 @@ function RecommendationLetterGenerator() {
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="absolute bottom-10 left-10 right-10 flex justify-between border-t border-slate-50 pt-2 text-[6.5px] text-slate-400">
-              <p>{companyName} Software Development</p>
-              <p>ID: {previewRlId}</p>
-            </div>
-
-            {/* Verification Footer Text */}
-            <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[5.5px] text-[#9ab3d0] text-center w-max">
-              This document can be verified at admin.cloudexify.site/verify/{previewRlId}
-            </p>
-
-            {/* QR Code representation */}
-            <div className="absolute bottom-12 right-10 flex flex-col items-center">
-              <div className="w-8 h-8 bg-slate-100 border border-slate-200 flex items-center justify-center mb-0.5">
-                <span className="text-[4px] text-slate-400 font-bold">QR CODE</span>
+            {/* Footer Mockup */}
+            <div className="absolute bottom-4 left-10 right-10 flex justify-between pt-1">
+              <div className="w-[75%] text-[7px] space-y-0.5 leading-tight">
+                <p className="font-bold text-slate-900">cloudexify.site | hello@cloudexify.site</p>
+                <p className="text-slate-500">WhatsApp: +92 341 1949277X</p>
+                <p className="text-blue-600">Verify: admin.cloudexify.site/verify</p>
+                <p className="font-bold text-slate-900">Document ID: {previewRlId}</p>
+                <p className="text-slate-400">© {new Date().getFullYear()} CloudExify. All rights reserved.</p>
               </div>
-              <p className="text-[4px] text-blue-600 font-bold uppercase tracking-wider">Scan to Verify</p>
+              <div className="w-[25%] flex flex-col items-end justify-start pt-0.5">
+                <div className="w-9 h-9 bg-slate-200 border border-slate-300 flex items-center justify-center mb-0.5">
+                  <span className="text-[5px] text-slate-400 font-bold">QR CODE</span>
+                </div>
+                <p className="text-[5px] text-blue-600 font-bold tracking-widest uppercase">SCAN TO VERIFY</p>
+              </div>
             </div>
           </div>
         </div>
