@@ -118,6 +118,7 @@ export default function DashboardPage() {
   };
 
   const supportData = stats?.support || { total: 0, open: 0, new: 0 };
+  const analysisData = stats?.analysis || { total: 0, done: 0, pending: 0, failed: 0, analyzing: 0 };
   const recentActivity = stats?.recentActivity || [];
 
   const domainBreakdown: any = internData?.domainBreakdown || {};
@@ -150,8 +151,8 @@ export default function DashboardPage() {
           </div>
         </motion.div>
 
-      {/* 4 Main Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* 5 Main Stat Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
         {/* Clickable Intern Stats Card */}
         <Card
           hoverEffect
@@ -267,6 +268,39 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="absolute bottom-4 right-4 text-purple-500 opacity-0 hover:opacity-100 group-hover:opacity-100 transition-opacity">
+            <ArrowRight className="h-4 w-4" />
+          </div>
+        </Card>
+
+        {/* AI Analysis Stats Card */}
+        <Card
+          hoverEffect
+          onClick={() => router.push('/dashboard/intern-analysis')}
+          className="border-l-4 border-l-pink-600 relative overflow-hidden"
+        >
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="flex items-center text-slate-500 font-bold text-[11px] leading-tight">
+                <BrainCircuit className="h-4 w-4 mr-1.5 text-pink-500" />
+                AI Project Analysis
+              </CardTitle>
+              <CardValue>
+                {analysisData.total}
+                {analysisData.pending > 0 && (
+                  <Badge variant="neutral" className="ml-2 text-[10px] bg-pink-100 text-pink-700 py-0.5 border-none">
+                    {analysisData.pending} queue
+                  </Badge>
+                )}
+              </CardValue>
+              <p className="text-xs text-slate-400 mt-1.5 font-medium">
+                {analysisData.done} Evaluated | {analysisData.analyzing} Active
+              </p>
+            </div>
+            <div className="bg-pink-50 text-pink-600 p-2 rounded-lg border border-pink-100">
+              <BrainCircuit className="h-5 w-5" />
+            </div>
+          </div>
+          <div className="absolute bottom-4 right-4 text-pink-500 opacity-0 hover:opacity-100 group-hover:opacity-100 transition-opacity">
             <ArrowRight className="h-4 w-4" />
           </div>
         </Card>

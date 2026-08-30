@@ -20,6 +20,9 @@ const DOMAINS = [
   { code: 'GEN', label: 'Full Stack', color: 'from-indigo-500 to-violet-500', bg: 'bg-indigo-500/10', border: 'border-indigo-500/20', text: 'text-indigo-400' },
 ];
 
+const ALL_DOMAIN = { code: 'ALL', label: 'All Domains', color: 'from-slate-700 to-slate-900', bg: 'bg-slate-800', border: 'border-slate-700', text: 'text-slate-200' };
+const LEADERBOARD_DOMAINS = [ALL_DOMAIN, ...DOMAINS];
+
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   pending: { label: 'Pending', color: 'bg-amber-500/10 text-amber-400 border-amber-500/20', icon: <Clock className="w-3 h-3" /> },
   analyzing: { label: 'Analyzing…', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20', icon: <Loader2 className="w-3 h-3 animate-spin" /> },
@@ -63,7 +66,7 @@ export default function InternAnalysisPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<ActiveTab>('overview');
-  const [activeDomain, setActiveDomain] = useState('PY');
+  const [activeDomain, setActiveDomain] = useState('ALL');
   const [expandedIntern, setExpandedIntern] = useState<string | null>(null);
   const [analyzingIds, setAnalyzingIds] = useState<Set<string>>(new Set());
   const [bulkAnalyzing, setBulkAnalyzing] = useState(false);
@@ -141,7 +144,7 @@ export default function InternAnalysisPage() {
 
   // Build intern summaries for leaderboard
   const buildLeaderboard = (domainCode: string): InternSummary[] => {
-    const domainProjects = projects.filter(p => p.domain_code === domainCode);
+    const domainProjects = domainCode === 'ALL' ? projects : projects.filter(p => p.domain_code === domainCode);
     const byIntern = new Map<string, Project[]>();
     domainProjects.forEach(p => {
       if (!byIntern.has(p.intern_id)) byIntern.set(p.intern_id, []);
@@ -156,7 +159,7 @@ export default function InternAnalysisPage() {
         intern_id: internId,
         intern_name: projs[0].intern_name,
         registration_number: projs[0].registration_number,
-        domain_code: domainCode,
+        domain_code: projs[0].domain_code,
         projects: projs.sort((a, b) => a.project_number - b.project_number),
         totalScore,
         analyzedCount,
@@ -167,7 +170,7 @@ export default function InternAnalysisPage() {
   };
 
   const leaderboard = buildLeaderboard(activeDomain);
-  const activeDomainInfo = DOMAINS.find(d => d.code === activeDomain)!;
+  const activeDomainInfo = LEADERBOARD_DOMAINS.find(d => d.code === activeDomain)!;
 
   if (loading) {
     return (
@@ -289,7 +292,7 @@ export default function InternAnalysisPage() {
           <div className="space-y-5">
             {/* Domain selector */}
             <div className="flex flex-wrap gap-2">
-              {DOMAINS.map(domain => (
+              {LEADERBOARD_DOMAINS.map(domain => (
                 <button
                   key={domain.code}
                   onClick={() => { setActiveDomain(domain.code); setExpandedIntern(null); }}
