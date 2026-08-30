@@ -20,6 +20,7 @@ function CertificateGenerator() {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [selectedIntern, setSelectedIntern] = useState<any>(null);
   const [completionDate, setCompletionDate] = useState(new Date().toISOString().split('T')[0]);
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [adminEmail, setAdminEmail] = useState('');
   const [allAdmins, setAllAdmins] = useState<any[]>([]);
   const [batches, setBatches] = useState<any[]>([]);
@@ -166,7 +167,7 @@ function CertificateGenerator() {
     signature_url: null
   };
 
-  const startDate = new Date(new Date(completionDate).getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  // startDate is now managed by state (fetched from batch.start_date)
 
   const fetchPendingInterns = async () => {
     setIsFetchingPending(true);
@@ -248,8 +249,9 @@ function CertificateGenerator() {
                 setSearchResults([]);
 
                 const batch = batches.find((b: any) => b.id === batchId);
-                if (batch && batch.end_date) {
-                  setCompletionDate(batch.end_date.split('T')[0]);
+                if (batch) {
+                  if (batch.end_date) setCompletionDate(batch.end_date.split('T')[0]);
+                  if (batch.start_date) setStartDate(batch.start_date.split('T')[0]);
                 }
               }}
               className="block w-full px-3 py-2 mb-4 text-sm border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
@@ -314,6 +316,18 @@ function CertificateGenerator() {
           <div>
             <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">3. Issuance Details</h2>
             <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1 flex items-center">
+                  <Calendar className="h-3.5 w-3.5 mr-1" />
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="block w-full px-3 py-2 text-sm border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                />
+              </div>
               <div>
                 <label className="block text-xs font-bold text-slate-500 mb-1 flex items-center">
                   <Calendar className="h-3.5 w-3.5 mr-1" />
