@@ -8,10 +8,12 @@ import { Badge } from '@/components/ui/Badge';
 import { TableSkeleton } from '@/components/ui/Skeleton';
 import { Modal } from '@/components/ui/Modal';
 import { formatDate } from '@/lib/utils';
-import { Search, ExternalLink, CheckCircle, XCircle, Clock, Eye, MessageSquare } from 'lucide-react';
+import { Search, ExternalLink, CheckCircle, XCircle, Clock, Eye, MessageSquare, BrainCircuit } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 export default function InternProjectsPage() {
+  const router = useRouter();
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -75,6 +77,26 @@ export default function InternProjectsPage() {
       toast.error(err.message, { id: saveToast });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleAnalyzeWithAI = async (projectId: string) => {
+    const aiToast = toast.loading('Sending project to AI...');
+    try {
+      const res = await fetch('/api/analysis/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ project_id: projectId })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || 'Analysis failed', { id: aiToast });
+      } else {
+        toast.success('Analysis initiated successfully!', { id: aiToast });
+        router.push('/dashboard/intern-analysis');
+      }
+    } catch {
+      toast.error('Network error during analysis', { id: aiToast });
     }
   };
 
@@ -157,14 +179,26 @@ export default function InternProjectsPage() {
                       {proj.marks !== null ? `${proj.marks} / 10` : '-'}
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => openReviewModal(proj)}
-                        className="text-blue-600 hover:bg-blue-50"
-                      >
-                        <Eye className="w-4 h-4 mr-1.5" /> Review
-                      </Button>
+                      <div className="flex items-center justify-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openReviewModal(proj)}
+                          className="text-blue-600 hover:bg-blue-50"
+                        >
+                          <Eye className="w-4 h-4 mr-1.5" /> Review
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleAnalyzeWithAI(proj.id)}
+                          className="text-purple-600 hover:bg-purple-50"
+                          disabled={proj.analysis_status === 'done' || proj.analysis_status === 'analyzing'}
+                        >
+                          <BrainCircuit className="w-4 h-4 mr-1.5" /> 
+                          {proj.analysis_status === 'done' ? 'Analyzed' : (proj.analysis_status === 'analyzing' ? 'Analyzing...' : 'Analyze')}
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
