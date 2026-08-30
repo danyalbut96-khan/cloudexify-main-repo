@@ -20,6 +20,7 @@ function RecommendationLetterGenerator() {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [selectedIntern, setSelectedIntern] = useState<any>(null);
   const [completionDate, setCompletionDate] = useState(new Date().toISOString().split('T')[0]);
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [customText, setCustomText] = useState(
     'During the internship, they exhibited strong problem-solving abilities, a proactive learning attitude, and a high level of dedication to their assigned tasks. They successfully met all project milestones, demonstrating both independent initiative and excellent teamwork.'
   );
@@ -38,6 +39,7 @@ function RecommendationLetterGenerator() {
   const [isFetchingPending, setIsFetchingPending] = useState(false);
   const [bulkProgress, setBulkProgress] = useState({ current: 0, total: 0 });
   const [isBulkGenerating, setIsBulkGenerating] = useState(false);
+  const [bulkMode, setBulkMode] = useState<'pending' | 'all'>('pending');
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -176,8 +178,9 @@ function RecommendationLetterGenerator() {
     signature_url: null
   };
 
-  const fetchPendingInterns = async () => {
+  const fetchPendingInterns = async (mode: 'pending' | 'all' = bulkMode) => {
     setIsFetchingPending(true);
+    setBulkMode(mode);
     try {
       let endpoint = '/api/interns?limit=5000';
       if (selectedBatchId) endpoint += `&batchId=${selectedBatchId}`;
@@ -185,16 +188,15 @@ function RecommendationLetterGenerator() {
       const res = await fetch(endpoint);
       if (res.ok) {
         const data = await res.json();
-        const pending = data.filter((i: any) => !i.intern_documents?.recommendation_letter_generated);
-        setPendingInterns(pending);
-        if (pending.length > 0) {
-          toast.success(`Found ${pending.length} interns pending recommendation letters.`);
-        } else {
-          toast.success('All interns already have recommendation letters!');
-        }
+        const list = mode === 'pending'
+          ? data.filter((i: any) => !i.intern_documents?.recommendation_letter_generated)
+          : data;
+        setPendingInterns(list);
+        const label = mode === 'pending' ? 'pending' : 'total';
+        toast.success(list.length > 0 ? `Found ${list.length} ${label} interns.` : 'No interns found!');
       }
     } catch (err) {
-      toast.error('Failed to fetch pending interns');
+      toast.error('Failed to fetch interns');
     } finally {
       setIsFetchingPending(false);
     }
@@ -257,8 +259,9 @@ function RecommendationLetterGenerator() {
                 setSearchResults([]);
 
                 const batch = batches.find((b: any) => b.id === batchId);
-                if (batch && batch.end_date) {
-                  setCompletionDate(batch.end_date.split('T')[0]);
+                if (batch) {
+                  if (batch.end_date) setCompletionDate(batch.end_date.split('T')[0]);
+                  if (batch.start_date) setStartDate(batch.start_date.split('T')[0]);
                 }
               }}
               className="block w-full px-3 py-2 mb-4 text-sm border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
@@ -326,7 +329,20 @@ function RecommendationLetterGenerator() {
               <div>
                 <label className="block text-xs font-bold text-slate-500 mb-1 flex items-center">
                   <Calendar className="h-3.5 w-3.5 mr-1" />
-                  Reference Letter Date
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="block w-full px-3 py-2 text-sm border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1 flex items-center">
+                  <Calendar className="h-3.5 w-3.5 mr-1" />
+                  Reference Letter Date (End Date)
                 </label>
                 <input
                   type="date"
@@ -395,16 +411,29 @@ function RecommendationLetterGenerator() {
             </p>
 
             <div className="space-y-3">
-              <Button
-                variant="outline"
-                onClick={fetchPendingInterns}
-                isLoading={isFetchingPending}
-                disabled={isBulkGenerating}
-                className="w-full text-xs py-2 border-purple-200 text-purple-700 hover:bg-purple-50"
-              >
-                <Users className="h-3.5 w-3.5 mr-2" />
-                Find Pending Interns ({pendingInterns.length})
-              </Button>
+              {/* Mode buttons */}
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => fetchPendingInterns('pending')}
+                  isLoading={isFetchingPending && bulkMode === 'pending'}
+                  disabled={isBulkGenerating}
+                  className="flex-1 text-xs py-2 border-amber-200 text-amber-700 hover:bg-amber-50"
+                >
+                  <Users className="h-3.5 w-3.5 mr-1.5" />
+                  Pending Only
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => fetchPendingInterns('all')}
+                  isLoading={isFetchingPending && bulkMode === 'all'}
+                  disabled={isBulkGenerating}
+                  className="flex-1 text-xs py-2 border-purple-200 text-purple-700 hover:bg-purple-50"
+                >
+                  <Users className="h-3.5 w-3.5 mr-1.5" />
+                  Regenerate All
+                </Button>
+              </div>
 
               {pendingInterns.length > 0 && (
                 <div className="bg-white border border-purple-100 rounded-xl p-4 shadow-sm space-y-4">
@@ -436,7 +465,10 @@ function RecommendationLetterGenerator() {
                     {isBulkGenerating ? (
                       <span className="flex items-center">Generating... Please wait...</span>
                     ) : (
-                      <span className="flex items-center"><Zap className="h-3.5 w-3.5 mr-2" /> Generate All to Storage</span>
+                      <span className="flex items-center">
+                        <Zap className="h-3.5 w-3.5 mr-2" />
+                        {bulkMode === 'pending' ? 'Generate Pending to Storage' : 'Regenerate All to Storage'}
+                      </span>
                     )}
                   </Button>
                 </div>

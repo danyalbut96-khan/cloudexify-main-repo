@@ -36,6 +36,7 @@ function CertificateGenerator() {
   const [isFetchingPending, setIsFetchingPending] = useState(false);
   const [bulkProgress, setBulkProgress] = useState({ current: 0, total: 0 });
   const [isBulkGenerating, setIsBulkGenerating] = useState(false);
+  const [bulkMode, setBulkMode] = useState<'pending' | 'all'>('pending');
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -169,8 +170,9 @@ function CertificateGenerator() {
 
   // startDate is now managed by state (fetched from batch.start_date)
 
-  const fetchPendingInterns = async () => {
+  const fetchPendingInterns = async (mode: 'pending' | 'all' = bulkMode) => {
     setIsFetchingPending(true);
+    setBulkMode(mode);
     try {
       let endpoint = '/api/interns?limit=5000';
       if (selectedBatchId) endpoint += `&batchId=${selectedBatchId}`;
@@ -178,16 +180,15 @@ function CertificateGenerator() {
       const res = await fetch(endpoint);
       if (res.ok) {
         const data = await res.json();
-        const pending = data.filter((i: any) => !i.intern_documents?.certificate_generated);
-        setPendingInterns(pending);
-        if (pending.length > 0) {
-          toast.success(`Found ${pending.length} interns pending certificates.`);
-        } else {
-          toast.success('All interns already have certificates!');
-        }
+        const list = mode === 'pending'
+          ? data.filter((i: any) => !i.intern_documents?.certificate_generated)
+          : data;
+        setPendingInterns(list);
+        const label = mode === 'pending' ? 'pending' : 'total';
+        toast.success(list.length > 0 ? `Found ${list.length} ${label} interns.` : 'No interns found!');
       }
     } catch (err) {
-      toast.error('Failed to fetch pending interns');
+      toast.error('Failed to fetch interns');
     } finally {
       setIsFetchingPending(false);
     }
@@ -377,30 +378,45 @@ function CertificateGenerator() {
         {/* Bulk Actions Card */}
         <Card className="lg:col-span-4 space-y-5 border border-purple-100 bg-gradient-to-br from-purple-50/50 to-white mt-0">
           <div>
-            <h2 className="text-sm font-bold text-purple-900 uppercase tracking-wider mb-2 flex items-center">
+            <h2 className="text-sm font-bold text-purple-900 uppercase tracking-wider mb-1 flex items-center">
               <Zap className="h-4 w-4 mr-1.5 text-purple-600" />
               Bulk Generation
             </h2>
             <p className="text-[10px] text-slate-500 mb-4 leading-relaxed">
-              Generate and automatically save Certificates for ALL pending interns directly to Supabase storage.
+              Generate and save Certificates for all interns in a batch directly to Supabase storage.
             </p>
 
             <div className="space-y-3">
-              <Button
-                variant="outline"
-                onClick={fetchPendingInterns}
-                isLoading={isFetchingPending}
-                disabled={isBulkGenerating}
-                className="w-full text-xs py-2 border-purple-200 text-purple-700 hover:bg-purple-50"
-              >
-                <Users className="h-3.5 w-3.5 mr-2" />
-                Find Pending Interns ({pendingInterns.length})
-              </Button>
+              {/* Mode buttons */}
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => fetchPendingInterns('pending')}
+                  isLoading={isFetchingPending && bulkMode === 'pending'}
+                  disabled={isBulkGenerating}
+                  className="flex-1 text-xs py-2 border-amber-200 text-amber-700 hover:bg-amber-50"
+                >
+                  <Users className="h-3.5 w-3.5 mr-1.5" />
+                  Pending Only
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => fetchPendingInterns('all')}
+                  isLoading={isFetchingPending && bulkMode === 'all'}
+                  disabled={isBulkGenerating}
+                  className="flex-1 text-xs py-2 border-purple-200 text-purple-700 hover:bg-purple-50"
+                >
+                  <Users className="h-3.5 w-3.5 mr-1.5" />
+                  Regenerate All
+                </Button>
+              </div>
 
               {pendingInterns.length > 0 && (
                 <div className="bg-white border border-purple-100 rounded-xl p-4 shadow-sm space-y-4">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="font-semibold text-slate-700">Ready to Process:</span>
+                    <span className="font-semibold text-slate-700">
+                      {bulkMode === 'pending' ? 'Pending:' : 'Regenerating:'}
+                    </span>
                     <Badge variant="blue">{pendingInterns.length} Interns</Badge>
                   </div>
                   
@@ -427,7 +443,10 @@ function CertificateGenerator() {
                     {isBulkGenerating ? (
                       <span className="flex items-center">Generating... Please wait...</span>
                     ) : (
-                      <span className="flex items-center"><Zap className="h-3.5 w-3.5 mr-2" /> Generate All to Storage</span>
+                      <span className="flex items-center">
+                        <Zap className="h-3.5 w-3.5 mr-2" />
+                        {bulkMode === 'pending' ? 'Generate Pending to Storage' : 'Regenerate All to Storage'}
+                      </span>
                     )}
                   </Button>
                 </div>
