@@ -128,6 +128,7 @@ interface ExperienceCertificateProps {
   performanceGrade: 'Excellent' | 'Very Good' | 'Good';
   skillsGained: string; // comma separated list
   logoBase64?: string | null;
+  startDate: string;
 }
 
 export const ExperienceCertificatePDF: React.FC<ExperienceCertificateProps> = ({
@@ -140,6 +141,7 @@ export const ExperienceCertificatePDF: React.FC<ExperienceCertificateProps> = ({
   performanceGrade,
   skillsGained,
   logoBase64,
+  startDate,
 }) => {
   const currentDate = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
@@ -147,7 +149,6 @@ export const ExperienceCertificatePDF: React.FC<ExperienceCertificateProps> = ({
     day: 'numeric',
   });
 
-  const startDate = new Date(new Date(completionDate).getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   const logoSrc = companySettings.company_logo_url || logoBase64 || null;
 
   return (

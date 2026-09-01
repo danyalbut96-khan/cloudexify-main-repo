@@ -133,6 +133,7 @@ function ExperienceCertificateGenerator() {
       const params = new URLSearchParams({
         internId: selectedIntern.id,
         completionDate,
+        startDate,
         adminEmail,
         performanceGrade,
         skillsGained
@@ -209,6 +210,7 @@ function ExperienceCertificateGenerator() {
           body: JSON.stringify({
             internId: intern.id,
             completionDate,
+            startDate,
             adminEmail,
             performanceGrade,
             skillsGained

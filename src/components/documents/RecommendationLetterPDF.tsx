@@ -136,6 +136,7 @@ interface RecommendationLetterProps {
   logoBase64?: string | null;
   recommendationLetterNumber: string;
   qrCodeBase64?: string | null;
+  startDate: string;
 }
 
 export const RecommendationLetterPDF: React.FC<RecommendationLetterProps> = ({
@@ -149,6 +150,7 @@ export const RecommendationLetterPDF: React.FC<RecommendationLetterProps> = ({
   logoBase64,
   recommendationLetterNumber,
   qrCodeBase64,
+  startDate,
 }) => {
   const currentDate = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
@@ -156,7 +158,6 @@ export const RecommendationLetterPDF: React.FC<RecommendationLetterProps> = ({
     day: 'numeric',
   });
 
-  const startDate = new Date(new Date(completionDate).getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   const logoSrc = companySettings.company_logo_url || logoBase64 || null;
 
   return (
