@@ -137,6 +137,10 @@ function CertificateGenerator() {
       toast.error('Please select a signer.');
       return;
     }
+    if ((selectedIntern.submitted_projects_count || 0) < 4) {
+      toast.error('Intern has not submitted 4 projects.');
+      return;
+    }
 
     setIsGenerating(true);
     const renderToast = toast.loading('Generating Certificate...');
@@ -198,14 +202,17 @@ function CertificateGenerator() {
     if (pendingInterns.length === 0) return toast.error('No pending interns found. Fetch them first.');
     if (!adminEmail) return toast.error('Please select an authorized admin to sign.');
 
+    const eligibleInterns = pendingInterns.filter((i: any) => (i.submitted_projects_count || 0) >= 4);
+    if (eligibleInterns.length === 0) return toast.error('No pending interns are eligible (require 4 projects).');
+
     setIsBulkGenerating(true);
-    setBulkProgress({ current: 0, total: pendingInterns.length });
+    setBulkProgress({ current: 0, total: eligibleInterns.length });
 
     let successCount = 0;
     let failCount = 0;
 
-    for (let i = 0; i < pendingInterns.length; i++) {
-      const intern = pendingInterns[i];
+    for (let i = 0; i < eligibleInterns.length; i++) {
+      const intern = eligibleInterns[i];
       try {
         const res = await fetch('/api/documents/certificate/store', {
           method: 'POST',
@@ -226,7 +233,7 @@ function CertificateGenerator() {
       } catch (err) {
         failCount++;
       }
-      setBulkProgress({ current: i + 1, total: pendingInterns.length });
+      setBulkProgress({ current: i + 1, total: eligibleInterns.length });
     }
 
     setIsBulkGenerating(false);
@@ -294,7 +301,7 @@ function CertificateGenerator() {
                   >
                     <div>
                       <p className="text-slate-900 font-bold">{item.full_name}</p>
-                      <p className="text-[10px] text-slate-400 font-medium">{item.domain}</p>
+                      <p className="text-[10px] text-slate-400 font-medium">{item.domain} • Projects: {item.submitted_projects_count || 0}/4</p>
                     </div>
                     <Badge variant="blue">{item.registration_number}</Badge>
                   </button>
@@ -310,6 +317,7 @@ function CertificateGenerator() {
                 </p>
                 <p className="text-slate-500 font-semibold">{selectedIntern.domain}</p>
                 <p className="text-slate-400 font-medium">Reg: {selectedIntern.registration_number}</p>
+                <p className={`text-[10px] font-bold ${(selectedIntern.submitted_projects_count || 0) >= 4 ? 'text-green-600' : 'text-amber-600'}`}>Projects Submitted: {selectedIntern.submitted_projects_count || 0}/4</p>
               </div>
             )}
           </div>
