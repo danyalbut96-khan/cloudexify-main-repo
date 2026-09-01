@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
   try {
     let query = supabase
       .from('interns')
-      .select('*, intern_documents (*)')
+      .select('*, intern_documents (*), intern_projects (count)')
 
     if (search) {
       query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%,registration_number.ilike.%${search}%`)
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
     
     if (offerStatus) {
       const isGen = offerStatus === 'generated'
-      filteredData = filteredData.filter(item => 
+      filteredData = filteredData.filter((item: any) => 
         isGen 
           ? item.intern_documents?.offer_letter_generated === true 
           : !item.intern_documents || item.intern_documents.offer_letter_generated === false
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
 
     if (certStatus) {
       const isGen = certStatus === 'generated'
-      filteredData = filteredData.filter(item => 
+      filteredData = filteredData.filter((item: any) => 
         isGen 
           ? item.intern_documents?.certificate_generated === true 
           : !item.intern_documents || item.intern_documents.certificate_generated === false
@@ -74,12 +74,18 @@ export async function GET(request: NextRequest) {
     }
 
     // Mark as viewed in the background
-    const idsToMark = filteredData.filter(i => i.is_new).map(i => i.id);
+    const idsToMark = filteredData.filter((i: any) => i.is_new).map((i: any) => i.id);
     if (idsToMark.length > 0) {
       supabase.from('interns').update({ is_new: false }).in('id', idsToMark).then();
     }
 
-    return NextResponse.json(filteredData)
+    // Map project counts
+    const finalData = filteredData.map((intern: any) => ({
+      ...intern,
+      submitted_projects_count: intern.intern_projects?.[0]?.count || 0
+    }))
+
+    return NextResponse.json(finalData)
   } catch (err: any) {
     return NextResponse.json(
       { error: err.message || 'Internal server error' },
