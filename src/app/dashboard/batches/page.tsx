@@ -26,7 +26,8 @@ export default function BatchesPage() {
     mode: '',
     projects: '',
     compensation: '',
-    certificate: ''
+    certificate: '',
+    registration_deadline: ''
   })
 
   const [editingBatch, setEditingBatch] = useState<any>(null)
@@ -64,7 +65,7 @@ export default function BatchesPage() {
       if (!res.ok) throw new Error(await res.text())
 
       toast.success('Batch created successfully!')
-      setFormData({ name: '', start_date: '', end_date: '', status: 'coming', documents_locked: false, duration: '', mode: '', projects: '', compensation: '', certificate: '' })
+      setFormData({ name: '', start_date: '', end_date: '', status: 'coming', documents_locked: false, duration: '', mode: '', projects: '', compensation: '', certificate: '', registration_deadline: '' })
       fetchBatches()
     } catch (error: any) {
       toast.error(error.message || 'Failed to create batch')
@@ -156,6 +157,15 @@ export default function BatchesPage() {
                 required
                 value={formData.end_date}
                 onChange={(e: { target: { value: any } }) => setFormData({ ...formData, end_date: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Registration Deadline</Label>
+              <Input
+                type="date"
+                value={formData.registration_deadline}
+                onChange={(e: { target: { value: any } }) => setFormData({ ...formData, registration_deadline: e.target.value })}
               />
             </div>
 
@@ -289,7 +299,7 @@ export default function BatchesPage() {
       {/* Edit Modal */}
       {editingBatch && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-          <Card className="w-full max-w-md shadow-2xl border-0 animate-in fade-in zoom-in duration-200">
+          <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl border-0 animate-in fade-in zoom-in duration-200">
             <div className="flex items-center justify-between mb-6 border-b border-slate-100 pb-4">
               <h2 className="text-lg font-bold text-slate-800 flex items-center">
                 <Pencil className="w-5 h-5 mr-2 text-indigo-600" />
@@ -333,6 +343,15 @@ export default function BatchesPage() {
                     onChange={(e: { target: { value: any } }) => setEditingBatch({ ...editingBatch, end_date: e.target.value })}
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Registration Deadline</Label>
+                <Input
+                  type="date"
+                  value={editingBatch.registration_deadline || ''}
+                  onChange={(e: { target: { value: any } }) => setEditingBatch({ ...editingBatch, registration_deadline: e.target.value })}
+                />
               </div>
 
               <div className="space-y-2">

@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { name, start_date, end_date, status = 'coming', documents_locked = false, duration, mode, projects, compensation, certificate } = await request.json()
+    const { name, start_date, end_date, status = 'coming', documents_locked = false, duration, mode, projects, compensation, certificate, registration_deadline } = await request.json()
     if (!name || !start_date || !end_date) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     const { data: newBatch, error } = await supabase
       .from('batches')
-      .insert({ name, start_date, end_date, status, documents_locked, duration, mode, projects, compensation, certificate })
+      .insert({ name, start_date, end_date, status, documents_locked, duration, mode, projects, compensation, certificate, registration_deadline })
       .select()
       .single()
 
@@ -81,7 +81,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   try {
-    const { id, name, start_date, end_date, status, documents_locked, duration, mode, projects, compensation, certificate } = await request.json()
+    const { id, name, start_date, end_date, status, documents_locked, duration, mode, projects, compensation, certificate, registration_deadline } = await request.json()
     if (!id) {
       return NextResponse.json({ error: 'Batch ID is required' }, { status: 400 })
     }
@@ -98,6 +98,7 @@ export async function PATCH(request: NextRequest) {
     if (projects !== undefined) updateData.projects = projects
     if (compensation !== undefined) updateData.compensation = compensation
     if (certificate !== undefined) updateData.certificate = certificate
+    if (registration_deadline !== undefined) updateData.registration_deadline = registration_deadline
 
     // If making accepting, deactivate others
     if (status === 'accepting') {
