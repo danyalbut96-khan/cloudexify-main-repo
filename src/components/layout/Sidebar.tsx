@@ -75,10 +75,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       path: '/dashboard/leadgen',
     },
     {
-      name: 'Employees',
+      name: 'Employee Management',
       icon: Briefcase,
-      path: '#',
-      isComingSoon: true,
+      path: '/dashboard/employees',
     },
     {
       name: 'Proposals',
