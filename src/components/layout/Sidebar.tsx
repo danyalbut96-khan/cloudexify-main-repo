@@ -144,7 +144,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                 (item.path !== '/dashboard' && pathname.startsWith(item.path)) ||
                 isSubActive;
 
-              if (item.isComingSoon) {
+              if ('isComingSoon' in item && item.isComingSoon) {
                 return (
                   <div
                     key={idx}
