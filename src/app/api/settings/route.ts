@@ -246,7 +246,6 @@ export async function POST(request: NextRequest) {
           openrouter_api_key: body.openrouter_api_key ? String(body.openrouter_api_key).trim() : null,
           openrouter_model: body.openrouter_model ? String(body.openrouter_model).trim() : 'mistralai/mistral-7b-instruct:free',
           max_projects_per_intern: body.max_projects_per_intern ? Number(body.max_projects_per_intern) : 4,
-          registration_open: Boolean(body.registration_open),
           public_leaderboard_open: Boolean(body.public_leaderboard_open),
           admin_signup_open: body.admin_signup_open !== undefined ? Boolean(body.admin_signup_open) : true,
           batch_coming_soon_message: body.batch_coming_soon_message ? String(body.batch_coming_soon_message).trim() : '',

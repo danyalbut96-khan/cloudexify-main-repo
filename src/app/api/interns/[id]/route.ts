@@ -48,17 +48,28 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
   try {
     const body = await request.json()
-    const { status } = body
+    const { status, document_lock_override } = body
 
-    if (!['Pending', 'Accepted', 'Rejected'].includes(status)) {
-      return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
+    const updateData: any = {}
+
+    if (status !== undefined) {
+      if (!['Pending', 'Accepted', 'Rejected'].includes(status)) {
+        return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
+      }
+      updateData.status = status
+      if (status === 'Rejected') {
+        updateData.rejected_at = new Date().toISOString()
+      } else {
+        updateData.rejected_at = null
+      }
     }
 
-    const updateData: any = { status }
-    if (status === 'Rejected') {
-      updateData.rejected_at = new Date().toISOString()
-    } else {
-      updateData.rejected_at = null
+    if (document_lock_override !== undefined) {
+      updateData.document_lock_override = document_lock_override
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return NextResponse.json({ error: 'No fields to update' }, { status: 400 })
     }
 
     const { data, error } = await supabase

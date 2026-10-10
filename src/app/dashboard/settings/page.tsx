@@ -86,7 +86,6 @@ export default function SettingsPage() {
   const [aiApiKey, setAiApiKey] = useState('');
   const [aiModel, setAiModel] = useState('mistralai/mistral-7b-instruct:free');
   const [aiMaxProjects, setAiMaxProjects] = useState(4);
-  const [aiRegistrationOpen, setAiRegistrationOpen] = useState(false);
   const [aiPublicLeaderboardOpen, setAiPublicLeaderboardOpen] = useState(false);
   const [adminSignupOpen, setAdminSignupOpen] = useState(true);
   const [aiBatchMessage, setAiBatchMessage] = useState('Batch 2 Registration Opening Soon! Stay tuned for announcements.');
@@ -137,7 +136,6 @@ export default function SettingsPage() {
         setAiApiKey(s.openrouter_api_key || '');
         setAiModel(s.openrouter_model || 'mistralai/mistral-7b-instruct:free');
         setAiMaxProjects(s.max_projects_per_intern ?? 4);
-        setAiRegistrationOpen(s.registration_open ?? false);
         setAiPublicLeaderboardOpen(s.public_leaderboard_open ?? false);
         setAdminSignupOpen(s.admin_signup_open ?? true);
         setAiBatchMessage(s.batch_coming_soon_message || '');
@@ -1248,7 +1246,7 @@ export default function SettingsPage() {
                 </select>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Max Projects Per Intern</label>
                   <input
@@ -1258,21 +1256,6 @@ export default function SettingsPage() {
                     onChange={e => setAiMaxProjects(Number(e.target.value))}
                     className="block w-full px-3.5 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                   />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Registration Status</label>
-                  <button
-                    type="button"
-                    onClick={() => setAiRegistrationOpen(v => !v)}
-                    className={`w-full flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold border transition-all ${
-                      aiRegistrationOpen
-                        ? 'bg-green-50 border-green-200 text-green-700'
-                        : 'bg-amber-50 border-amber-200 text-amber-700'
-                    }`}
-                  >
-                    {aiRegistrationOpen ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}
-                    {aiRegistrationOpen ? 'Open' : 'Closed'}
-                  </button>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Public Leaderboard</label>

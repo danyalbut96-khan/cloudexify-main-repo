@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   try {
     const { data: batches, error } = await supabase
       .from('batches')
-      .select('*, interns(count)')
+      .select('*, interns(count), batch_domains(*)')
       .order('created_at', { ascending: false })
 
     if (error) throw error
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { name, start_date, end_date, status = 'coming', documents_locked = false, duration, mode, projects, compensation, certificate, registration_deadline } = await request.json()
+    const { name, start_date, end_date, status = 'coming', documents_locked = false, mode_enum, location_enum, projects, comp_type, comp_amount, certificate, registration_deadline, domains } = await request.json()
     if (!name || !start_date || !end_date) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
@@ -54,11 +54,22 @@ export async function POST(request: NextRequest) {
 
     const { data: newBatch, error } = await supabase
       .from('batches')
-      .insert({ name, start_date, end_date, status, documents_locked, duration, mode, projects, compensation, certificate, registration_deadline })
+      .insert({ name, start_date, end_date, status, documents_locked, mode_enum, location_enum, projects, comp_type, comp_amount, certificate, registration_deadline })
       .select()
       .single()
 
     if (error) throw error
+
+    if (domains && Array.isArray(domains) && domains.length > 0) {
+      const domainsToInsert = domains.map(d => ({ ...d, batch_id: newBatch.id }))
+      const { error: domainsError } = await supabase.from('batch_domains').insert(domainsToInsert)
+      if (domainsError) console.error('Failed to insert domains:', domainsError)
+    }
+
+    // Sync registration_open status
+    const { data: acceptingBatches } = await supabase.from('batches').select('id').eq('status', 'accepting')
+    const isRegistrationOpen = acceptingBatches && acceptingBatches.length > 0
+    await supabase.from('intern_analysis_settings').update({ registration_open: isRegistrationOpen }).neq('id', '00000000-0000-0000-0000-000000000000')
 
     await logAction(user.email || 'Admin', 'Created New Batch: ' + name, 'batch', newBatch.id)
 
@@ -81,7 +92,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   try {
-    const { id, name, start_date, end_date, status, documents_locked, duration, mode, projects, compensation, certificate, registration_deadline } = await request.json()
+    const { id, name, start_date, end_date, status, documents_locked, mode_enum, location_enum, projects, comp_type, comp_amount, certificate, registration_deadline, domains, is_archived } = await request.json()
     if (!id) {
       return NextResponse.json({ error: 'Batch ID is required' }, { status: 400 })
     }
@@ -93,12 +104,14 @@ export async function PATCH(request: NextRequest) {
     if (end_date !== undefined) updateData.end_date = end_date
     if (status !== undefined) updateData.status = status
     if (documents_locked !== undefined) updateData.documents_locked = documents_locked
-    if (duration !== undefined) updateData.duration = duration
-    if (mode !== undefined) updateData.mode = mode
+    if (mode_enum !== undefined) updateData.mode_enum = mode_enum
+    if (location_enum !== undefined) updateData.location_enum = location_enum
     if (projects !== undefined) updateData.projects = projects
-    if (compensation !== undefined) updateData.compensation = compensation
+    if (comp_type !== undefined) updateData.comp_type = comp_type
+    if (comp_amount !== undefined) updateData.comp_amount = comp_amount
     if (certificate !== undefined) updateData.certificate = certificate
     if (registration_deadline !== undefined) updateData.registration_deadline = registration_deadline
+    if (is_archived !== undefined) updateData.is_archived = is_archived
 
     // If making accepting, deactivate others
     if (status === 'accepting') {
@@ -113,6 +126,17 @@ export async function PATCH(request: NextRequest) {
       .single()
 
     if (error) throw error
+
+    if (domains && Array.isArray(domains) && domains.length > 0) {
+      const domainsToUpsert = domains.map(d => ({ ...d, batch_id: id }))
+      const { error: domainsError } = await supabase.from('batch_domains').upsert(domainsToUpsert, { onConflict: 'batch_id,domain' })
+      if (domainsError) console.error('Failed to upsert domains:', domainsError)
+    }
+
+    // Sync registration_open status
+    const { data: acceptingBatches } = await supabase.from('batches').select('id').eq('status', 'accepting')
+    const isRegistrationOpen = acceptingBatches && acceptingBatches.length > 0
+    await supabase.from('intern_analysis_settings').update({ registration_open: isRegistrationOpen }).neq('id', '00000000-0000-0000-0000-000000000000')
 
     await logAction(user.email || 'Admin', `Updated Batch ${updatedBatch.name} (Status: ${status || updatedBatch.status})`, 'batch', id)
 
