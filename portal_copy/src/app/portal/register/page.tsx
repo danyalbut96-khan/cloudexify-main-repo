@@ -45,7 +45,7 @@ export default function RegisterPage() {
       })
       .catch(() => {});
   }, []);
-  const [successData, setSuccessData] = useState<{ intern: any; message: string } | null>(null);
+  const [successData, setSuccessData] = useState<{ intern?: any; message?: string; isWaitlisted?: boolean } | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -68,7 +68,11 @@ export default function RegisterPage() {
         throw new Error(data.error || 'Registration failed.');
       }
 
-      toast.success('Registration successful!', { id: toastId });
+      if (data.isWaitlisted) {
+        toast.success('Added to waitlist!', { id: toastId });
+      } else {
+        toast.success('Registration successful!', { id: toastId });
+      }
       setSuccessData(data);
     } catch (err: any) {
       toast.error(err.message, { id: toastId });
@@ -78,6 +82,29 @@ export default function RegisterPage() {
   };
 
   if (successData) {
+    if (successData.isWaitlisted) {
+      return (
+        <div className="min-h-screen bg-slate-950 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
+          <div className="sm:mx-auto sm:w-full sm:max-w-md">
+            <div className="bg-slate-900/60 backdrop-blur-md border border-amber-500/30 shadow-2xl shadow-amber-900/20 rounded-2xl p-8 text-center space-y-6">
+              <div className="mx-auto w-16 h-16 bg-amber-500/20 border border-amber-500/30 rounded-full flex items-center justify-center">
+                <Clock className="w-8 h-8 text-amber-400" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-black text-white mb-2">Waitlist Subscribed!</h2>
+              </div>
+              <p className="text-slate-300 text-sm leading-relaxed">
+                {successData.message}
+              </p>
+              <Link href="/portal" className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm font-semibold transition-colors mt-4">
+                <ArrowLeft className="w-4 h-4" /> Return to Portal
+              </Link>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -89,12 +116,12 @@ export default function RegisterPage() {
             <div>
               <h2 className="text-2xl font-black text-white mb-2">Registration Successful!</h2>
               <p className="text-green-400 font-medium bg-green-500/10 inline-block px-3 py-1 rounded-full text-sm border border-green-500/20">
-                ID: {successData.intern.registration_number}
+                ID: {successData.intern?.registration_number}
               </p>
             </div>
             
             <p className="text-slate-400 text-sm leading-relaxed">
-              Congratulations, <strong>{successData.intern.full_name}</strong>! Your application for the <strong>{successData.intern.domain}</strong> internship has been received.
+              Congratulations, <strong>{successData.intern?.full_name}</strong>! Your application for the <strong>{successData.intern?.domain}</strong> internship has been received.
             </p>
             
             <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 text-left space-y-2">

@@ -29,7 +29,23 @@ export async function POST(request: NextRequest) {
       .maybeSingle()
 
     if (settingsError || !settings?.registration_open) {
-      return NextResponse.json({ error: 'Registration is currently closed.' }, { status: 403 })
+      // Registration is closed
+      const { data: closestBatch } = await supabase
+        .from('batches')
+        .select('name')
+        .eq('status', 'coming')
+        .order('start_date', { ascending: true })
+        .limit(1)
+        .maybeSingle()
+
+      await supabase.from('waitlist_subscribers').upsert({ email }, { onConflict: 'email' })
+
+      const batchName = closestBatch?.name || 'the next batch'
+      return NextResponse.json({ 
+        success: false,
+        isWaitlisted: true,
+        message: `Currently no batch is running, but the closest batch is ${batchName} which is coming soon. You are added in waitlist subscriber list.` 
+      }, { status: 200 })
     }
 
     // Get the currently active batch
@@ -58,6 +74,26 @@ export async function POST(request: NextRequest) {
     const domainCode = DOMAIN_CODES[domain]
     if (!domainCode) {
       return NextResponse.json({ error: 'Invalid domain selected.' }, { status: 400 })
+    }
+
+    // Check if domain seat is full
+    const { data: batchDomain } = await supabase
+      .from('batch_domains')
+      .select('seats_filled, seats_total, is_open')
+      .eq('batch_id', activeBatch.id)
+      .eq('domain', domain)
+      .maybeSingle()
+
+    if (batchDomain) {
+      if (!batchDomain.is_open || batchDomain.seats_filled >= batchDomain.seats_total) {
+        await supabase.from('waitlist_subscribers').upsert({ email }, { onConflict: 'email' })
+        
+        return NextResponse.json({ 
+          success: false,
+          isWaitlisted: true,
+          message: 'Seat full ho chuki hai and you are added to waitlist subscriber list, jab seat khali hogi we will notify you by email.'
+        }, { status: 200 })
+      }
     }
 
     // Auto-increment registration number (Global sequence ignoring domain codes)
