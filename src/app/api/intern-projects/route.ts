@@ -36,23 +36,23 @@ export async function PATCH(request: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
-    const { id, analysis_status, marks, feedback } = await request.json()
+    const { id, manual_status, manual_marks, manual_feedback } = await request.json()
     if (!id) return NextResponse.json({ error: 'Missing ID' }, { status: 400 })
 
     const { data, error } = await supabase
       .from('intern_projects')
-      .update({ analysis_status, marks, feedback })
+      .update({ manual_status, manual_marks, manual_feedback })
       .eq('id', id)
       .select()
       .single()
 
     if (error) throw error
 
-    // Automated Grading & Certificate Generation if approved and marks >= 4 (out of 10)
-    if (analysis_status === 'approved' && marks !== null && marks >= 4) {
+    // Automated Grading & Certificate Generation if approved and manual_marks >= 4 (out of 10)
+    if (manual_status === 'approved' && manual_marks !== null && manual_marks >= 4) {
       let grade = 'Good';
-      if (marks >= 8) grade = 'Excellent';
-      else if (marks >= 6) grade = 'Very Good';
+      if (manual_marks >= 8) grade = 'Excellent';
+      else if (manual_marks >= 6) grade = 'Very Good';
       
       try {
         const storeUrl = new URL('/api/documents/experience-certificate/store', request.url).toString();
@@ -77,3 +77,5 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }
+
+

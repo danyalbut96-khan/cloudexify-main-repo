@@ -21,9 +21,9 @@ export default function InternProjectsPage() {
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const [marks, setMarks] = useState<number | ''>('');
-  const [feedback, setFeedback] = useState('');
-  const [analysisStatus, setAnalysisStatus] = useState('');
+  const [manual_marks, setManualMarks] = useState<number | ''>('');
+  const [manual_feedback, setManualFeedback] = useState('');
+  const [manualStatus, setManualStatus] = useState('');
 
   const fetchProjects = async () => {
     setLoading(true);
@@ -45,9 +45,9 @@ export default function InternProjectsPage() {
 
   const openReviewModal = (project: any) => {
     setSelectedProject(project);
-    setMarks(project.marks ?? '');
-    setFeedback(project.feedback || '');
-    setAnalysisStatus(project.analysis_status || 'pending');
+    setManualMarks(project.manual_marks ?? '');
+    setManualFeedback(project.manual_feedback || '');
+    setManualStatus(project.manual_status || 'pending');
   };
 
   const handleSaveReview = async (e: React.FormEvent) => {
@@ -62,9 +62,9 @@ export default function InternProjectsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: selectedProject.id,
-          analysis_status: analysisStatus,
-          marks: marks === '' ? null : Number(marks),
-          feedback
+          manual_status: manualStatus,
+          manual_marks: manual_marks === '' ? null : Number(manual_marks),
+          manual_feedback
         })
       });
 
@@ -147,7 +147,7 @@ export default function InternProjectsPage() {
                   <th className="px-6 py-3.5">Domain</th>
                   <th className="px-6 py-3.5">Project</th>
                   <th className="px-6 py-3.5">Repo URL</th>
-                  <th className="px-6 py-3.5">Marks</th>
+                  <th className="px-6 py-3.5">manual_marks</th>
                   <th className="px-6 py-3.5 text-center">Action</th>
                 </tr>
               </thead>
@@ -176,7 +176,7 @@ export default function InternProjectsPage() {
                       </a>
                     </td>
                     <td className="px-6 py-4 font-bold text-slate-900">
-                      {proj.marks !== null ? `${proj.marks} / 10` : '-'}
+                      {proj.manual_marks !== null ? `${proj.manual_marks} / 10` : '-'}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <div className="flex items-center justify-center gap-2">
@@ -252,14 +252,14 @@ export default function InternProjectsPage() {
             <form onSubmit={handleSaveReview} className="space-y-4 pt-4 border-t border-slate-100">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Marks (out of 10)</label>
+                  <label className="text-xs font-bold text-slate-700">manual_marks (out of 10)</label>
                   <input
                     type="number"
                     step="0.1"
                     min="0"
                     max="10"
-                    value={marks}
-                    onChange={(e) => setMarks(e.target.value ? Number(e.target.value) : '')}
+                    value={manual_marks}
+                    onChange={(e) => setManualMarks(e.target.value ? Number(e.target.value) : '')}
                     className="block w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                     placeholder="e.g. 8.5"
                   />
@@ -267,8 +267,8 @@ export default function InternProjectsPage() {
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-700">Status</label>
                   <select
-                    value={analysisStatus}
-                    onChange={(e) => setAnalysisStatus(e.target.value)}
+                    value={manualStatus}
+                    onChange={(e) => setManualStatus(e.target.value)}
                     className="block w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                   >
                     <option value="pending">Pending</option>
@@ -281,13 +281,13 @@ export default function InternProjectsPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-700 flex items-center">
                   <MessageSquare className="w-3.5 h-3.5 mr-1.5 text-slate-400" />
-                  Written Feedback (Optional)
+                  Written manual_feedback (Optional)
                 </label>
                 <textarea
                   rows={4}
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                  placeholder="Leave constructive feedback for the intern..."
+                  value={manual_feedback}
+                  onChange={(e) => setManualFeedback(e.target.value)}
+                  placeholder="Leave constructive manual_feedback for the intern..."
                   className="block w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
                 />
               </div>
@@ -303,3 +303,5 @@ export default function InternProjectsPage() {
     </PageWrapper>
   );
 }
+
+
