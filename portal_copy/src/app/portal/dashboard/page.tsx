@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import { Cloud, FileText, Download, CheckCircle2, Clock, XCircle, LogOut, Briefcase, LayoutDashboard, UserCircle, Menu } from 'lucide-react'
+import { Cloud, FileText, Download, CheckCircle2, Clock, XCircle, LogOut, Briefcase, LayoutDashboard, UserCircle, Menu, Github, GitBranch, Star, BrainCircuit } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { Skeleton } from '@/components/ui/Skeleton'
 import Link from 'next/link'
@@ -209,8 +209,132 @@ export default function StudentDashboardPage() {
               </Card>
             )}
           </div>
+          </div>
 
-          
+          {/* Project Submissions Section */}
+          <div className="space-y-6">
+            <h2 className="text-xl font-bold text-slate-900 flex items-center">
+              <GitBranch className="w-5 h-5 mr-2 text-indigo-600" />
+              Your Project Submissions
+            </h2>
+            
+            {data?.projects && data.projects.length > 0 ? (
+              <div className="space-y-4">
+                {data.projects.map((proj: any) => (
+                  <Card key={proj.id} className="p-5 border border-slate-200">
+                    <div className="flex justify-between items-start gap-4 flex-wrap sm:flex-nowrap">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Project #{proj.project_number}</span>
+                          <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full border ${proj.analysis_status === 'done' ? 'bg-green-50 text-green-700 border-green-200' : proj.analysis_status === 'pending' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-slate-50 text-slate-700 border-slate-200'}`}>
+                            {proj.analysis_status === 'done' ? 'Analyzed' : proj.analysis_status === 'pending' ? 'Analysis Pending' : proj.analysis_status}
+                          </span>
+                        </div>
+                        <h3 className="text-lg font-bold text-slate-900">{proj.project_title}</h3>
+                        {proj.description && <p className="text-sm text-slate-500 mt-1">{proj.description}</p>}
+                        
+                        <div className="mt-3">
+                          <a href={proj.repo_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md transition-colors">
+                            <Github className="w-3.5 h-3.5" /> View Repository
+                          </a>
+                        </div>
+                      </div>
+                      
+                      {/* Score / AI Status */}
+                      <div className="shrink-0 flex flex-col items-end min-w-[120px]">
+                        {proj.analysis_status === 'done' ? (
+                          proj.ai_score !== null ? (
+                            <div className="text-right">
+                              <p className="text-xs text-slate-500 font-semibold mb-0.5">AI Score</p>
+                              <p className="text-3xl font-black text-indigo-600">{proj.ai_score.toFixed(1)}<span className="text-sm text-slate-400 font-normal">/25</span></p>
+                            </div>
+                          ) : (
+                            <div className="text-right">
+                              <span className="text-xs text-slate-500 italic">Score hidden by Admin</span>
+                            </div>
+                          )
+                        ) : (
+                          <div className="text-right">
+                            <BrainCircuit className="w-6 h-6 text-slate-300 mx-auto mb-1" />
+                            <p className="text-[10px] text-slate-400 font-semibold uppercase">Pending</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* AI Feedback */}
+                    {proj.ai_feedback && (
+                      <div className="mt-5 pt-4 border-t border-slate-100">
+                        <h4 className="text-sm font-bold text-slate-800 flex items-center gap-1.5 mb-3">
+                          <BrainCircuit className="w-4 h-4 text-purple-500" /> AI Feedback
+                        </h4>
+                        
+                        {proj.ai_feedback.overall_feedback && (
+                          <div className="p-3 bg-purple-50/50 rounded-lg border border-purple-100/50 mb-4">
+                            <p className="text-xs text-slate-700 leading-relaxed"><Star className="w-3 h-3 inline mr-1 text-amber-500" />{proj.ai_feedback.overall_feedback}</p>
+                          </div>
+                        )}
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            {proj.ai_feedback.strengths && proj.ai_feedback.strengths.length > 0 && (
+                              <div className="mb-4">
+                                <p className="text-xs font-bold text-green-600 mb-1.5">Strengths:</p>
+                                <ul className="list-disc pl-4 text-xs text-slate-600 space-y-1">
+                                  {proj.ai_feedback.strengths.map((s: string, idx: number) => <li key={idx}>{s}</li>)}
+                                </ul>
+                              </div>
+                            )}
+                            {proj.ai_feedback.improvements && proj.ai_feedback.improvements.length > 0 && (
+                              <div>
+                                <p className="text-xs font-bold text-red-500 mb-1.5">Areas to Improve:</p>
+                                <ul className="list-disc pl-4 text-xs text-slate-600 space-y-1">
+                                  {proj.ai_feedback.improvements.map((s: string, idx: number) => <li key={idx}>{s}</li>)}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            {proj.ai_feedback.criteria && (
+                              <div className="space-y-2.5">
+                                <p className="text-xs font-bold text-slate-700">Criteria Breakdown:</p>
+                                {proj.ai_feedback.criteria.map((c: any, i: number) => (
+                                  <div key={i}>
+                                    <div className="flex justify-between text-[10px] mb-1">
+                                      <span className="font-medium text-slate-600">{c.name}</span>
+                                      <span className="font-bold text-slate-900">{c.score}/5</span>
+                                    </div>
+                                    <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
+                                      <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${(c.score / 5) * 100}%` }} />
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {proj.ai_feedback.next_steps && proj.ai_feedback.next_steps.length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-slate-50">
+                            <p className="text-xs font-bold text-blue-500 mb-1.5">Next Steps:</p>
+                            <ul className="list-disc pl-4 text-xs text-slate-600 space-y-1">
+                              {proj.ai_feedback.next_steps.map((s: string, idx: number) => <li key={idx}>{s}</li>)}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card className="p-8 text-center border-dashed border-2 border-slate-200 bg-slate-50">
+                <GitBranch className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <h3 className="text-lg font-bold text-slate-700">No Projects Submitted</h3>
+                <p className="text-sm text-slate-500 mt-1">Submit your projects via the main portal to see them here.</p>
+              </Card>
+            )}
+          </div>
         </div>
       </div>
     )

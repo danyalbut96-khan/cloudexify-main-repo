@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { name, start_date, end_date, status = 'coming', documents_locked = false, mode_enum, location_enum, projects, comp_type, comp_amount, certificate, registration_deadline, domains, max_projects = 4 } = await request.json()
+    const { name, start_date, end_date, status = 'coming', documents_locked = false, release_ai_feedback = false, mode_enum, location_enum, projects, comp_type, comp_amount, certificate, registration_deadline, domains, max_projects = 4 } = await request.json()
     if (!name || !start_date || !end_date) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     const { data: newBatch, error } = await supabase
       .from('batches')
-      .insert({ name, start_date, end_date, status, documents_locked, mode_enum, location_enum, projects, comp_type, comp_amount, certificate, registration_deadline, max_projects })
+      .insert({ name, start_date, end_date, status, documents_locked, release_ai_feedback, mode_enum, location_enum, projects, comp_type, comp_amount, certificate, registration_deadline, max_projects })
       .select()
       .single()
 
@@ -92,7 +92,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   try {
-    const { id, name, start_date, end_date, status, documents_locked, mode_enum, location_enum, projects, comp_type, comp_amount, certificate, registration_deadline, domains, is_archived, max_projects } = await request.json()
+    const { id, name, start_date, end_date, status, documents_locked, release_ai_feedback, mode_enum, location_enum, projects, comp_type, comp_amount, certificate, registration_deadline, domains, is_archived, max_projects } = await request.json()
     if (!id) {
       return NextResponse.json({ error: 'Batch ID is required' }, { status: 400 })
     }
@@ -113,6 +113,7 @@ export async function PATCH(request: NextRequest) {
     if (registration_deadline !== undefined) updateData.registration_deadline = registration_deadline
     if (is_archived !== undefined) updateData.is_archived = is_archived
     if (max_projects !== undefined) updateData.max_projects = max_projects
+    if (release_ai_feedback !== undefined) updateData.release_ai_feedback = release_ai_feedback
 
     // If making accepting, deactivate others
     if (status === 'accepting') {

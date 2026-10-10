@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     // 1. Fetch Intern Details
     const { data: intern, error: internError } = await supabase
       .from('interns')
-      .select('id, full_name, email, whatsapp, university, semester, registration_number, status, domain, batch_id, batches(name, status, end_date, documents_locked)')
+      .select('id, full_name, email, whatsapp, university, semester, registration_number, status, domain, batch_id, batches(name, status, end_date, documents_locked, release_ai_feedback)')
       .eq('id', internId)
       .single()
 
@@ -60,18 +60,29 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 4. Fetch submitted projects count
-    const { count: projectCount } = await supabase
+    // 4. Fetch submitted projects
+    const { data: projects } = await supabase
       .from('intern_projects')
-      .select('id', { count: 'exact', head: true })
+      .select('id, project_number, project_title, description, repo_url, created_at, analysis_status, ai_score, ai_feedback, is_feedback_hidden')
       .eq('intern_id', internId)
+      .order('project_number', { ascending: true })
+
+    const releaseFeedback = intern.batches?.release_ai_feedback === true;
+    const sanitizedProjects = (projects || []).map(p => {
+      // Hide feedback if batch-level toggle is off OR project-level hide is true
+      if (!releaseFeedback || p.is_feedback_hidden) {
+        return { ...p, ai_score: null, ai_feedback: null };
+      }
+      return p;
+    });
 
     return NextResponse.json({
       success: true,
       intern,
       documents: documents || null,
       tasks,
-      submitted_projects_count: projectCount || 0
+      projects: sanitizedProjects,
+      submitted_projects_count: sanitizedProjects.length
     })
 
   } catch (err: unknown) {

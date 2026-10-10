@@ -37,6 +37,7 @@ export default function BatchesPage() {
     certificate: '',
     registration_deadline: '',
     max_projects: 4,
+    release_ai_feedback: false,
     domains: getInitialDomains()
   })
 
@@ -75,7 +76,7 @@ export default function BatchesPage() {
       if (!res.ok) throw new Error(await res.text())
 
       toast.success('Batch created successfully!')
-      setFormData({ name: '', start_date: '', end_date: '', status: 'coming', documents_locked: false, mode_enum: 'remote', location_enum: 'Remote', projects: '', comp_type: 'unpaid', comp_amount: '', certificate: '', registration_deadline: '', max_projects: 4, domains: getInitialDomains() })
+      setFormData({ name: '', start_date: '', end_date: '', status: 'coming', documents_locked: false, release_ai_feedback: false, mode_enum: 'remote', location_enum: 'Remote', projects: '', comp_type: 'unpaid', comp_amount: '', certificate: '', registration_deadline: '', max_projects: 4, domains: getInitialDomains() })
       fetchBatches()
     } catch (error: any) {
       toast.error(error.message || 'Failed to create batch')
@@ -139,6 +140,7 @@ export default function BatchesPage() {
       end_date: batch.end_date,
       status: 'coming',
       documents_locked: batch.documents_locked,
+      release_ai_feedback: batch.release_ai_feedback || false,
       mode_enum: batch.mode_enum || 'remote',
       location_enum: batch.location_enum || 'Remote',
       projects: batch.projects || '',
@@ -372,17 +374,38 @@ export default function BatchesPage() {
               </div>
             </div>
 
-            <div className="flex items-center space-x-2 pt-4 border-t border-slate-100">
-              <input
-                type="checkbox"
-                id="doc-lock-new"
-                checked={formData.documents_locked}
-                onChange={(e) => setFormData({ ...formData, documents_locked: e.target.checked })}
-                className="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500"
-              />
-              <Label htmlFor="doc-lock-new" className="text-sm font-semibold text-slate-700 cursor-pointer">
-                Lock Document Downloads
-              </Label>
+            <div className="flex flex-col space-y-3 pt-4 border-t border-slate-100">
+              <div className="flex items-center space-x-2 p-3 bg-red-50 border border-red-100 rounded-lg">
+                <input
+                  type="checkbox"
+                  id="doc-lock-new"
+                  checked={formData.documents_locked}
+                  onChange={(e) => setFormData({ ...formData, documents_locked: e.target.checked })}
+                  className="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500"
+                />
+                <div className="flex flex-col">
+                  <Label htmlFor="doc-lock-new" className="text-sm font-bold text-red-900 cursor-pointer">
+                    Lock Document Downloads
+                  </Label>
+                  <span className="text-[10px] text-red-700 leading-tight">If checked, interns in this batch cannot download their generated documents from the portal.</span>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2 p-3 bg-purple-50 border border-purple-100 rounded-lg">
+                <input
+                  type="checkbox"
+                  id="ai-feed-lock-new"
+                  checked={formData.release_ai_feedback}
+                  onChange={(e) => setFormData({ ...formData, release_ai_feedback: e.target.checked })}
+                  className="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500"
+                />
+                <div className="flex flex-col">
+                  <Label htmlFor="ai-feed-lock-new" className="text-sm font-bold text-purple-900 cursor-pointer">
+                    Show AI Feedback to Interns
+                  </Label>
+                  <span className="text-[10px] text-purple-700 leading-tight">If checked, interns can view their AI project scores and feedback in the portal.</span>
+                </div>
+              </div>
             </div>
 
             <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 mt-4" disabled={isSubmitting}>
@@ -663,6 +686,22 @@ export default function BatchesPage() {
                     Lock Document Downloads
                   </Label>
                   <span className="text-[10px] text-red-700 leading-tight">If checked, interns in this batch cannot download their generated documents from the portal.</span>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2 p-3 bg-purple-50 border border-purple-100 rounded-lg mt-2">
+                <input
+                  type="checkbox"
+                  id="ai-feed-lock-edit"
+                  checked={editingBatch.release_ai_feedback}
+                  onChange={(e) => setEditingBatch({ ...editingBatch, release_ai_feedback: e.target.checked })}
+                  className="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500"
+                />
+                <div className="flex flex-col">
+                  <Label htmlFor="ai-feed-lock-edit" className="text-sm font-bold text-purple-900 cursor-pointer">
+                    Show AI Feedback to Interns
+                  </Label>
+                  <span className="text-[10px] text-purple-700 leading-tight">If checked, interns can view their AI project scores and feedback in the portal.</span>
                 </div>
               </div>
 
