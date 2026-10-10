@@ -9,7 +9,7 @@ export async function GET() {
   const [projectsResult, settingsResult] = await Promise.all([
     supabase
       .from('intern_projects')
-      .select('*')
+      .select('*, interns!inner(batch_id, batches!inner(id, name, status))')
       .order('submitted_at', { ascending: false }),
     supabase
       .from('intern_analysis_settings')

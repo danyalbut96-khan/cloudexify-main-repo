@@ -75,10 +75,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       path: '/dashboard/leadgen',
     },
     {
-      name: 'Employees',
+      name: 'Employee Management',
       icon: Briefcase,
-      path: '#',
-      isComingSoon: true,
+      path: '/dashboard/employees',
     },
     {
       name: 'Proposals',
@@ -145,7 +144,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                 (item.path !== '/dashboard' && pathname.startsWith(item.path)) ||
                 isSubActive;
 
-              if (item.isComingSoon) {
+              if ('isComingSoon' in item && item.isComingSoon) {
                 return (
                   <div
                     key={idx}
