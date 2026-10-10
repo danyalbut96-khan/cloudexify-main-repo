@@ -85,10 +85,7 @@ export default function SettingsPage() {
   // Intern Analysis Settings State
   const [aiApiKey, setAiApiKey] = useState('');
   const [aiModel, setAiModel] = useState('mistralai/mistral-7b-instruct:free');
-  const [aiMaxProjects, setAiMaxProjects] = useState(4);
-  const [aiPublicLeaderboardOpen, setAiPublicLeaderboardOpen] = useState(false);
   const [adminSignupOpen, setAdminSignupOpen] = useState(true);
-  const [aiBatchMessage, setAiBatchMessage] = useState('Batch 2 Registration Opening Soon! Stay tuned for announcements.');
   const [aiSystemPrompt, setAiSystemPrompt] = useState('');
   const [showApiKey, setShowApiKey] = useState(false);
   const [isSavingAiSettings, setIsSavingAiSettings] = useState(false);
@@ -135,10 +132,7 @@ export default function SettingsPage() {
         const s = data.internAnalysisSettings;
         setAiApiKey(s.openrouter_api_key || '');
         setAiModel(s.openrouter_model || 'mistralai/mistral-7b-instruct:free');
-        setAiMaxProjects(s.max_projects_per_intern ?? 4);
-        setAiPublicLeaderboardOpen(s.public_leaderboard_open ?? false);
         setAdminSignupOpen(s.admin_signup_open ?? true);
-        setAiBatchMessage(s.batch_coming_soon_message || '');
         setAiSystemPrompt(s.system_prompt_prefix || '');
       }
 
@@ -1003,11 +997,7 @@ export default function SettingsPage() {
                               type: 'intern-analysis-settings',
                               openrouter_api_key: aiApiKey,
                               openrouter_model: aiModel,
-                              max_projects_per_intern: aiMaxProjects,
-                              registration_open: aiRegistrationOpen,
-                              public_leaderboard_open: aiPublicLeaderboardOpen,
                               admin_signup_open: newState,
-                              batch_coming_soon_message: aiBatchMessage,
                               system_prompt_prefix: aiSystemPrompt
                             })
                           });
@@ -1246,44 +1236,6 @@ export default function SettingsPage() {
                 </select>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Max Projects Per Intern</label>
-                  <input
-                    type="number"
-                    min={1} max={10}
-                    value={aiMaxProjects}
-                    onChange={e => setAiMaxProjects(Number(e.target.value))}
-                    className="block w-full px-3.5 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Public Leaderboard</label>
-                  <button
-                    type="button"
-                    onClick={() => setAiPublicLeaderboardOpen(v => !v)}
-                    className={`w-full flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold border transition-all ${
-                      aiPublicLeaderboardOpen
-                        ? 'bg-blue-50 border-blue-200 text-blue-700'
-                        : 'bg-slate-50 border-slate-200 text-slate-500'
-                    }`}
-                  >
-                    {aiPublicLeaderboardOpen ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}
-                    {aiPublicLeaderboardOpen ? 'Visible' : 'Hidden'}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">&quot;Batch Coming Soon&quot; Message (shown on portal)</label>
-                <input
-                  type="text"
-                  value={aiBatchMessage}
-                  onChange={e => setAiBatchMessage(e.target.value)}
-                  className="block w-full px-3.5 py-2 text-xs border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-                />
-              </div>
-
               <div>
                 <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">AI System Prompt Prefix</label>
                 <textarea
@@ -1310,10 +1262,6 @@ export default function SettingsPage() {
                         type: 'intern-analysis-settings',
                         openrouter_api_key: aiApiKey,
                         openrouter_model: aiModel,
-                        max_projects_per_intern: aiMaxProjects,
-                        registration_open: aiRegistrationOpen,
-                        public_leaderboard_open: aiPublicLeaderboardOpen,
-                        batch_coming_soon_message: aiBatchMessage,
                         system_prompt_prefix: aiSystemPrompt,
                       })
                     });

@@ -36,6 +36,7 @@ export default function BatchesPage() {
     comp_amount: '',
     certificate: '',
     registration_deadline: '',
+    max_projects: 4,
     domains: getInitialDomains()
   })
 
@@ -74,7 +75,7 @@ export default function BatchesPage() {
       if (!res.ok) throw new Error(await res.text())
 
       toast.success('Batch created successfully!')
-      setFormData({ name: '', start_date: '', end_date: '', status: 'coming', documents_locked: false, mode_enum: 'remote', location_enum: 'Remote', projects: '', comp_type: 'unpaid', comp_amount: '', certificate: '', registration_deadline: '', domains: getInitialDomains() })
+      setFormData({ name: '', start_date: '', end_date: '', status: 'coming', documents_locked: false, mode_enum: 'remote', location_enum: 'Remote', projects: '', comp_type: 'unpaid', comp_amount: '', certificate: '', registration_deadline: '', max_projects: 4, domains: getInitialDomains() })
       fetchBatches()
     } catch (error: any) {
       toast.error(error.message || 'Failed to create batch')
@@ -145,6 +146,7 @@ export default function BatchesPage() {
       comp_amount: batch.comp_amount || '',
       certificate: batch.certificate || '',
       registration_deadline: batch.registration_deadline || '',
+      max_projects: batch.max_projects || 4,
       domains: domainsToSet
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -253,18 +255,30 @@ export default function BatchesPage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <select
-                className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={formData.status}
-                onChange={(e: any) => setFormData({ ...formData, status: e.target.value })}
-              >
-                <option value="accepting">Accepting Registrations</option>
-                <option value="coming">Coming Soon</option>
-                <option value="active">Active (Ongoing)</option>
-                <option value="completed">Completed</option>
-              </select>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <select
+                  className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={formData.status}
+                  onChange={(e: any) => setFormData({ ...formData, status: e.target.value })}
+                >
+                  <option value="accepting">Accepting Registrations</option>
+                  <option value="coming">Coming Soon</option>
+                  <option value="active">Active (Ongoing)</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label>Max Projects/Intern</Label>
+                <Input
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={formData.max_projects || 4}
+                  onChange={(e) => setFormData({ ...formData, max_projects: parseInt(e.target.value) || 4 })}
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -519,18 +533,30 @@ export default function BatchesPage() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label>Status</Label>
-                <select
-                  className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={editingBatch.status}
-                  onChange={(e: any) => setEditingBatch({ ...editingBatch, status: e.target.value })}
-                >
-                  <option value="accepting">Accepting Registrations</option>
-                  <option value="coming">Coming Soon</option>
-                  <option value="active">Active (Ongoing)</option>
-                  <option value="completed">Completed</option>
-                </select>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Status</Label>
+                  <select
+                    className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={editingBatch.status}
+                    onChange={(e: any) => setEditingBatch({ ...editingBatch, status: e.target.value })}
+                  >
+                    <option value="accepting">Accepting Registrations</option>
+                    <option value="coming">Coming Soon</option>
+                    <option value="active">Active (Ongoing)</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Max Projects/Intern</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={editingBatch.max_projects || 4}
+                    onChange={(e) => setEditingBatch({ ...editingBatch, max_projects: parseInt(e.target.value) || 4 })}
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

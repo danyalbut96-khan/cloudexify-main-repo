@@ -114,7 +114,7 @@ export default function EmployeesPage() {
           </div>
           <h3 className="text-xl font-medium text-white mb-2">No Employees Found</h3>
           <p className="text-slate-400 max-w-sm mx-auto mb-6">
-            You haven't added any employees yet. Click the button above to add your first employee to the system.
+            You haven&apos;t added any employees yet. Click the button above to add your first employee to the system.
           </p>
         </div>
       ) : (
