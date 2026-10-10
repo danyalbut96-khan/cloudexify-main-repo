@@ -252,16 +252,16 @@ export default function InternProjectsPage() {
             <form onSubmit={handleSaveReview} className="space-y-4 pt-4 border-t border-slate-100">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">manual_marks (out of 10)</label>
+                  <label className="text-xs font-bold text-slate-700">Project Marks (out of 25)</label>
                   <input
                     type="number"
                     step="0.1"
                     min="0"
-                    max="10"
+                    max="25"
                     value={manual_marks}
                     onChange={(e) => setManualMarks(e.target.value ? Number(e.target.value) : '')}
                     className="block w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    placeholder="e.g. 8.5"
+                    placeholder="e.g. 23.5"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -281,7 +281,7 @@ export default function InternProjectsPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-700 flex items-center">
                   <MessageSquare className="w-3.5 h-3.5 mr-1.5 text-slate-400" />
-                  Written manual_feedback (Optional)
+                  Mentor Feedback Remarks (Optional)
                 </label>
                 <textarea
                   rows={4}
