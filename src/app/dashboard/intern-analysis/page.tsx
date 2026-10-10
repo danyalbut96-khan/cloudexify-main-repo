@@ -47,6 +47,11 @@ interface Project {
   ai_feedback: any;
   ai_analyzed_at: string | null;
   analysis_status: string;
+  is_feedback_hidden?: boolean;
+  interns?: {
+    batch_id: string;
+    batches: { id: string; name: string; status: string };
+  };
 }
 
 interface InternSummary {
@@ -72,14 +77,31 @@ export default function InternAnalysisPage() {
   const [bulkAnalyzing, setBulkAnalyzing] = useState(false);
   const [maxProjects, setMaxProjects] = useState(4);
 
+  const [batches, setBatches] = useState<any[]>([]);
+  const [topTab, setTopTab] = useState<'active' | 'archive'>('active');
+  const [selectedBatchId, setSelectedBatchId] = useState<string>('all');
+
   const fetchProjects = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/analysis/projects');
-      if (!res.ok) throw new Error('Failed to load projects');
-      const data = await res.json();
+      const [projRes, batchRes] = await Promise.all([
+        fetch('/api/analysis/projects'),
+        fetch('/api/batches')
+      ]);
+      if (!projRes.ok) throw new Error('Failed to load projects');
+      const data = await projRes.json();
       setProjects(data.projects || []);
       setMaxProjects(data.maxProjects || 4);
+
+      if (batchRes.ok) {
+        const bData = await batchRes.json();
+        setBatches(bData || []);
+
+        // Default batch: ongoing or accepting
+        const activeB = bData.find((b: any) => b.status === 'ongoing' || b.status === 'accepting');
+        if (activeB) setSelectedBatchId(activeB.id);
+        else setSelectedBatchId('all');
+      }
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -88,6 +110,58 @@ export default function InternAnalysisPage() {
   }, []);
 
   useEffect(() => { fetchProjects(); }, [fetchProjects]);
+
+  // Compute filtered projects
+  const activeBatches = batches.filter(b => b.status !== 'completed');
+  const archivedBatches = batches.filter(b => b.status === 'completed');
+
+  const filteredProjects = projects.filter(p => {
+    const pBatchStatus = p.interns?.batches?.status || 'coming';
+    const pBatchId = p.interns?.batch_id;
+    const isCompleted = pBatchStatus === 'completed';
+
+    if (topTab === 'active' && isCompleted) return false;
+    if (topTab === 'archive' && !isCompleted) return false;
+
+    if (selectedBatchId !== 'all' && pBatchId !== selectedBatchId) return false;
+
+    return true;
+  });
+
+  const toggleFeedbackVisibility = async (projectId: string, currentHidden: boolean) => {
+    try {
+      const res = await fetch(`/api/analysis/projects/${projectId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_feedback_hidden: !currentHidden })
+      });
+      if (!res.ok) throw new Error('Failed to update visibility');
+      toast.success(currentHidden ? 'Feedback is now visible to intern' : 'Feedback hidden from intern');
+      setProjects(prev => prev.map(p => p.id === projectId ? { ...p, is_feedback_hidden: !currentHidden } : p));
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const editFeedback = async (projectId: string, currentFeedback: any) => {
+    if (!currentFeedback) return;
+    const newText = window.prompt("Edit overall AI feedback:", currentFeedback.overall_feedback);
+    if (newText !== null && newText.trim() !== "") {
+      const updatedFeedback = { ...currentFeedback, overall_feedback: newText.trim() };
+      try {
+        const res = await fetch(`/api/analysis/projects/${projectId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ai_feedback: updatedFeedback })
+        });
+        if (!res.ok) throw new Error('Failed to update feedback');
+        toast.success('Feedback updated successfully');
+        setProjects(prev => prev.map(p => p.id === projectId ? { ...p, ai_feedback: updatedFeedback } : p));
+      } catch (err: any) {
+        toast.error(err.message);
+      }
+    }
+  };
 
   const analyzeProject = async (projectId: string) => {
     setAnalyzingIds(prev => new Set(prev).add(projectId));
@@ -116,7 +190,7 @@ export default function InternAnalysisPage() {
   };
 
   const analyzeAllPending = async () => {
-    const pending = projects.filter(p => p.analysis_status === 'pending' || p.analysis_status === 'failed');
+    const pending = filteredProjects.filter(p => p.analysis_status === 'pending' || p.analysis_status === 'failed');
     if (pending.length === 0) { toast('No pending projects to analyze'); return; }
     setBulkAnalyzing(true);
     toast(`Analyzing ${pending.length} projects sequentially…`);
@@ -129,22 +203,22 @@ export default function InternAnalysisPage() {
   };
 
   // Stats
-  const totalProjects = projects.length;
-  const analyzedCount = projects.filter(p => p.analysis_status === 'done').length;
-  const pendingCount = projects.filter(p => p.analysis_status === 'pending').length;
-  const failedCount = projects.filter(p => p.analysis_status === 'failed').length;
-  const uniqueInterns = new Set(projects.map(p => p.intern_id)).size;
+  const totalProjects = filteredProjects.length;
+  const analyzedCount = filteredProjects.filter(p => p.analysis_status === 'done').length;
+  const pendingCount = filteredProjects.filter(p => p.analysis_status === 'pending').length;
+  const failedCount = filteredProjects.filter(p => p.analysis_status === 'failed').length;
+  const uniqueInterns = new Set(filteredProjects.map(p => p.intern_id)).size;
   const completionPct = totalProjects > 0 ? Math.round((analyzedCount / totalProjects) * 100) : 0;
 
   const pieData = [
-    { name: 'Analyzed', value: analyzedCount, color: '#10b981' }, // emerald-500
-    { name: 'Pending', value: pendingCount, color: '#f59e0b' },   // amber-500
-    { name: 'Failed', value: failedCount, color: '#ef4444' }      // red-500
+    { name: 'Analyzed', value: analyzedCount, color: '#10b981' },
+    { name: 'Pending', value: pendingCount, color: '#f59e0b' },
+    { name: 'Failed', value: failedCount, color: '#ef4444' }
   ].filter(d => d.value > 0);
 
   // Build intern summaries for leaderboard
   const buildLeaderboard = (domainCode: string): InternSummary[] => {
-    const domainProjects = domainCode === 'ALL' ? projects : projects.filter(p => p.domain_code === domainCode);
+    const domainProjects = domainCode === 'ALL' ? filteredProjects : filteredProjects.filter(p => p.domain_code === domainCode);
     const byIntern = new Map<string, Project[]>();
     domainProjects.forEach(p => {
       if (!byIntern.has(p.intern_id)) byIntern.set(p.intern_id, []);
@@ -198,17 +272,50 @@ export default function InternAnalysisPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  activeTab === tab.id
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === tab.id
                     ? 'bg-white text-blue-600 shadow-sm border border-slate-200/50'
                     : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/50'
-                }`}
+                  }`}
               >
                 <Icon className="w-4 h-4" />
                 {tab.label}
               </button>
             );
           })}
+        </div>
+
+        {/* Top-Level Filter for Batches */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => { setTopTab('active'); setSelectedBatchId('all'); }}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${topTab === 'active' ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+            >
+              Active View
+            </button>
+            <button
+              onClick={() => { setTopTab('archive'); setSelectedBatchId('all'); }}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${topTab === 'archive' ? 'bg-slate-800 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+            >
+              Archive (Completed)
+            </button>
+          </div>
+
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <span className="text-sm font-semibold text-slate-500">Filter by Batch:</span>
+            <select
+              value={selectedBatchId}
+              onChange={e => setSelectedBatchId(e.target.value)}
+              className="bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent flex-1 sm:w-64 font-medium"
+            >
+              <option value="all">All {topTab === 'active' ? 'Active' : 'Archived'} Batches</option>
+              {(topTab === 'active' ? activeBatches : archivedBatches).map(b => (
+                <option key={b.id} value={b.id}>{b.name} ({b.status})</option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* ====== TAB: OVERVIEW ====== */}
@@ -261,7 +368,7 @@ export default function InternAnalysisPage() {
             {/* Domain breakdown */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {DOMAINS.map(domain => {
-                const domainProjs = projects.filter(p => p.domain_code === domain.code);
+                const domainProjs = filteredProjects.filter(p => p.domain_code === domain.code);
                 const domainDone = domainProjs.filter(p => p.analysis_status === 'done').length;
                 const domainInterns = new Set(domainProjs.map(p => p.intern_id)).size;
                 const pct = domainProjs.length > 0 ? Math.round((domainDone / domainProjs.length) * 100) : 0;
@@ -296,11 +403,10 @@ export default function InternAnalysisPage() {
                 <button
                   key={domain.code}
                   onClick={() => { setActiveDomain(domain.code); setExpandedIntern(null); }}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-                    activeDomain === domain.code
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${activeDomain === domain.code
                       ? `bg-gradient-to-r ${domain.color} text-white border-transparent shadow-lg`
                       : `${domain.bg} ${domain.border} ${domain.text} hover:opacity-80`
-                  }`}
+                    }`}
                 >
                   {domain.code} — {domain.label}
                 </button>
@@ -410,7 +516,21 @@ export default function InternAnalysisPage() {
                                       </button>
                                     )}
                                     {proj.analysis_status === 'done' && (
-                                      <span className={`text-base font-black ${activeDomainInfo.text.replace('text-', 'text-').replace('-400', '-600')}`}>{proj.ai_score?.toFixed(1)}<span className="text-[10px] text-slate-500 font-normal">/25</span></span>
+                                      <div className="flex items-center gap-3">
+                                        <button
+                                          onClick={() => toggleFeedbackVisibility(proj.id, proj.is_feedback_hidden ?? false)}
+                                          className={`px-2 py-1 text-[10px] font-bold rounded border ${proj.is_feedback_hidden ? 'bg-red-50 text-red-600 border-red-200' : 'bg-green-50 text-green-600 border-green-200'}`}
+                                        >
+                                          {proj.is_feedback_hidden ? 'Feedback Hidden' : 'Feedback Visible'}
+                                        </button>
+                                        <button
+                                          onClick={() => editFeedback(proj.id, proj.ai_feedback)}
+                                          className="px-2 py-1 text-[10px] font-bold rounded border bg-blue-50 text-blue-600 border-blue-200"
+                                        >
+                                          Edit Feedback
+                                        </button>
+                                        <span className={`text-base font-black ${activeDomainInfo.text.replace('text-', 'text-').replace('-400', '-600')}`}>{proj.ai_score?.toFixed(1)}<span className="text-[10px] text-slate-500 font-normal">/25</span></span>
+                                      </div>
                                     )}
                                   </div>
                                 </div>
@@ -433,6 +553,30 @@ export default function InternAnalysisPage() {
                                     {proj.ai_feedback.overall_feedback && (
                                       <div className="mt-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
                                         <p className="text-[10px] text-slate-600 leading-relaxed"><Star className="w-3 h-3 inline mr-1 text-amber-500" />{proj.ai_feedback.overall_feedback}</p>
+                                      </div>
+                                    )}
+                                    {proj.ai_feedback.strengths && proj.ai_feedback.strengths.length > 0 && (
+                                      <div className="mt-2 px-2">
+                                        <p className="text-[10px] font-bold text-green-600 mb-1">Strengths:</p>
+                                        <ul className="list-disc pl-4 text-[10px] text-slate-600 space-y-0.5">
+                                          {proj.ai_feedback.strengths.map((s: string, idx: number) => <li key={idx}>{s}</li>)}
+                                        </ul>
+                                      </div>
+                                    )}
+                                    {proj.ai_feedback.improvements && proj.ai_feedback.improvements.length > 0 && (
+                                      <div className="mt-2 px-2">
+                                        <p className="text-[10px] font-bold text-red-500 mb-1">Areas to Improve:</p>
+                                        <ul className="list-disc pl-4 text-[10px] text-slate-600 space-y-0.5">
+                                          {proj.ai_feedback.improvements.map((s: string, idx: number) => <li key={idx}>{s}</li>)}
+                                        </ul>
+                                      </div>
+                                    )}
+                                    {proj.ai_feedback.next_steps && proj.ai_feedback.next_steps.length > 0 && (
+                                      <div className="mt-2 px-2">
+                                        <p className="text-[10px] font-bold text-blue-500 mb-1">Next Steps:</p>
+                                        <ul className="list-disc pl-4 text-[10px] text-slate-600 space-y-0.5">
+                                          {proj.ai_feedback.next_steps.map((s: string, idx: number) => <li key={idx}>{s}</li>)}
+                                        </ul>
                                       </div>
                                     )}
                                   </div>
@@ -472,11 +616,11 @@ export default function InternAnalysisPage() {
                 <div className="col-span-2">Action</div>
               </div>
 
-              {projects.length === 0 ? (
+              {filteredProjects.length === 0 ? (
                 <div className="p-10 text-center text-slate-500 text-sm">No projects submitted yet.</div>
               ) : (
                 <div className="divide-y divide-slate-100">
-                  {projects.map(proj => {
+                  {filteredProjects.map(proj => {
                     const domainInfo = DOMAINS.find(d => d.code === proj.domain_code);
                     const statusCfg = STATUS_CONFIG[proj.analysis_status] || STATUS_CONFIG.pending;
                     return (
