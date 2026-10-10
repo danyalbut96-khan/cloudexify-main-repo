@@ -1,19 +1,9 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
   "/api/portal/leaderboard/route": "app/api/portal/leaderboard/route.js",
-  "/api/portal/auth/route": "app/api/portal/auth/route.js",
-  "/api/portal/register/route": "app/api/portal/register/route.js",
-  "/api/batches/route": "app/api/batches/route.js",
-  "/api/portal/dashboard/route": "app/api/portal/dashboard/route.js",
-  "/api/portal/submit-project/route": "app/api/portal/submit-project/route.js",
-  "/api/portal/profile/route": "app/api/portal/profile/route.js",
-  "/api/portal/lookup/route": "app/api/portal/lookup/route.js",
-  "/api/portal/subscribe/route": "app/api/portal/subscribe/route.js",
   "/api/portal/settings/route": "app/api/portal/settings/route.js",
-  "/api/support/route": "app/api/support/route.js",
+  "/api/batches/route": "app/api/batches/route.js",
   "/portal/page": "app/portal/page.js",
   "/portal/register/page": "app/portal/register/page.js",
-  "/portal/support/page": "app/portal/support/page.js",
-  "/portal/dashboard/page": "app/portal/dashboard/page.js",
   "/portal/login/page": "app/portal/login/page.js"
 }
