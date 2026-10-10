@@ -9,13 +9,14 @@ import { formatDate } from '@/lib/utils';
 import { Search, Star, MessageSquare } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+import { createClient } from '@/lib/supabase/client';
+
 export default function FeedbackPage() {
   const [feedbacks, setFeedbacks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
   const fetchFeedbacks = async () => {
-    setLoading(true);
     try {
       const res = await fetch('/api/feedback');
       if (!res.ok) throw new Error('Failed to load feedback');
@@ -30,6 +31,22 @@ export default function FeedbackPage() {
 
   useEffect(() => {
     fetchFeedbacks();
+    
+    const supabase = createClient();
+    const channel = supabase
+      .channel('feedback_updates')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'intern_feedbacks' },
+        () => {
+          fetchFeedbacks(); // Refresh data on any change
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const filteredFeedbacks = feedbacks.filter(f => 

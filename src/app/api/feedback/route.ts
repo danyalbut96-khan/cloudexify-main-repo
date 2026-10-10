@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getAdminClient } from '@/lib/supabase/server'
 import { isRateLimited } from '@/lib/utils'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -12,8 +12,10 @@ export async function GET(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const adminClient = getAdminClient()
+
   try {
-    const { data: feedback, error } = await supabase
+    const { data: feedback, error } = await adminClient
       .from('intern_feedbacks')
       .select('*, interns(full_name, registration_number)')
       .order('created_at', { ascending: false })

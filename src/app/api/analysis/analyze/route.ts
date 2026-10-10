@@ -124,14 +124,20 @@ ${languages}
 Score this project on the following ${criteria.length} criteria. Each criterion is worth ${criteria[0]?.max_marks ?? 5} marks.
 Total maximum score: ${criteria.reduce((s, c) => s + c.max_marks, 0)} marks.
 
-IMPORTANT: Return ONLY valid JSON, no extra text. Use this exact format:
+IMPORTANT INSTRUCTIONS:
+1. Return ONLY valid JSON, no extra text or markdown formatting outside the JSON block.
+2. Keep the tone constructive, encouraging, and highly specific to the project's actual code/repo.
+3. Do NOT expose internal scoring rules, metrics, or mention other interns' data. Speak directly to the intern.
+4. Use this exact format:
 {
   "total_score": <number>,
   "criteria": [
-    {"name": "...", "score": <number>, "comment": "2-3 sentence constructive feedback"},
-    ...
+    {"name": "...", "score": <number>, "comment": "2-3 sentence constructive feedback"}
   ],
-  "overall_feedback": "3-4 sentence overall assessment of the project"
+  "overall_feedback": "A short summary paragraph of the project",
+  "strengths": ["string", "string"],
+  "improvements": ["string", "string"],
+  "next_steps": ["string", "string"]
 }
 
 CRITERIA:

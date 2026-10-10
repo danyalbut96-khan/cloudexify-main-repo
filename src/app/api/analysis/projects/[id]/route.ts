@@ -1,34 +1,31 @@
 import { createClient } from '@/lib/supabase/server'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
-    const { manual_status, manual_marks, manual_feedback } = await request.json()
-    
-    // Validate status
-    if (manual_status && !['pending', 'approved', 'rejected'].includes(manual_status)) {
-       return NextResponse.json({ error: 'Invalid manual status' }, { status: 400 })
-    }
+    const { is_feedback_hidden, ai_feedback } = await request.json()
+    const { id } = params
 
-    const updateData: any = {}
-    if (manual_status !== undefined) updateData.manual_status = manual_status
-    if (manual_marks !== undefined) updateData.manual_marks = manual_marks
-    if (manual_feedback !== undefined) updateData.manual_feedback = manual_feedback
+    if (!id) return NextResponse.json({ error: 'Project ID is required' }, { status: 400 })
 
-    const { error } = await supabase
+    const updateData: any = {};
+    if (is_feedback_hidden !== undefined) updateData.is_feedback_hidden = is_feedback_hidden;
+    if (ai_feedback !== undefined) updateData.ai_feedback = ai_feedback;
+
+    const { data: updated, error } = await supabase
       .from('intern_projects')
       .update(updateData)
-      .eq('id', params.id)
+      .eq('id', id)
+      .select()
+      .single()
 
     if (error) throw error
-
-    return NextResponse.json({ success: true })
-  } catch (error: any) {
-    console.error('Error updating manual analysis:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json(updated)
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }
