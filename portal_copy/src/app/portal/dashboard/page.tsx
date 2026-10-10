@@ -209,7 +209,6 @@ export default function StudentDashboardPage() {
               </Card>
             )}
           </div>
-          </div>
 
           {/* Project Submissions Section */}
           <div className="space-y-6">

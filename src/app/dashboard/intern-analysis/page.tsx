@@ -53,19 +53,6 @@ interface Project {
     batches: { id: string; name: string; status: string };
   };
 }
-intern_name: string;
-registration_number: string;
-project_title: string;
-repo_url: string;
-domain_code: string;
-project_number: number;
-description: string | null;
-submitted_at: string;
-ai_score: number | null;
-ai_feedback: any;
-ai_analyzed_at: string | null;
-analysis_status: string;
-}
 
 interface InternSummary {
   intern_id: string;
