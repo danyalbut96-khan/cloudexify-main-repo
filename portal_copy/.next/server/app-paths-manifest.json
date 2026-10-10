@@ -1,9 +1,0 @@
-{
-  "/_not-found/page": "app/_not-found/page.js",
-  "/api/portal/leaderboard/route": "app/api/portal/leaderboard/route.js",
-  "/api/portal/settings/route": "app/api/portal/settings/route.js",
-  "/api/batches/route": "app/api/batches/route.js",
-  "/portal/page": "app/portal/page.js",
-  "/portal/register/page": "app/portal/register/page.js",
-  "/portal/login/page": "app/portal/login/page.js"
-}
