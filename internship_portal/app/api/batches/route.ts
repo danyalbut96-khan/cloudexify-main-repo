@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getAdminClient } from '@/lib/supabase/server'
 import { isRateLimited } from '@/lib/utils'
 import { logAction } from '@/lib/server-utils'
 import { NextRequest, NextResponse } from 'next/server'
@@ -9,16 +9,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
 
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
   try {
+    const supabase = getAdminClient()
     const { data: batches, error } = await supabase
       .from('batches')
-      .select('*, interns(count)')
+      .select('id, name, status, registration_deadline, start_date, end_date, documents_locked')
       .order('created_at', { ascending: false })
 
     if (error) throw error

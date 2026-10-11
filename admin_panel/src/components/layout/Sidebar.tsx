@@ -10,6 +10,7 @@ import {
   FolderGit2,
   FileSignature,
   Receipt,
+  CreditCard,
   History,
   Settings,
   ChevronDown,
@@ -31,7 +32,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const pathname = usePathname();
   const [openSubmenus, setOpenSubmenus] = useState<Record<string, boolean>>({
-    interns: pathname.startsWith('/dashboard/interns') || pathname.startsWith('/dashboard/documents'),
+    interns: pathname.startsWith('/dashboard/interns') || pathname.startsWith('/dashboard/documents') || pathname.startsWith('/dashboard/ai-interviews') || pathname.startsWith('/dashboard/payments'),
     leadgen: pathname.startsWith('/dashboard/leadgen'),
   });
 
@@ -57,7 +58,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       submenu: [
         { name: 'All Interns', path: '/dashboard/interns', icon: Users },
         { name: 'Batch Management', path: '/dashboard/batches', icon: CalendarRange },
-        { name: 'Intern Analysis', path: '/dashboard/intern-analysis', icon: BrainCircuit },
+        { name: 'Technical Interviews', path: '/dashboard/ai-interviews', icon: BrainCircuit },
+          { name: 'Fee Payments', path: '/dashboard/payments', icon: CreditCard },
+          { name: 'Intern Analysis', path: '/dashboard/intern-analysis', icon: BrainCircuit },
         { name: 'Intern Projects (Manual)', path: '/dashboard/intern-projects', icon: FolderGit2 },
         { name: 'Tasks', path: '/dashboard/tasks', icon: FolderGit2 },
         { name: 'Feedback', path: '/dashboard/feedback', icon: FileText },
