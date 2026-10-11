@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
   try {
     let query = supabase
       .from('interns')
-      .select('*, batches (id, name, status, start_date, end_date), intern_documents (*), intern_projects (count)')
+      .select('*, batches (id, name, status, start_date, end_date, documents_locked), intern_documents (*), intern_projects (count)')
 
     if (search) {
       query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%,registration_number.ilike.%${search}%`)

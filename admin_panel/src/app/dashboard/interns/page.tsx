@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
+  Lock,
+  LockOpen,
   Search, 
   Download, 
   Filter, 
@@ -224,6 +226,33 @@ export default function InternsPage() {
       fetchInterns();
     } catch (err: any) {
       toast.error(err.message || 'Status update failed', { id: actionToast });
+    }
+  };
+
+  const updateInternDocLock = async (id: string, overrideValue: boolean | null) => {
+    const actionToast = toast.loading('Updating document lock setting...');
+    try {
+      const res = await fetch(`/api/interns/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ document_lock_override: overrideValue })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update document lock');
+
+      const statusText = overrideValue === false 
+        ? 'Documents unlocked for this intern!' 
+        : overrideValue === true 
+        ? 'Documents locked for this intern!' 
+        : 'Reset to batch default lock setting!';
+
+      toast.success(statusText, { id: actionToast });
+      if (selectedIntern && selectedIntern.id === id) {
+        setSelectedIntern({ ...selectedIntern, document_lock_override: overrideValue });
+      }
+      fetchInterns();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update lock', { id: actionToast });
     }
   };
 
@@ -458,7 +487,7 @@ export default function InternsPage() {
                   <th className="px-5 py-3.5">Reg No</th>
                   <th className="px-5 py-3.5">Name & Email</th>
                   <th className="px-5 py-3.5">Domain</th>
-                  <th className="px-5 py-3.5">Pipeline Stage</th>
+                  <th className="px-5 py-3.5">Doc Access</th>
                   <th className="px-5 py-3.5">Offer Letter</th>
                   <th className="px-5 py-3.5">Certificate</th>
                   <th className="px-5 py-3.5 text-center">Actions</th>
@@ -500,19 +529,48 @@ export default function InternsPage() {
                       <div className="text-[11px] text-slate-500 font-normal">Sem {intern.semester || '-'} • {intern.skill_level || 'Beginner'}</div>
                     </td>
 
-                    {/* Pipeline Stage */}
+                    {/* Document Access Status & Quick Action */}
                     <td className="px-5 py-4">
-                      <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold border capitalize ${
-                        intern.pipeline_stage === 'registered' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                        intern.pipeline_stage === 'interview_pending' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
-                        intern.pipeline_stage === 'shortlisted' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                        intern.pipeline_stage === 'payment_pending' ? 'bg-purple-50 text-purple-700 border-purple-200' :
-                        intern.pipeline_stage === 'approved' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' :
-                        intern.pipeline_stage === 'rejected' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                        'bg-slate-50 text-slate-700 border-slate-200'
-                      }`}>
-                        {(intern.pipeline_stage || 'registered').replace('_', ' ')}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        {intern.document_lock_override === false ? (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                            <LockOpen className="w-3 h-3 text-emerald-600" /> Unlocked
+                          </span>
+                        ) : intern.document_lock_override === true ? (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
+                            <Lock className="w-3 h-3 text-rose-600" /> Locked
+                          </span>
+                        ) : intern.batches?.documents_locked ? (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1">
+                            <Lock className="w-3 h-3 text-amber-600" /> Batch Lock
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-50 text-slate-600 border border-slate-200 flex items-center gap-1">
+                            <LockOpen className="w-3 h-3 text-slate-500" /> Open
+                          </span>
+                        )}
+
+                        <button
+                          onClick={() => {
+                            const currentlyLocked = intern.document_lock_override !== null && intern.document_lock_override !== undefined
+                              ? intern.document_lock_override
+                              : Boolean(intern.batches?.documents_locked);
+                            updateInternDocLock(intern.id, !currentlyLocked);
+                          }}
+                          title={
+                            intern.document_lock_override === false 
+                              ? "Click to Lock Documents specifically for this intern" 
+                              : "Click to Unlock Documents specifically for this intern"
+                          }
+                          className="p-1 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
+                        >
+                          {intern.document_lock_override === false ? (
+                            <Lock className="w-3.5 h-3.5 text-slate-400 hover:text-rose-600" />
+                          ) : (
+                            <LockOpen className="w-3.5 h-3.5 text-slate-400 hover:text-emerald-600" />
+                          )}
+                        </button>
+                      </div>
                     </td>
                     
                     {/* Offer Letter status */}
@@ -660,6 +718,75 @@ export default function InternsPage() {
                 </div>
               </div>
             )}
+
+            {/* Individual Document Lock Authority */}
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4.5 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/80 pb-3">
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                    {selectedIntern.document_lock_override === false ? (
+                      <LockOpen className="w-4 h-4 text-emerald-600" />
+                    ) : selectedIntern.document_lock_override === true ? (
+                      <Lock className="w-4 h-4 text-rose-600" />
+                    ) : selectedIntern.batches?.documents_locked ? (
+                      <Lock className="w-4 h-4 text-amber-600" />
+                    ) : (
+                      <LockOpen className="w-4 h-4 text-emerald-600" />
+                    )}
+                    Individual Document Lock Authority
+                  </h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Batch default: <strong>{selectedIntern.batches?.name || 'Cohort'}</strong> is currently{' '}
+                    <span className={selectedIntern.batches?.documents_locked ? 'text-amber-700 font-bold' : 'text-emerald-700 font-bold'}>
+                      {selectedIntern.batches?.documents_locked ? 'Locked' : 'Unlocked'}
+                    </span>.
+                  </p>
+                </div>
+
+                <div className="shrink-0">
+                  {selectedIntern.document_lock_override === false ? (
+                    <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full text-[11px] font-bold flex items-center gap-1">
+                      <LockOpen className="w-3.5 h-3.5 text-emerald-700" /> Individually Unlocked
+                    </span>
+                  ) : selectedIntern.document_lock_override === true ? (
+                    <span className="px-2.5 py-1 bg-rose-100 text-rose-800 border border-rose-300 rounded-full text-[11px] font-bold flex items-center gap-1">
+                      <Lock className="w-3.5 h-3.5 text-rose-700" /> Individually Locked
+                    </span>
+                  ) : (
+                    <span className="px-2.5 py-1 bg-slate-200 text-slate-700 border border-slate-300 rounded-full text-[11px] font-bold flex items-center gap-1">
+                      Following Batch Default
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                <Button
+                  size="sm"
+                  onClick={() => updateInternDocLock(selectedIntern.id, false)}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-8 shadow-sm flex items-center gap-1.5"
+                >
+                  <LockOpen className="w-3.5 h-3.5" /> Unlock Documents for this Intern
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => updateInternDocLock(selectedIntern.id, true)}
+                  className="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs h-8 shadow-sm flex items-center gap-1.5"
+                >
+                  <Lock className="w-3.5 h-3.5" /> Lock Documents for this Intern
+                </Button>
+                {selectedIntern.document_lock_override !== null && selectedIntern.document_lock_override !== undefined && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => updateInternDocLock(selectedIntern.id, null)}
+                    className="border-slate-300 bg-white text-slate-700 hover:bg-slate-50 font-bold text-xs h-8 shadow-sm flex items-center gap-1.5"
+                  >
+                    <RefreshCw className="w-3 h-3 text-slate-500" /> Reset to Batch Default
+                  </Button>
+                )}
+              </div>
+            </div>
 
             {/* 2. Documents History Tracker and Actions */}
             <div className={selectedIntern.status !== 'Accepted' ? 'opacity-50 pointer-events-none' : ''}>
