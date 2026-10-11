@@ -11,6 +11,8 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import Link from 'next/link'
 import SubmitProjectTab from '@/components/SubmitProjectTab'
 import SubmittedProjectsList from '@/components/SubmittedProjectsList'
+import PipelineStatusTracker from '@/components/pipeline/PipelineStatusTracker'
+import CandidatePaymentSection from '@/components/pipeline/CandidatePaymentSection'
 import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
 
@@ -20,6 +22,8 @@ export default function StudentDashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('dashboard')
+  const [appealNote, setAppealNote] = useState('')
+  const [isSubmittingAppeal, setIsSubmittingAppeal] = useState(false)
   const [isEditingProfile, setIsEditingProfile] = useState(false)
   const [editProfileForm, setEditProfileForm] = useState({ full_name: '', email: '', whatsapp: '', university: '', semester: '', profile_picture_url: '' })
   const [isSavingProfile, setIsSavingProfile] = useState(false)
@@ -60,13 +64,73 @@ export default function StudentDashboardPage() {
 
   useEffect(() => {
     fetchDashboardData()
+    const interval = setInterval(() => {
+      fetchDashboardData()
+    }, 8000)
+    const onFocus = () => fetchDashboardData()
+    window.addEventListener('focus', onFocus)
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('focus', onFocus)
+    }
   }, [fetchDashboardData])
+
+  // Realtime subscription: auto-refresh when candidate stage or status changes
+  useEffect(() => {
+    if (!data?.intern?.id) return
+    const supabase = createClient()
+    const channel = supabase
+      .channel(`intern_pipeline_${data.intern.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'interns',
+          filter: `id=eq.${data.intern.id}`
+        },
+        () => {
+          fetchDashboardData()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [data?.intern?.id, fetchDashboardData])
 
   const handleLogout = async () => {
     document.cookie = "intern_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
     toast.success('Logged out successfully')
     router.push('/')
   }
+
+  const handleAppealSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!appealNote.trim() || appealNote.trim().length < 10) {
+      toast.error('Please provide a detailed justification for your review request (at least 10 characters).');
+      return;
+    }
+    setIsSubmittingAppeal(true);
+    const toastId = toast.loading('Submitting review appeal...');
+    try {
+      const res = await fetch('/api/appeal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appeal_note: appealNote.trim() })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to submit review request');
+      toast.success(data.message || 'Appeal submitted successfully!', { id: toastId });
+      setAppealNote('');
+      fetchDashboardData();
+    } catch (err: any) {
+      toast.error(err.message || 'Error submitting appeal', { id: toastId });
+    } finally {
+      setIsSubmittingAppeal(false);
+    }
+  };
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -190,23 +254,230 @@ export default function StudentDashboardPage() {
   if (!data) return null
 
   const { intern, documents, tasks } = data
+  const isApprovedCandidate = intern?.status === 'Accepted' || intern?.pipeline_stage === 'approved'
 
-  const renderStatusScreen = () => {
-    if (!intern.status || intern.status === 'Pending' || intern.status === 'Under Review') {
+    const renderStatusScreen = () => {
+    const currentStage = String(intern.pipeline_stage || '').toLowerCase();
+    const internStatus = String(intern.status || '').toLowerCase();
+    const isApprovedCandidate = intern.status === 'Accepted' || currentStage === 'approved';
+    const isRejected = currentStage === 'rejected' || (internStatus === 'rejected' && !['shortlisted', 'payment_pending', 'interview_pending', 'under_review', 'approved'].includes(currentStage));
+
+    // 1. REJECTION CHECK MUST COME FIRST
+    if (isRejected) {
+      const rejectionTime = intern.rejected_at ? new Date(intern.rejected_at).getTime() : new Date(intern.created_at).getTime();
+      const hoursSinceRejection = (Date.now() - rejectionTime) / (1000 * 60 * 60);
+      const isWithin48h = hoursSinceRejection <= 48;
+      const hoursRemaining = Math.max(0, Math.ceil(48 - hoursSinceRejection));
+
       return (
-        <Card className="max-w-lg mx-auto mt-20 p-8 text-center shadow-xl border-blue-100 bg-white">
-          <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6">
-            <Clock className="w-8 h-8 text-blue-600 animate-pulse" />
+        <div className="max-w-xl mx-auto mt-10 space-y-6">
+          <Card className="p-8 text-center shadow-xl border-red-100 bg-white rounded-3xl">
+            <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-6">
+              <XCircle className="w-8 h-8 text-red-600" />
+            </div>
+            <h2 className="text-2xl font-black text-slate-900 mb-2">Application Status Update</h2>
+            <p className="text-slate-600 text-sm font-medium mb-4 leading-relaxed">
+              Dear <strong>{intern.full_name}</strong>,
+              <br/><br/>
+              Thank you for applying to the <strong>{intern.domain}</strong> internship track at CloudExify. After careful evaluation of candidate assessments and batch seat quotas, we regret to inform you that we are unable to offer you admission for this cohort.
+            </p>
+
+            {intern.final_rejection_reason && (
+              <div className="bg-rose-50 border border-rose-200 p-3.5 rounded-xl text-xs text-rose-800 mb-5 text-left font-medium">
+                <strong>Evaluation Feedback:</strong> {intern.final_rejection_reason}
+              </div>
+            )}
+
+            {/* Appeal / 1-Time Review Request Section */}
+            {intern.review_requested || intern.appeal_submitted_at ? (
+              <div className="bg-blue-50 border border-blue-200 p-4 rounded-2xl text-left space-y-2 mt-4">
+                <div className="flex items-center gap-2 text-blue-900 font-bold text-xs uppercase tracking-wide">
+                  <Clock className="w-4 h-4 text-blue-600" /> Review Request Under Committee Evaluation
+                </div>
+                <p className="text-xs text-blue-800 leading-relaxed">
+                  You have submitted your 1-time admissions appeal. The committee is re-evaluating your dossier. You will receive an official notification via email once finalized.
+                </p>
+                {intern.appeal_note && (
+                  <div className="text-[11px] bg-white p-2.5 rounded-lg border border-blue-100 text-slate-600 font-mono mt-2">
+                    "{intern.appeal_note}"
+                  </div>
+                )}
+              </div>
+            ) : isWithin48h ? (
+              <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl text-left space-y-3 mt-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                    <Clock className="w-4 h-4 text-amber-500" /> Request Admissions Review (1-Time Appeal)
+                  </span>
+                  <span className="text-[11px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md">
+                    {hoursRemaining}h window remaining
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  You are eligible to submit a 1-time reconsideration request within 48 hours of decision notice. Provide any additional portfolio context, test clarification, or justification:
+                </p>
+                <form onSubmit={handleAppealSubmit} className="space-y-3 pt-1">
+                  <textarea
+                    rows={3}
+                    required
+                    value={appealNote}
+                    onChange={(e) => setAppealNote(e.target.value)}
+                    placeholder="Enter your appeal justification and relevant links..."
+                    className="w-full text-xs p-3 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 placeholder:text-slate-400 bg-white"
+                  />
+                  <Button
+                    type="submit"
+                    disabled={isSubmittingAppeal}
+                    className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2.5 rounded-xl shadow-md transition-all"
+                  >
+                    {isSubmittingAppeal ? 'Submitting Appeal...' : 'Submit Reconsideration Request (1-Time Only)'}
+                  </Button>
+                </form>
+              </div>
+            ) : (
+              <p className="text-xs text-slate-400 italic mt-4">
+                The 48-hour admissions reconsideration period has expired.
+              </p>
+            )}
+
+            {data.upcoming_batch && (
+              <div className="pt-4 border-t border-slate-100 mt-6">
+                <Link
+                  href={`/register?batch_id=${data.upcoming_batch.id}`}
+                  className="inline-block w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition-all shadow-md"
+                >
+                  Apply for Next Cohort ({data.upcoming_batch.name})
+                </Link>
+              </div>
+            )}
+          </Card>
+        </div>
+      );
+    }
+
+    // If Candidate is Shortlisted or Payment Pending, render payment verification UI
+    if (currentStage === 'shortlisted' || currentStage === 'payment_pending') {
+      return (
+        <div className="max-w-4xl mx-auto space-y-6">
+          <PipelineStatusTracker intern={intern} />
+          <CandidatePaymentSection intern={intern} onSuccess={fetchDashboardData} />
+
+          <Card className="p-6 bg-white border border-slate-200/80 rounded-2xl shadow-sm">
+            <h3 className="font-bold text-slate-900 text-base mb-4">Candidate Application Profile</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <span className="text-slate-400 font-bold uppercase block mb-1">Track</span>
+                <span className="font-extrabold text-slate-800 text-sm">{intern.domain}</span>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <span className="text-slate-400 font-bold uppercase block mb-1">University</span>
+                <span className="font-extrabold text-slate-800 text-sm">{intern.university || 'N/A'}</span>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <span className="text-slate-400 font-bold uppercase block mb-1">University Roll/Reg No</span>
+                <span className="font-extrabold text-slate-800 text-sm font-mono">{intern.university_registration_number || 'N/A'}</span>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <span className="text-slate-400 font-bold uppercase block mb-1">Semester</span>
+                <span className="font-extrabold text-slate-800 text-sm">Semester {intern.semester}</span>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <span className="text-slate-400 font-bold uppercase block mb-1">Expertise Level</span>
+                <span className="font-extrabold text-slate-800 text-sm">{intern.skill_level || 'Beginner'}</span>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <span className="text-slate-400 font-bold uppercase block mb-1">Batch</span>
+                <span className="font-extrabold text-slate-800 text-sm">{intern.batches?.name || 'Current Batch'}</span>
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    if (!isApprovedCandidate && intern.status !== 'Rejected' && currentStage !== 'rejected' && currentStage !== 'cancelled_non_payment') {
+      return (
+        <div className="max-w-4xl mx-auto space-y-6">
+          <PipelineStatusTracker intern={intern} />
+
+          <Card className="p-6 bg-white border border-slate-200/80 rounded-2xl shadow-sm">
+            <h3 className="font-bold text-slate-900 text-base mb-4">Candidate Application Details</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <span className="text-slate-400 font-bold uppercase block mb-1">Track</span>
+                <span className="font-extrabold text-slate-800 text-sm">{intern.domain}</span>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <span className="text-slate-400 font-bold uppercase block mb-1">University</span>
+                <span className="font-extrabold text-slate-800 text-sm">{intern.university || 'N/A'}</span>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <span className="text-slate-400 font-bold uppercase block mb-1">University Roll/Reg No</span>
+                <span className="font-extrabold text-slate-800 text-sm font-mono">{intern.university_registration_number || 'N/A'}</span>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <span className="text-slate-400 font-bold uppercase block mb-1">Semester</span>
+                <span className="font-extrabold text-slate-800 text-sm">Semester {intern.semester}</span>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <span className="text-slate-400 font-bold uppercase block mb-1">Expertise Level</span>
+                <span className="font-extrabold text-slate-800 text-sm">{intern.skill_level || 'Beginner'}</span>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <span className="text-slate-400 font-bold uppercase block mb-1">Batch</span>
+                <span className="font-extrabold text-slate-800 text-sm">{intern.batches?.name || 'Current Batch'}</span>
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    // TASK 6: FINAL STATES BARRIER (cancelled_non_payment)
+    if (intern.status === 'cancelled_non_payment' || currentStage === 'cancelled_non_payment') {
+      return (
+        <Card className="max-w-lg mx-auto mt-20 p-8 text-center shadow-xl border-amber-200 bg-white rounded-3xl">
+          <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-6">
+            <Clock className="w-8 h-8 text-amber-600" />
           </div>
-          <h2 className="text-2xl font-black text-slate-900 mb-2">Application Under Review</h2>
-          <p className="text-slate-500 font-medium mb-6">
-            Hello {intern.full_name}, your application for the {intern.domain} internship is currently being reviewed by our team. Please check back later.
+          <span className="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+            Seat Released - Non Payment
+          </span>
+          <h2 className="text-2xl font-black text-slate-900 mt-3 mb-2">Admission Window Expired</h2>
+          <p className="text-slate-600 text-sm font-medium mb-4 leading-relaxed">
+            Dear <strong>{intern.full_name}</strong>,
+            <br/><br/>
+            Your reserved seat for the <strong>{intern.domain}</strong> track in <strong>{intern.batches?.name || 'Current Batch'}</strong> has been released because verification fee payment was not completed within the mandatory 72-hour deadline.
+            <br/><br/>
+            In accordance with CloudExify cohort rules, expired seats are automatically reassigned to waitlisted applicants. This is a final status for this specific batch.
           </p>
-          <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 text-sm font-semibold text-slate-700">
-            Registration Number: <span className="text-blue-600">{intern.registration_number}</span>
+          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-600 mb-6 text-left">
+            <strong>What are your options?</strong><br/>
+            You are warmly welcome to register for our next upcoming cohort when applications open. Your previous assessment record does not prevent you from competing in future batches.
           </div>
+          {data.upcoming_batch ? (
+            <Link
+              href={`/register?batch_id=${data.upcoming_batch.id}`}
+              className="inline-block w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition-all shadow-md"
+            >
+              Apply for Next Cohort ({data.upcoming_batch.name})
+            </Link>
+          ) : (
+            <div className="space-y-3">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600">
+                You will be notified via email (<strong>{intern.email}</strong>) when the next cohort opens.
+              </div>
+              <button
+                type="button"
+                onClick={() => toast.success('Opt-in recorded! You are on the priority waitlist for the next cohort.')}
+                className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs transition-all"
+              >
+                Opt-in to Next Cohort Notification Waitlist
+              </button>
+            </div>
+          )}
         </Card>
-      )
+      );
     }
 
     if (intern.status === 'Rejected') {
@@ -225,6 +496,32 @@ export default function StudentDashboardPage() {
             <br/><br/>
             Please do not let this discourage you. We encourage you to continue developing your skills and hope you will re-apply for future opportunities with us. We wish you the absolute best in your professional journey!
           </p>
+          {intern.final_rejection_reason && (
+            <div className="bg-rose-50 border border-rose-200 p-3 rounded-xl text-xs text-rose-800 mb-4 text-left font-medium">
+              <strong>Evaluation Feedback:</strong> {intern.final_rejection_reason}
+            </div>
+          )}
+          {data.upcoming_batch ? (
+            <Link
+              href={`/register?batch_id=${data.upcoming_batch.id}`}
+              className="inline-block w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition-all shadow-md mb-4"
+            >
+              Apply for Next Cohort ({data.upcoming_batch.name})
+            </Link>
+          ) : (
+            <div className="space-y-3 mb-4">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600">
+                You will be notified via email (<strong>{intern.email}</strong>) when the next cohort opens.
+              </div>
+              <button
+                type="button"
+                onClick={() => toast.success('Opt-in recorded! You are on the priority waitlist for the next cohort.')}
+                className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs transition-all"
+              >
+                Opt-in to Next Cohort Notification Waitlist
+              </button>
+            </div>
+          )}
           <div className="text-xs text-slate-400 font-semibold border-t pt-4">
             CloudExify Talent Acquisition Team
           </div>
@@ -235,6 +532,8 @@ export default function StudentDashboardPage() {
     // Accepted State
     return (
       <div className="max-w-6xl mx-auto space-y-8">
+        <PipelineStatusTracker intern={intern} />
+
         {/* Welcome Banner */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
           <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl pointer-events-none"></div>
@@ -398,11 +697,18 @@ export default function StudentDashboardPage() {
 
   const renderProfileScreen = () => {
     return (
-      <Card className="max-w-3xl mx-auto p-8 shadow-sm">
-        <div className="flex justify-between items-center mb-6 border-b pb-4">
-          <h2 className="text-2xl font-black text-slate-900">My Profile</h2>
+      <Card className="max-w-4xl mx-auto p-8 shadow-sm bg-white border border-slate-200/90 rounded-2xl">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-slate-100 pb-4">
+          <div>
+            <span className="text-[11px] font-black uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">
+              Candidate Dossier
+            </span>
+            <h2 className="text-2xl font-black text-slate-900 mt-1">My Profile</h2>
+          </div>
           {!isEditingProfile && (
-            <Button variant="outline" onClick={() => setIsEditingProfile(true)}>Edit Profile</Button>
+            <Button variant="outline" onClick={() => setIsEditingProfile(true)} className="text-xs">
+              Edit Contact Info
+            </Button>
           )}
         </div>
         
@@ -418,35 +724,28 @@ export default function StudentDashboardPage() {
                 <input required type="email" value={editProfileForm.email} onChange={e => setEditProfileForm(p => ({...p, email: e.target.value}))} className="w-full border rounded-lg px-3 py-2 text-sm bg-white text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 outline-none" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">WhatsApp</label>
+                <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">WhatsApp Number</label>
                 <input required value={editProfileForm.whatsapp} onChange={e => setEditProfileForm(p => ({...p, whatsapp: e.target.value}))} className="w-full border rounded-lg px-3 py-2 text-sm bg-white text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 outline-none" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">University</label>
+                <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">University Name</label>
                 <input required value={editProfileForm.university} onChange={e => setEditProfileForm(p => ({...p, university: e.target.value}))} className="w-full border rounded-lg px-3 py-2 text-sm bg-white text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">University Roll / Reg No</label>
+                <input value={intern.university_registration_number || ''} disabled className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-500 cursor-not-allowed font-mono" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">Semester</label>
                 <input required type="number" value={editProfileForm.semester} onChange={e => setEditProfileForm(p => ({...p, semester: e.target.value}))} className="w-full border rounded-lg px-3 py-2 text-sm bg-white text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 outline-none" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">Profile Picture (PNG/JPG)</label>
-                <div className="flex items-center gap-4">
-                  {editProfileForm.profile_picture_url && (
-                    <img src={editProfileForm.profile_picture_url} alt="Profile" className="w-10 h-10 rounded-full object-cover border" />
-                  )}
-                  <input 
-                    type="file" 
-                    accept="image/png, image/jpeg, image/webp" 
-                    onChange={handleProfilePictureUpload} 
-                    disabled={isUploadingPic}
-                    className="flex-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50" 
-                  />
-                </div>
+                <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">Assigned Track (Domain)</label>
+                <input disabled value={intern.domain} className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-500 cursor-not-allowed" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">Domain (Cannot be changed)</label>
-                <input disabled value={intern.domain} className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-500 cursor-not-allowed" />
+                <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">Skill Level</label>
+                <input disabled value={intern.skill_level || 'Beginner'} className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-500 cursor-not-allowed" />
               </div>
             </div>
             <div className="flex justify-end space-x-3 pt-4 border-t mt-6">
@@ -456,38 +755,61 @@ export default function StudentDashboardPage() {
           </form>
         ) : (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Full Name</span><span className="font-semibold text-slate-900 text-lg">{intern.full_name}</span></div>
-              <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Registration No</span><span className="font-semibold text-blue-600 bg-blue-50 px-3 py-1 inline-block rounded-md">{intern.registration_number}</span></div>
-              <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Email Address</span><span className="font-semibold text-slate-900">{intern.email}</span></div>
-              <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">WhatsApp</span><span className="font-semibold text-slate-900">{intern.whatsapp || 'N/A'}</span></div>
-              <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">University</span><span className="font-semibold text-slate-900">{intern.university || 'N/A'}</span></div>
-              <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Semester</span><span className="font-semibold text-slate-900">{intern.semester || 'N/A'}</span></div>
-              <div className="col-span-full sm:col-span-1">
-                <span className="text-slate-500 font-bold block text-xs uppercase mb-1">Profile Picture</span>
-                {intern.profile_picture_url ? (
-                  <img src={intern.profile_picture_url} alt="Profile" className="w-16 h-16 rounded-full object-cover border shadow-sm" />
-                ) : (
-                  <span className="font-semibold text-slate-400 italic text-sm">Not uploaded</span>
-                )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+              <div className="p-4 bg-slate-50/70 border border-slate-200/70 rounded-xl">
+                <span className="text-slate-400 font-bold block text-[10px] uppercase tracking-wider mb-1">Full Name</span>
+                <span className="font-extrabold text-slate-900 text-base">{intern.full_name}</span>
               </div>
-              <div><span className="text-slate-500 font-bold block text-xs uppercase mb-1">Domain</span><span className="font-semibold text-slate-900">{intern.domain}</span></div>
-            </div>
-            
-            <div className="mt-8 bg-blue-50/50 rounded-xl p-6 border border-blue-100 flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-black text-slate-900">Project Submissions</h3>
-                <p className="text-sm text-slate-500 mt-1">Total projects you have submitted so far.</p>
+              <div className="p-4 bg-blue-50/60 border border-blue-200/70 rounded-xl">
+                <span className="text-blue-500 font-bold block text-[10px] uppercase tracking-wider mb-1">CloudExify Reg ID</span>
+                <span className="font-black text-blue-700 font-mono text-sm">{intern.registration_number}</span>
               </div>
-              <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-2xl font-black text-white shadow-lg shadow-blue-200">
-                {data.submitted_projects_count || 0}
+              <div className="p-4 bg-slate-50/70 border border-slate-200/70 rounded-xl">
+                <span className="text-slate-400 font-bold block text-[10px] uppercase tracking-wider mb-1">Email Address</span>
+                <span className="font-bold text-slate-800 text-xs break-all">{intern.email}</span>
+              </div>
+              <div className="p-4 bg-slate-50/70 border border-slate-200/70 rounded-xl">
+                <span className="text-slate-400 font-bold block text-[10px] uppercase tracking-wider mb-1">WhatsApp Number</span>
+                <span className="font-bold text-slate-800 text-xs">{intern.whatsapp || 'N/A'}</span>
+              </div>
+              <div className="p-4 bg-slate-50/70 border border-slate-200/70 rounded-xl">
+                <span className="text-slate-400 font-bold block text-[10px] uppercase tracking-wider mb-1">University</span>
+                <span className="font-bold text-slate-800 text-xs">{intern.university || 'N/A'}</span>
+              </div>
+              <div className="p-4 bg-slate-50/70 border border-slate-200/70 rounded-xl">
+                <span className="text-slate-400 font-bold block text-[10px] uppercase tracking-wider mb-1">University Roll/Reg No</span>
+                <span className="font-bold text-slate-800 font-mono text-xs">{intern.university_registration_number || 'N/A'}</span>
+              </div>
+              <div className="p-4 bg-slate-50/70 border border-slate-200/70 rounded-xl">
+                <span className="text-slate-400 font-bold block text-[10px] uppercase tracking-wider mb-1">Academic Semester</span>
+                <span className="font-bold text-slate-800 text-xs">Semester {intern.semester || 'N/A'}</span>
+              </div>
+              <div className="p-4 bg-slate-50/70 border border-slate-200/70 rounded-xl">
+                <span className="text-slate-400 font-bold block text-[10px] uppercase tracking-wider mb-1">Internship Track</span>
+                <span className="font-extrabold text-indigo-700 text-xs">{intern.domain}</span>
+              </div>
+              <div className="p-4 bg-slate-50/70 border border-slate-200/70 rounded-xl">
+                <span className="text-slate-400 font-bold block text-[10px] uppercase tracking-wider mb-1">Expertise / Skill Level</span>
+                <span className="font-bold text-slate-800 text-xs">{intern.skill_level || 'Beginner'}</span>
+              </div>
+              <div className="p-4 bg-slate-50/70 border border-slate-200/70 rounded-xl">
+                <span className="text-slate-400 font-bold block text-[10px] uppercase tracking-wider mb-1">Assigned Cohort Batch</span>
+                <span className="font-bold text-slate-800 text-xs">{intern.batches?.name || 'Active Batch'}</span>
+              </div>
+              <div className="p-4 bg-slate-50/70 border border-slate-200/70 rounded-xl">
+                <span className="text-slate-400 font-bold block text-[10px] uppercase tracking-wider mb-1">Admissions Pipeline Stage</span>
+                <span className="font-bold text-emerald-700 text-xs capitalize">{intern.pipeline_stage || intern.status || 'Registered'}</span>
+              </div>
+              <div className="p-4 bg-slate-50/70 border border-slate-200/70 rounded-xl">
+                <span className="text-slate-400 font-bold block text-[10px] uppercase tracking-wider mb-1">Registration Date</span>
+                <span className="font-bold text-slate-800 text-xs">{new Date(intern.created_at).toLocaleDateString()}</span>
               </div>
             </div>
           </div>
         )}
       </Card>
-    )
-  }
+    );
+  };
 
   const renderDocumentsScreen = () => {
     return (
@@ -606,24 +928,28 @@ export default function StudentDashboardPage() {
             className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-bold ${activeTab === 'dashboard' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 hover:text-white'}`}
           >
             <LayoutDashboard className="w-5 h-5" />
-            <span>Dashboard</span>
+            <span>{isApprovedCandidate ? 'Dashboard' : 'Application Status'}</span>
           </button>
           
-          <button 
-            onClick={() => { setActiveTab('documents'); setIsSidebarOpen(false) }}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-bold ${activeTab === 'documents' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 hover:text-white'}`}
-          >
-            <FileText className="w-5 h-5" />
-            <span>Documents</span>
-          </button>
-          
-          <button 
-            onClick={() => { setActiveTab('submit-project'); setIsSidebarOpen(false) }}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-bold ${activeTab === 'submit-project' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 hover:text-white'}`}
-          >
-            <Briefcase className="w-5 h-5" />
-            <span>Project Submission</span>
-          </button>
+          {isApprovedCandidate && (
+            <>
+              <button 
+                onClick={() => { setActiveTab('documents'); setIsSidebarOpen(false) }}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-bold ${activeTab === 'documents' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 hover:text-white'}`}
+              >
+                <FileText className="w-5 h-5" />
+                <span>Documents</span>
+              </button>
+              
+              <button 
+                onClick={() => { setActiveTab('submit-project'); setIsSidebarOpen(false) }}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-bold ${activeTab === 'submit-project' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 hover:text-white'}`}
+              >
+                <Briefcase className="w-5 h-5" />
+                <span>Project Submission</span>
+              </button>
+            </>
+          )}
           
           <button 
             onClick={() => { setActiveTab('profile'); setIsSidebarOpen(false) }}
@@ -633,21 +959,25 @@ export default function StudentDashboardPage() {
             <span>My Profile</span>
           </button>
           
-          <button 
-            onClick={() => { setActiveTab('review'); setIsSidebarOpen(false) }}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-bold ${activeTab === 'review' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 hover:text-white'}`}
-          >
-            <Star className="w-5 h-5" />
-            <span>Submit Review</span>
-          </button>
+          {isApprovedCandidate && (
+            <>
+              <button 
+                onClick={() => { setActiveTab('review'); setIsSidebarOpen(false) }}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-bold ${activeTab === 'review' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 hover:text-white'}`}
+              >
+                <Star className="w-5 h-5" />
+                <span>Submit Review</span>
+              </button>
 
-          <button 
-            onClick={() => { setActiveTab('feedback'); setIsSidebarOpen(false) }}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-bold ${activeTab === 'feedback' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 hover:text-white'}`}
-          >
-            <MessageCircle className="w-5 h-5" />
-            <span>Course Feedback</span>
-          </button>
+              <button 
+                onClick={() => { setActiveTab('feedback'); setIsSidebarOpen(false) }}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-bold ${activeTab === 'feedback' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 hover:text-white'}`}
+              >
+                <MessageCircle className="w-5 h-5" />
+                <span>Course Feedback</span>
+              </button>
+            </>
+          )}
         </nav>
 
         <div className="absolute bottom-0 left-0 w-full p-4 border-t border-slate-800">
@@ -674,12 +1004,12 @@ export default function StudentDashboardPage() {
 
         {/* Scrollable Content */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          {activeTab === 'dashboard' && renderStatusScreen()}
-          {activeTab === 'documents' && renderDocumentsScreen()}
+          {(!isApprovedCandidate || activeTab === 'dashboard') && activeTab !== 'profile' && renderStatusScreen()}
           {activeTab === 'profile' && renderProfileScreen()}
-          {activeTab === 'review' && renderReviewScreen()}
-          {activeTab === 'feedback' && renderFeedbackScreen()}
-          {activeTab === 'submit-project' && (
+          {isApprovedCandidate && activeTab === 'documents' && renderDocumentsScreen()}
+          {isApprovedCandidate && activeTab === 'review' && renderReviewScreen()}
+          {isApprovedCandidate && activeTab === 'feedback' && renderFeedbackScreen()}
+          {isApprovedCandidate && activeTab === 'submit-project' && (
             <SubmitProjectTab 
               intern={intern} 
               submittedCount={data.submitted_projects_count} 

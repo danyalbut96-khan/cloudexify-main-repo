@@ -59,8 +59,15 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       updateData.status = status
       if (status === 'Rejected') {
         updateData.rejected_at = new Date().toISOString()
+        updateData.pipeline_stage = 'rejected'
+      } else if (status === 'Accepted') {
+        updateData.rejected_at = null
+        updateData.final_rejection_reason = null
+        updateData.pipeline_stage = 'approved'
       } else {
         updateData.rejected_at = null
+        updateData.final_rejection_reason = null
+        updateData.pipeline_stage = 'under_review'
       }
     }
 

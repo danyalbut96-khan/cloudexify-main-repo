@@ -30,12 +30,28 @@ export async function GET(request: NextRequest) {
     // 1. Fetch Intern Details
     const { data: intern, error: internError } = await supabase
       .from('interns')
-      .select('id, full_name, email, whatsapp, university, semester, registration_number, status, domain, batch_id, batches(name, status, end_date, documents_locked, release_ai_feedback)')
+      .select('id, full_name, email, whatsapp, university, semester, registration_number, status, domain, skill_level, university_registration_number, pipeline_stage, interest, linkedin_url, resume_url, payment_deadline, payment_method, payment_transaction_id, payment_screenshot_url, payment_status, final_rejection_reason, batch_id, batches(name, status, end_date, documents_locked, release_ai_feedback)')
       .eq('id', internId)
       .single()
 
     if (internError || !intern) {
       return NextResponse.json({ error: 'Intern not found' }, { status: 404 })
+    }
+
+    const internRecord: any = intern
+    // Check if candidate submitted an appeal
+    const { data: appealLogs } = await supabase
+      .from('admin_audit_logs')
+      .select('details, created_at')
+      .eq('target_id', internId)
+      .eq('action', 'CANDIDATE_APPEAL_SUBMITTED')
+      .order('created_at', { ascending: false })
+      .limit(1)
+
+    if (appealLogs && appealLogs.length > 0) {
+      internRecord.review_requested = true
+      internRecord.appeal_note = appealLogs[0].details?.appeal_note
+      internRecord.appeal_submitted_at = appealLogs[0].created_at
     }
 
     // 2. Fetch Documents (if they exist)
@@ -94,8 +110,19 @@ export async function GET(request: NextRequest) {
       display_ai_feedback: (releaseFeedback && !p.is_feedback_hidden) ? p.ai_feedback : null,
     }))
 
+    // Fetch if any upcoming batch is accepting applications
+    const { data: upcomingBatch } = await supabase
+      .from('batches')
+      .select('id, name, status')
+      .in('status', ['Accepting Applications', 'active'])
+      .neq('id', intern.batch_id || '')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
     return NextResponse.json({
       success: true,
+      upcoming_batch: upcomingBatch || null,
       intern,
       documents: documents || null,
       tasks,
