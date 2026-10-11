@@ -1,0 +1,604 @@
+'use client';
+
+import React, { useEffect, useState, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Search, Download, Calendar, ShieldCheck, UserCheck, MessageSquare, Zap, Users } from 'lucide-react';
+import { PageWrapper } from '@/components/ui/PageWrapper';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { formatDate } from '@/lib/utils';
+import toast from 'react-hot-toast';
+
+function RecommendationLetterGenerator() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const urlInternId = searchParams.get('internId');
+
+  // State
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [selectedIntern, setSelectedIntern] = useState<any>(null);
+  const [completionDate, setCompletionDate] = useState(new Date().toISOString().split('T')[0]);
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [customText, setCustomText] = useState(
+    'During the internship, they exhibited strong problem-solving abilities, a proactive learning attitude, and a high level of dedication to their assigned tasks. They successfully met all project milestones, demonstrating both independent initiative and excellent teamwork.'
+  );
+  const [adminEmail, setAdminEmail] = useState('');
+  const [allAdmins, setAllAdmins] = useState<any[]>([]);
+  const [batches, setBatches] = useState<any[]>([]);
+  const [selectedBatchId, setSelectedBatchId] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [previewRlId, setPreviewRlId] = useState('');
+  const [companyLogoUrl, setCompanyLogoUrl] = useState('');
+  const [companyName, setCompanyName] = useState('CloudExify');
+
+  // Bulk Generation State
+  const [pendingInterns, setPendingInterns] = useState<any[]>([]);
+  const [isFetchingPending, setIsFetchingPending] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState({ current: 0, total: 0 });
+  const [isBulkGenerating, setIsBulkGenerating] = useState(false);
+  const [bulkMode, setBulkMode] = useState<'pending' | 'all'>('pending');
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch('/api/settings');
+        if (res.ok) {
+          const data = await res.json();
+          setAllAdmins(data.allSignatures || []);
+          if (data.adminSignature?.email) {
+            setAdminEmail(data.adminSignature.email);
+          } else if (data.allSignatures?.length > 0) {
+            setAdminEmail(data.allSignatures[0].email);
+          }
+          if (data.companySettings) {
+            setCompanyLogoUrl(data.companySettings.company_logo_url || '');
+            setCompanyName(data.companySettings.company_name || 'CloudExify');
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchSettings();
+
+    const fetchBatches = async () => {
+      try {
+        const res = await fetch('/api/batches');
+        if (res.ok) {
+          const data = await res.json();
+          setBatches(data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchBatches();
+  }, []);
+
+  useEffect(() => {
+    if (urlInternId) {
+      const fetchIntern = async () => {
+        try {
+          const res = await fetch(`/api/interns/${urlInternId}`);
+          if (!res.ok) throw new Error('Intern not found');
+          const data = await res.json();
+          setSelectedIntern(data);
+          setSearchQuery(data.full_name);
+        } catch (err: any) {
+          toast.error(err.message || 'Error loading pre-selected intern');
+        }
+      };
+      fetchIntern();
+    }
+  }, [urlInternId]);
+
+  // Generate random preview recommendation letter number
+  useEffect(() => {
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    const year = new Date().getFullYear();
+    setPreviewRlId(`CX-RL-${year}-${randomNum}`);
+  }, [selectedIntern]);
+
+  const handleSearch = async (val: string) => {
+    setSearchQuery(val);
+    if (val.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+    setIsSearching(true);
+    try {
+      let endpoint = `/api/interns?search=${val}`;
+      if (selectedBatchId) endpoint += `&batchId=${selectedBatchId}`;
+      
+      const res = await fetch(endpoint);
+      if (res.ok) {
+        const data = await res.json();
+        setSearchResults(data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const selectIntern = (intern: any) => {
+    setSelectedIntern(intern);
+    setSearchQuery(intern.full_name);
+    setSearchResults([]);
+  };
+
+  const handleGenerate = async () => {
+    if (!selectedIntern) {
+      toast.error('Please select an intern.');
+      return;
+    }
+    if (!adminEmail) {
+      toast.error('Please select a signer.');
+      return;
+    }
+    if ((selectedIntern.submitted_projects_count || 0) < 4) {
+      toast.error('Intern has not submitted 4 projects.');
+      return;
+    }
+
+    setIsGenerating(true);
+    const renderToast = toast.loading('Generating Letter...');
+
+    try {
+      const params = new URLSearchParams({
+        internId: selectedIntern.id,
+        startDate,
+        completionDate,
+        adminEmail,
+        customText
+      });
+      const endpoint = `/api/documents/recommendation-letter?${params.toString()}`;
+
+      const response = await fetch(endpoint);
+      if (!response.ok) throw new Error('Generation failed');
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Recommendation_Letter_${selectedIntern.registration_number}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success('Recommendation Letter downloaded successfully!', { id: renderToast });
+    } catch (err: any) {
+      toast.error(err.message || 'Error generating Letter', { id: renderToast });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const selectedSignatory = allAdmins.find(a => a.email === adminEmail) || {
+    full_name: 'Authorized Signatory',
+    signature_url: null
+  };
+
+  const fetchPendingInterns = async (mode: 'pending' | 'all' = bulkMode) => {
+    setIsFetchingPending(true);
+    setBulkMode(mode);
+    try {
+      let endpoint = '/api/interns?limit=5000';
+      if (selectedBatchId) endpoint += `&batchId=${selectedBatchId}`;
+      
+      const res = await fetch(endpoint);
+      if (res.ok) {
+        const data = await res.json();
+        const list = mode === 'pending'
+          ? data.filter((i: any) => !i.intern_documents?.recommendation_letter_generated)
+          : data;
+        setPendingInterns(list);
+        const label = mode === 'pending' ? 'pending' : 'total';
+        toast.success(list.length > 0 ? `Found ${list.length} ${label} interns.` : 'No interns found!');
+      }
+    } catch (err) {
+      toast.error('Failed to fetch interns');
+    } finally {
+      setIsFetchingPending(false);
+    }
+  };
+
+  const handleBulkGenerate = async () => {
+    if (pendingInterns.length === 0) return toast.error('No pending interns found. Fetch them first.');
+    if (!adminEmail) return toast.error('Please select an authorized admin to sign.');
+
+    const eligibleInterns = pendingInterns.filter((i: any) => (i.submitted_projects_count || 0) >= 4);
+    if (eligibleInterns.length === 0) return toast.error('No pending interns are eligible (require 4 projects).');
+
+    setIsBulkGenerating(true);
+    setBulkProgress({ current: 0, total: eligibleInterns.length });
+
+    let successCount = 0;
+    let failCount = 0;
+
+    for (let i = 0; i < eligibleInterns.length; i++) {
+      const intern = eligibleInterns[i];
+      try {
+        const res = await fetch('/api/documents/recommendation-letter/store', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            internId: intern.id,
+            startDate,
+            completionDate,
+            adminEmail,
+            customText
+          })
+        });
+
+        if (res.ok) {
+          successCount++;
+        } else {
+          failCount++;
+          console.error(`Failed for ${intern.full_name}`);
+        }
+      } catch (err) {
+        failCount++;
+      }
+      setBulkProgress({ current: i + 1, total: eligibleInterns.length });
+    }
+
+    setIsBulkGenerating(false);
+    toast.success(`Bulk generation complete! Success: ${successCount}, Failed: ${failCount}`);
+    setPendingInterns([]);
+  };
+
+  return (
+    <PageWrapper title="Recommendation Letter Generator">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Form */}
+        <Card className="lg:col-span-5 space-y-6 border border-slate-100">
+          <div>
+            <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">1. Select Batch (Optional)</h2>
+            <select
+              value={selectedBatchId}
+              onChange={(e) => {
+                const batchId = e.target.value;
+                setSelectedBatchId(batchId);
+                setSearchQuery('');
+                setSearchResults([]);
+
+                const batch = batches.find((b: any) => b.id === batchId);
+                if (batch) {
+                  if (batch.end_date) setCompletionDate(batch.end_date.split('T')[0]);
+                  if (batch.start_date) setStartDate(batch.start_date.split('T')[0]);
+                }
+              }}
+              className="block w-full px-3 py-2 mb-4 text-sm border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+            >
+              <option value="">All Batches</option>
+              {batches.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name} ({b.status})
+                </option>
+              ))}
+            </select>
+
+            <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">2. Select Intern</h2>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <Search className="h-4.5 w-4.5" />
+              </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                placeholder="Search intern..."
+                className="block w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
+              />
+              {isSearching && (
+                <div className="absolute right-3 top-2.5">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent" />
+                </div>
+              )}
+            </div>
+
+            {searchResults.length > 0 && (
+              <div className="absolute z-20 w-[90%] md:w-[35%] bg-white border border-slate-100 rounded-lg mt-1 shadow-lg max-h-52 overflow-y-auto divide-y divide-slate-50">
+                {searchResults.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => selectIntern(item)}
+                    className="w-full text-left px-4 py-2.5 hover:bg-slate-50 text-xs font-semibold text-slate-700 flex justify-between items-center"
+                  >
+                    <div>
+                      <p className="text-slate-900 font-bold">{item.full_name}</p>
+                      <p className="text-[10px] text-slate-400 font-medium">{item.domain} • Projects: {item.submitted_projects_count || 0}/4</p>
+                    </div>
+                    <Badge variant="blue">{item.registration_number}</Badge>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {selectedIntern && (
+              <div className="mt-3.5 bg-blue-50/50 border border-blue-100 rounded-xl p-3.5 text-xs text-blue-800 space-y-1">
+                <p className="font-bold flex items-center">
+                  <UserCheck className="h-4 w-4 mr-1.5 text-blue-600" />
+                  Selected: {selectedIntern.full_name}
+                </p>
+                <p className="text-slate-500 font-semibold">{selectedIntern.domain}</p>
+                <p className="text-slate-400 font-medium">Reg: {selectedIntern.registration_number}</p>
+                <p className={`text-[10px] font-bold ${(selectedIntern.submitted_projects_count || 0) >= 4 ? 'text-green-600' : 'text-amber-600'}`}>Projects Submitted: {selectedIntern.submitted_projects_count || 0}/4</p>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">3. Evaluation Parameters</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1 flex items-center">
+                  <Calendar className="h-3.5 w-3.5 mr-1" />
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="block w-full px-3 py-2 text-sm border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1 flex items-center">
+                  <Calendar className="h-3.5 w-3.5 mr-1" />
+                  Reference Letter Date (End Date)
+                </label>
+                <input
+                  type="date"
+                  value={completionDate}
+                  onChange={(e) => setCompletionDate(e.target.value)}
+                  className="block w-full px-3 py-2 text-sm border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1 flex items-center">
+                  <MessageSquare className="h-3.5 w-3.5 mr-1" />
+                  Custom Commendation Text
+                </label>
+                <textarea
+                  value={customText}
+                  onChange={(e) => setCustomText(e.target.value)}
+                  rows={4}
+                  className="block w-full px-3 py-2 text-sm border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white placeholder-slate-400"
+                  placeholder="Detail custom positive accomplishments or key skills demonstrated..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1 flex items-center">
+                  <ShieldCheck className="h-3.5 w-3.5 mr-1" />
+                  Authorized Signer
+                </label>
+                <select
+                  value={adminEmail}
+                  onChange={(e) => setAdminEmail(e.target.value)}
+                  className="block w-full px-3 py-2 text-sm border border-slate-200 rounded-lg text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                >
+                  <option value="">Select Signatory...</option>
+                  {allAdmins.map((adm) => (
+                    <option key={adm.email} value={adm.email}>
+                      {adm.full_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <Button
+            variant="primary"
+            onClick={handleGenerate}
+            isLoading={isGenerating}
+            disabled={!selectedIntern || !adminEmail || isBulkGenerating}
+            className="w-full py-2.5 font-bold shadow-lg shadow-blue-200"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Generate Recommendation
+          </Button>
+        </Card>
+
+        {/* Bulk Actions Card */}
+        <Card className="lg:col-span-5 space-y-5 border border-purple-100 bg-gradient-to-br from-purple-50/50 to-white mt-0">
+          <div>
+            <h2 className="text-sm font-bold text-purple-900 uppercase tracking-wider mb-2 flex items-center">
+              <Zap className="h-4 w-4 mr-1.5 text-purple-600" />
+              Bulk Generation
+            </h2>
+            <p className="text-[10px] text-slate-500 mb-4 leading-relaxed">
+              Generate and automatically save Recommendation Letters for ALL pending interns directly to Supabase storage.
+            </p>
+
+            <div className="space-y-3">
+              {/* Mode buttons */}
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => fetchPendingInterns('pending')}
+                  isLoading={isFetchingPending && bulkMode === 'pending'}
+                  disabled={isBulkGenerating}
+                  className="flex-1 text-xs py-2 border-amber-200 text-amber-700 hover:bg-amber-50"
+                >
+                  <Users className="h-3.5 w-3.5 mr-1.5" />
+                  Pending Only
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => fetchPendingInterns('all')}
+                  isLoading={isFetchingPending && bulkMode === 'all'}
+                  disabled={isBulkGenerating}
+                  className="flex-1 text-xs py-2 border-purple-200 text-purple-700 hover:bg-purple-50"
+                >
+                  <Users className="h-3.5 w-3.5 mr-1.5" />
+                  Regenerate All
+                </Button>
+              </div>
+
+              {pendingInterns.length > 0 && (
+                <div className="bg-white border border-purple-100 rounded-xl p-4 shadow-sm space-y-4">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="font-semibold text-slate-700">Ready to Process:</span>
+                    <Badge variant="blue">{pendingInterns.length} Interns</Badge>
+                  </div>
+                  
+                  {isBulkGenerating && (
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                        <span>Processing...</span>
+                        <span>{bulkProgress.current} / {bulkProgress.total}</span>
+                      </div>
+                      <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                        <div 
+                          className="bg-purple-500 h-2 rounded-full transition-all duration-300" 
+                          style={{ width: `${(bulkProgress.current / bulkProgress.total) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <Button
+                    onClick={handleBulkGenerate}
+                    disabled={isBulkGenerating || !adminEmail}
+                    className="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-200 text-xs font-bold"
+                  >
+                    {isBulkGenerating ? (
+                      <span className="flex items-center">Generating... Please wait...</span>
+                    ) : (
+                      <span className="flex items-center">
+                        <Zap className="h-3.5 w-3.5 mr-2" />
+                        {bulkMode === 'pending' ? 'Generate Pending to Storage' : 'Regenerate All to Storage'}
+                      </span>
+                    )}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-6">
+        {/* Right Preview */}
+        <div className="lg:col-span-12 space-y-2">
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Live Letter Preview</p>
+          <div className="bg-white border border-slate-100 shadow-[0_4px_16px_rgba(0,0,0,0.03)] rounded-2xl p-10 min-h-[640px] text-[10px] text-slate-600 leading-relaxed font-sans relative aspect-[1/1.41] select-none text-slate-700">
+            {/* Logo header */}
+            <div className="flex justify-between items-center border-b border-slate-100 pb-5 mb-8">
+              <div>
+                {companyLogoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={companyLogoUrl} className="h-8 object-contain mb-1" alt="logo" />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img 
+                    src="/logo.png" 
+                    className="h-8 object-contain mb-1" 
+                    alt="logo" 
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      const textLogo = document.getElementById('preview-rl-text-logo');
+                      if (textLogo) textLogo.style.display = 'block';
+                    }}
+                  />
+                )}
+                <p id="preview-rl-text-logo" className="text-xl font-bold tracking-tight text-blue-600" style={{ display: 'none' }}>
+                  {companyName}.
+                </p>
+              </div>
+              <div className="text-right text-[7px] text-slate-400">
+                <p className="font-bold text-slate-700">{companyName}</p>
+                <p>Islamabad, Pakistan</p>
+                <p>https://cloudexify.site | hello@cloudexify.site</p>
+              </div>
+            </div>
+
+            {/* Title */}
+            <h3 className="text-center text-sm font-bold text-slate-900 uppercase tracking-widest mb-6">
+              Letter of Recommendation
+            </h3>
+
+            {/* Recipient */}
+            <p className="mb-4 text-slate-500 font-semibold">Date: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p className="mb-6 font-bold text-slate-900 text-xs">To Whom It May Concern,</p>
+
+            {/* Body */}
+            <div className="space-y-4 text-justify text-slate-700">
+              <p>
+                It is a pleasure to write this letter of recommendation for <span className="font-bold text-slate-900">{selectedIntern ? selectedIntern.full_name : '[Intern Name]'}</span>, who completed a 2-month internship as a <span className="font-bold text-slate-900">{selectedIntern ? selectedIntern.domain : '[Domain]'} Intern</span> at CloudExify.
+              </p>
+              <p>
+                During the course of the internship, {selectedIntern ? selectedIntern.full_name : 'the intern'} worked on engineering tasks under the supervision of senior developers. They consistently proved to be motivated, proactive, and committed to coding standards.
+              </p>
+              <p>
+                {customText}
+              </p>
+              <p>
+                {selectedIntern ? selectedIntern.full_name : 'The intern'} has also demonstrated good communication capabilities and collaborative spirit, integrating well with the remote developer community. We have no doubt they will be an asset to any software engineering group they join.
+              </p>
+              <p>
+                Therefore, we recommend them for future software development roles or academic programs and wish them success.
+              </p>
+            </div>
+
+            {/* Signatures */}
+            <div className="mt-12 w-[35%] text-left">
+              {selectedSignatory.signature_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={selectedSignatory.signature_url} className="h-10 object-contain mb-1.5 opacity-90" alt="signature" />
+              ) : (
+                <div className="h-10" />
+              )}
+              <div className="border-t border-slate-300 pt-1.5">
+                <p className="font-bold text-slate-900">{selectedSignatory.full_name}</p>
+                <p className="text-[7.5px] text-slate-400">{selectedSignatory.designation || 'Managing Director / Founder'}</p>
+                <p className="text-[7.5px] text-slate-400">{companyName}</p>
+              </div>
+            </div>
+
+            {/* Footer Mockup */}
+            <div className="absolute bottom-4 left-10 right-10 flex justify-between pt-1">
+              <div className="w-[75%] text-[7px] space-y-0.5 leading-tight">
+                <p className="font-bold text-slate-900">cloudexify.site | hello@cloudexify.site</p>
+                <p className="text-slate-500">WhatsApp: +92 341 1949277X</p>
+                <p className="text-blue-600">Verify: admin.cloudexify.site/verify</p>
+                <p className="font-bold text-slate-900">Document ID: {previewRlId}</p>
+                <p className="text-slate-400">© {new Date().getFullYear()} CloudExify. All rights reserved.</p>
+              </div>
+              <div className="w-[25%] flex flex-col items-end justify-start pt-0.5">
+                <div className="w-9 h-9 bg-slate-200 border border-slate-300 flex items-center justify-center mb-0.5">
+                  <span className="text-[5px] text-slate-400 font-bold">QR CODE</span>
+                </div>
+                <p className="text-[5px] text-blue-600 font-bold tracking-widest uppercase">SCAN TO VERIFY</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </PageWrapper>
+  );
+}
+
+export default function RecommendationLetterPage() {
+  return (
+    <Suspense fallback={
+      <PageWrapper title="Recommendation Letter Generator">
+        <div className="animate-pulse flex items-center justify-center min-h-[300px] text-slate-400">
+          Loading Recommendation Letter Generator...
+        </div>
+      </PageWrapper>
+    }>
+      <RecommendationLetterGenerator />
+    </Suspense>
+  );
+}
