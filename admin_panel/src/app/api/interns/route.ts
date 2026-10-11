@@ -20,12 +20,13 @@ export async function GET(request: NextRequest) {
   const semester = searchParams.get('semester') || ''
   const offerStatus = searchParams.get('offer_letter_status') || ''
   const certStatus = searchParams.get('certificate_status') || ''
-  const batchId = searchParams.get('batchId') || ''
+  const batchId = searchParams.get('batch_id') || searchParams.get('batchId') || ''
+  const batchStatus = searchParams.get('batch_status') || ''
 
   try {
     let query = supabase
       .from('interns')
-      .select('*, intern_documents (*), intern_projects (count)')
+      .select('*, batches (id, name, status, start_date, end_date), intern_documents (*), intern_projects (count)')
 
     if (search) {
       query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%,registration_number.ilike.%${search}%`)
@@ -39,13 +40,39 @@ export async function GET(request: NextRequest) {
       query = query.eq('semester', parseInt(semester))
     }
 
-    if (batchId) {
+    if (batchId && batchId !== 'all') {
       query = query.eq('batch_id', batchId)
+    }
+
+    // Filter by Batch Status (Active, Registration Open, Upcoming, Completed)
+    if (batchStatus && batchStatus !== 'all') {
+      let statusesToMatch: string[] = [batchStatus]
+      if (batchStatus === 'active' || batchStatus === 'ongoing') {
+        statusesToMatch = ['ongoing', 'active']
+      } else if (batchStatus === 'accepting' || batchStatus === 'registration_open') {
+        statusesToMatch = ['accepting', 'registration_open']
+      } else if (batchStatus === 'upcoming') {
+        statusesToMatch = ['upcoming']
+      } else if (batchStatus === 'completed') {
+        statusesToMatch = ['completed']
+      }
+
+      const { data: matchedBatches } = await supabase
+        .from('batches')
+        .select('id')
+        .in('status', statusesToMatch)
+
+      const matchedIds = (matchedBatches || []).map((b: any) => b.id)
+      if (matchedIds.length > 0) {
+        query = query.in('batch_id', matchedIds)
+      } else {
+        return NextResponse.json([])
+      }
     }
 
     // Sort so Pending comes first, then by newest
     const { data, error } = await query
-      .order('status', { ascending: false }) // 'Pending' > 'Accepted' > 'Rejected' usually, but text sort puts 'Rejected' first. Wait, let's just order by created_at desc.
+      .order('status', { ascending: false })
       .order('created_at', { ascending: false })
 
     if (error) {

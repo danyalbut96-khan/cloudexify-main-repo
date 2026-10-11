@@ -39,15 +39,20 @@ export async function POST(request: NextRequest) {
     const fileExt = file.name.split('.').pop() || 'png'
     const fileName = `receipts/${authIntern.id}_${Date.now()}.${fileExt}`
 
-    // Ensure bucket exists
+    // Ensure bucket exists and is set to public so receipt links load immediately
     try {
       await adminDb.storage.createBucket('payment_receipts', { public: true })
     } catch {
-      // Ignore if exists
+      // If already exists, ensure public is enabled
+      try {
+        await adminDb.storage.updateBucket('payment_receipts', { public: true })
+      } catch {}
     }
 
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
+
+    let finalPublicUrl = ''
 
     const { data: uploadData, error: uploadErr } = await adminDb.storage
       .from('payment_receipts')
@@ -70,11 +75,24 @@ export async function POST(request: NextRequest) {
       }
 
       const { data: urlData } = adminDb.storage.from('resumes').getPublicUrl(fileName)
-      return NextResponse.json({ success: true, url: urlData.publicUrl })
+      finalPublicUrl = urlData.publicUrl
+    } else {
+      const { data: urlData } = adminDb.storage.from('payment_receipts').getPublicUrl(fileName)
+      finalPublicUrl = urlData.publicUrl
     }
 
-    const { data: urlData } = adminDb.storage.from('payment_receipts').getPublicUrl(fileName)
-    return NextResponse.json({ success: true, url: urlData.publicUrl })
+    // REAL-TIME DATABASE SAVE: Save receipt URL directly to intern record
+    await adminDb
+      .from('interns')
+      .update({ payment_screenshot_url: finalPublicUrl })
+      .eq('id', authIntern.id)
+
+    return NextResponse.json({ 
+      success: true, 
+      url: finalPublicUrl,
+      message: 'Receipt uploaded and saved to database successfully.'
+    })
+
   } catch (err: any) {
     return NextResponse.json({ error: err.message || 'Upload failed' }, { status: 500 })
   }
