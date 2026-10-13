@@ -299,7 +299,7 @@ export default function StudentDashboardPage() {
                 </p>
                 {intern.appeal_note && (
                   <div className="text-[11px] bg-white p-2.5 rounded-lg border border-blue-100 text-slate-600 font-mono mt-2">
-                    "{intern.appeal_note}"
+                    &ldquo;{intern.appeal_note}&rdquo;
                   </div>
                 )}
               </div>
