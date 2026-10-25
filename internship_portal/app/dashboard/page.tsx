@@ -812,13 +812,30 @@ export default function StudentDashboardPage() {
   };
 
   const renderDocumentsScreen = () => {
+    // Individual document_lock_override takes precedence over batch lock
+    const isDocsLocked = intern.document_lock_override !== null && intern.document_lock_override !== undefined
+      ? Boolean(intern.document_lock_override)
+      : Boolean(intern.batches?.documents_locked);
+
     return (
       <div className="max-w-4xl mx-auto space-y-6">
-        <h2 className="text-2xl font-black text-slate-900 mb-6">My Documents</h2>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+          <div>
+            <h2 className="text-2xl font-black text-slate-900">My Official Documents</h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Access your verified credential documents, internship offer letter, and completion certificates.
+            </p>
+          </div>
+          {isDocsLocked && (
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-xs font-semibold">
+              <span>?? Documents Locked by Administration</span>
+            </div>
+          )}
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <DocumentCard title="Offer Letter" url={documents?.offer_letter_url} locked={intern.batches?.documents_locked} icon={<FileText className="w-6 h-6 text-blue-500" />} />
-          <DocumentCard title="Internship Certificate" url={documents?.certificate_url} locked={intern.batches?.documents_locked} icon={<CheckCircle2 className="w-6 h-6 text-emerald-500" />} requiresProjects={4} submittedProjects={data.submitted_projects_count || 0} />
-          <DocumentCard title="Recommendation Letter" url={documents?.recommendation_letter_url} locked={intern.batches?.documents_locked} icon={<UserCircle className="w-6 h-6 text-amber-500" />} requiresProjects={4} submittedProjects={data.submitted_projects_count || 0} />
+          <DocumentCard title="Offer Letter" url={documents?.offer_letter_url} locked={isDocsLocked} icon={<FileText className="w-6 h-6 text-blue-500" />} />
+          <DocumentCard title="Internship Certificate" url={documents?.certificate_url} locked={isDocsLocked} icon={<CheckCircle2 className="w-6 h-6 text-emerald-500" />} requiresProjects={4} submittedProjects={data.submitted_projects_count || 0} />
+          <DocumentCard title="Recommendation Letter" url={documents?.recommendation_letter_url} locked={isDocsLocked} icon={<UserCircle className="w-6 h-6 text-amber-500" />} requiresProjects={4} submittedProjects={data.submitted_projects_count || 0} />
         </div>
       </div>
     )

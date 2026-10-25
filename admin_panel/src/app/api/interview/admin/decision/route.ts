@@ -1,10 +1,11 @@
-﻿import { createClient, getAdminClient } from '@/lib/supabase/server'
+import { createClient, getAdminClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { 
   sendShortlistedEmail, 
   sendRejectionEmail, 
   sendWaitlistPromotedEmail,
-  sendInterviewInvitationEmail
+  sendInterviewInvitationEmail,
+  sendApprovalEmail
 } from '@/lib/email-service'
 
 export async function POST(request: NextRequest) {
@@ -22,7 +23,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'intern_ids array is required' }, { status: 400 })
     }
 
-    if (!['shortlist', 'reject', 'hold', 'call_interview'].includes(decision)) {
+    const validDecisions = ['shortlist', 'reject', 'hold', 'call_interview', 'approve', 'progress']
+    if (!validDecisions.includes(decision)) {
       return NextResponse.json({ error: 'Invalid decision' }, { status: 400 })
     }
 
@@ -31,10 +33,10 @@ export async function POST(request: NextRequest) {
     const paymentDeadline = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000) // 72 hours from now
 
     for (const internId of intern_ids) {
-      // 1. Fetch current intern record
+      // 1. Fetch current intern record with batch & interview sessions
       const { data: intern, error: fetchErr } = await adminDb
         .from('interns')
-        .select('*, batches(id, name)')
+        .select('*, batches(id, name), interview_sessions(*)')
         .eq('id', internId)
         .single()
 
@@ -44,9 +46,92 @@ export async function POST(request: NextRequest) {
       }
 
       const batchName = intern.batches?.name || 'Internship Program'
+      let actionToExecute = decision
 
-      if (decision === 'shortlist') {
-        // Update intern record (clear any prior rejection)
+      // SMART PROGRESS LOGIC (Tick button):
+      // Automatically determine the next logical state:
+      if (decision === 'progress') {
+        const isPaidOrVerified = 
+          intern.payment_status === 'verified' || 
+          intern.payment_status === 'pending_verification' || 
+          intern.pipeline_stage === 'payment_pending' ||
+          intern.pipeline_stage === 'approved' ||
+          intern.status === 'Accepted';
+
+        const hasInterviewSession = Array.isArray(intern.interview_sessions) && intern.interview_sessions.length > 0;
+        const hasCompletedInterview = hasInterviewSession || intern.pipeline_stage === 'interview_completed' || intern.pipeline_stage === 'under_review';
+
+        if (isPaidOrVerified) {
+          actionToExecute = 'approve'
+        } else if (hasCompletedInterview) {
+          actionToExecute = 'shortlist'
+        } else {
+          actionToExecute = 'call_interview'
+        }
+      }
+
+      // If action is shortlist but candidate ALREADY paid, promote directly to approve!
+      if (actionToExecute === 'shortlist' && (intern.payment_status === 'verified' || intern.status === 'Accepted' || intern.pipeline_stage === 'approved')) {
+        actionToExecute = 'approve'
+      }
+
+      // EXECUTE ACTION
+      if (actionToExecute === 'approve') {
+        // Direct Admission Approval
+        const { error: updateErr } = await adminDb
+          .from('interns')
+          .update({
+            pipeline_stage: 'approved',
+            status: 'Accepted',
+            payment_status: 'verified',
+            payment_verified_at: intern.payment_verified_at || now.toISOString(),
+            final_rejection_reason: null,
+            rejected_at: null
+          })
+          .eq('id', internId)
+
+        if (updateErr) {
+          results.push({ id: internId, status: 'error', error: updateErr.message })
+          continue
+        }
+
+        // Update latest interview session
+        await adminDb
+          .from('interview_sessions')
+          .update({
+            decision: 'approved',
+            decision_by: user.email,
+            decision_at: now.toISOString(),
+            decision_reason: reason || 'Candidate approved and seat secured'
+          })
+          .eq('intern_id', internId)
+
+        // Send Admission Approval Email
+        try {
+          await sendApprovalEmail({
+            to: intern.email,
+            fullName: intern.full_name,
+            batchName: batchName,
+            domain: intern.domain,
+            registrationNumber: intern.registration_number
+          })
+        } catch (emailErr) {
+          console.error(`Failed to send approval email to ${intern.email}:`, emailErr)
+        }
+
+        // Audit log
+        await adminDb.from('admin_audit_logs').insert({
+          admin_id: user.id,
+          action: 'INTERVIEW_ADMISSION_APPROVED',
+          target_type: 'intern',
+          target_id: internId,
+          details: { decision: 'approved', verified_at: now.toISOString(), reason }
+        })
+
+        results.push({ id: internId, status: 'success', decision: 'approved' })
+
+      } else if (actionToExecute === 'shortlist') {
+        // Shortlist & 72h Payment window
         const { error: updateErr } = await adminDb
           .from('interns')
           .update({
@@ -107,14 +192,15 @@ export async function POST(request: NextRequest) {
 
         results.push({ id: internId, status: 'success', decision: 'shortlisted' })
 
-      } else if (decision === 'reject') {
-        // Update intern status to Rejected and pipeline_stage to rejected
+      } else if (actionToExecute === 'reject') {
+        // Reject Candidate
         const { error: updateErr } = await adminDb
           .from('interns')
           .update({
             pipeline_stage: 'rejected',
             status: 'Rejected',
-            final_rejection_reason: reason || 'Did not meet technical assessment criteria'
+            final_rejection_reason: reason || 'Did not meet technical assessment criteria',
+            rejected_at: now.toISOString()
           })
           .eq('id', internId)
 
@@ -202,7 +288,7 @@ export async function POST(request: NextRequest) {
 
         results.push({ id: internId, status: 'success', decision: 'rejected' })
 
-      } else if (decision === 'hold') {
+      } else if (actionToExecute === 'hold') {
         const { error: updateErr } = await adminDb
           .from('interns')
           .update({
@@ -237,7 +323,8 @@ export async function POST(request: NextRequest) {
         })
 
         results.push({ id: internId, status: 'success', decision: 'hold' })
-      } else if (decision === 'call_interview') {
+
+      } else if (actionToExecute === 'call_interview') {
         // Erase any prior completed/failed interview sessions in real-time
         await adminDb
           .from('interview_sessions')
@@ -273,10 +360,10 @@ export async function POST(request: NextRequest) {
 
         await adminDb.from('admin_audit_logs').insert({
           admin_id: user.id,
-          action: 'INTERVIEW_INVITATION_CALLED',
+          action: 'INTERVIEW_INVITED',
           target_type: 'intern',
           target_id: internId,
-          details: { domain: intern.domain, registration_number: intern.registration_number }
+          details: { decision: 'call_interview', reason: reason || 'Invited to technical interview' }
         })
 
         results.push({ id: internId, status: 'success', decision: 'call_interview' })
@@ -284,7 +371,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      message: `Processed ${results.length} candidate(s)`,
+      message: 'Batch decision processing completed',
       results
     })
 

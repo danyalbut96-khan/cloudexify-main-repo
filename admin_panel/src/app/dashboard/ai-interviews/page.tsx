@@ -29,6 +29,7 @@ interface Candidate {
   linkedin_url?: string;
   resume_url?: string;
   pipeline_stage: string;
+  payment_status?: string;
   status: string;
   batch_id?: string;
   batches?: { id: string; name: string; status: string };
@@ -193,9 +194,24 @@ export default function AIInterviewsPage() {
   };
 
   // 4. Handle Decision (Single or Bulk)
+  const handleCallAllAwaiting = async () => {
+    const awaiting = candidates.filter(c => c.pipeline_stage === 'registered');
+    if (awaiting.length === 0) {
+      toast.error('No candidates are currently awaiting interview invitation.');
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to invite all ${awaiting.length} awaiting candidate(s) to take their technical interview? Invitation emails will be dispatched.`)) {
+      return;
+    }
+
+    const awaitingIds = awaiting.map(c => c.id);
+    await handleDecision(awaitingIds, 'call_interview');
+  };
+
   const handleDecision = async (
     ids: string[], 
-    decision: 'shortlist' | 'reject' | 'hold' | 'call_interview', 
+    decision: 'shortlist' | 'reject' | 'hold' | 'call_interview' | 'approve' | 'progress', 
     reason?: string
   ) => {
     if (ids.length === 0) return;
@@ -328,16 +344,17 @@ export default function AIInterviewsPage() {
   };
 
   // 7. Save Settings
-  const handleSaveSetting = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSaveSetting = async (e: React.FormEvent, createNewVersion: boolean = false) => {
+    if (e && e.preventDefault) e.preventDefault();
     if (!editingSetting) return;
 
     setSavingSetting(true);
     try {
+      const payload = { ...editingSetting, create_new_version: createNewVersion };
       const res = await fetch('/api/interview/admin/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editingSetting)
+        body: JSON.stringify(payload)
       });
 
       const data = await res.json();
@@ -467,9 +484,17 @@ export default function AIInterviewsPage() {
           </div>
 
           <Button
+            onClick={handleCallAllAwaiting}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-sm flex items-center gap-1.5 transition-all"
+          >
+            <Sparkles className="w-4 h-4 text-amber-300" />
+            Call All Awaiting ({registeredCount})
+          </Button>
+
+          <Button
             variant="outline"
             onClick={fetchCandidates}
-            className="flex items-center gap-2 border-slate-700 text-gray-300 hover:bg-slate-800"
+            className="flex items-center gap-2 border-slate-300 bg-white text-slate-700 hover:bg-slate-50 font-semibold shadow-sm"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             Refresh
@@ -478,7 +503,7 @@ export default function AIInterviewsPage() {
           <Button
             variant="outline"
             onClick={exportToCSV}
-            className="flex items-center gap-2 border-slate-700 text-gray-300 hover:bg-slate-800"
+            className="flex items-center gap-2 border-slate-300 bg-white text-slate-700 hover:bg-slate-50 font-semibold shadow-sm"
           >
             <Download className="w-4 h-4 text-emerald-400" />
             Export CSV
@@ -651,7 +676,7 @@ export default function AIInterviewsPage() {
           )}
 
           {/* Candidates List Table */}
-          <Card className="overflow-hidden bg-slate-900 border-slate-800">
+          <Card className="overflow-hidden bg-white border border-slate-200 shadow-sm rounded-2xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -695,11 +720,11 @@ export default function AIInterviewsPage() {
                       const isSelected = selectedIds.includes(cand.id);
                       const isCancelled = cand.session?.status === 'cancelled_tab_switch';
 
-                      let scoreBadgeColor = 'bg-white text-slate-500 border-slate-700';
+                      let scoreBadgeColor = 'bg-slate-50 text-slate-600 border-slate-200';
                       if (cand.ai_score !== null) {
-                        if (cand.ai_score >= 70) scoreBadgeColor = 'bg-emerald-950/70 text-emerald-400 border-emerald-800';
-                        else if (cand.ai_score >= 50) scoreBadgeColor = 'bg-amber-950/70 text-amber-400 border-amber-800';
-                        else scoreBadgeColor = 'bg-rose-950/70 text-rose-400 border-rose-800';
+                        if (cand.ai_score >= 70) scoreBadgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200 font-bold';
+                        else if (cand.ai_score >= 50) scoreBadgeColor = 'bg-amber-50 text-amber-700 border-amber-200 font-bold';
+                        else scoreBadgeColor = 'bg-rose-50 text-rose-700 border-rose-200 font-bold';
                       }
 
                       return (
@@ -724,7 +749,7 @@ export default function AIInterviewsPage() {
                             <div className="font-bold text-slate-900 flex items-center gap-1.5">
                               {cand.full_name}
                               {cand.batches && (
-                                <span className="text-[10px] bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded border border-slate-700">
+                                <span className="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200 font-semibold">
                                   {cand.batches.name}
                                 </span>
                               )}
@@ -760,8 +785,8 @@ export default function AIInterviewsPage() {
                           </td>
                           <td className="p-3.5">
                             {cand.domain_rank ? (
-                              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-800 text-indigo-300 border border-slate-700 flex items-center gap-1 w-fit">
-                                <Award className="w-3 h-3 text-amber-400" />
+                              <span className="text-xs font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1 w-fit">
+                                <Award className="w-3 h-3 text-amber-600" />
                                 #{cand.domain_rank}
                               </span>
                             ) : (
@@ -770,27 +795,29 @@ export default function AIInterviewsPage() {
                           </td>
                           <td className="p-3.5">
                             {isCancelled ? (
-                              <span className="px-2 py-0.5 text-[11px] font-semibold rounded bg-red-950 text-red-400 border border-red-800 flex items-center gap-1 w-fit">
-                                <AlertOctagon className="w-3 h-3" /> Tab Switch Cancel
+                              <span className="px-2 py-0.5 text-[11px] font-bold rounded bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1 w-fit">
+                                <AlertOctagon className="w-3 h-3 text-rose-600" /> Tab Switch Cancel
                               </span>
                             ) : cand.violation_count > 0 ? (
-                              <span className="px-2 py-0.5 text-[11px] font-medium rounded bg-amber-950/80 text-amber-400 border border-amber-800 flex items-center gap-1 w-fit">
-                                <ShieldAlert className="w-3 h-3" /> {cand.violation_count} Violation(s)
+                              <span className="px-2 py-0.5 text-[11px] font-semibold rounded bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1 w-fit">
+                                <ShieldAlert className="w-3 h-3 text-amber-600" /> {cand.violation_count} Violation(s)
                               </span>
                             ) : (
-                              <span className="text-[11px] text-emerald-400 flex items-center gap-1">
-                                <CheckCircle2 className="w-3 h-3" /> Clean
+                              <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
+                                <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Clean
                               </span>
                             )}
                           </td>
                           <td className="p-3.5">
-                            <span className={`px-2 py-0.5 rounded text-[11px] font-medium capitalize ${
-                              cand.pipeline_stage === 'registered' ? 'bg-blue-950 text-blue-400 border border-blue-800' :
-                              cand.pipeline_stage === 'interview_pending' ? 'bg-indigo-950 text-indigo-400 border border-indigo-800' :
-                              cand.pipeline_stage === 'shortlisted' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' :
-                              cand.pipeline_stage === 'rejected' ? 'bg-rose-950 text-rose-400 border border-rose-800' :
-                              cand.pipeline_stage === 'under_review' ? 'bg-amber-950 text-amber-400 border border-amber-800' :
-                              'bg-slate-800 text-gray-300 border border-slate-700'
+                            <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold border capitalize ${
+                              cand.pipeline_stage === 'registered' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                              cand.pipeline_stage === 'interview_pending' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
+                              cand.pipeline_stage === 'interview_completed' ? 'bg-purple-50 text-purple-700 border-purple-200' :
+                              cand.pipeline_stage === 'shortlisted' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                              cand.pipeline_stage === 'approved' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' :
+                              cand.pipeline_stage === 'rejected' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                              cand.pipeline_stage === 'under_review' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                              'bg-slate-50 text-slate-700 border-slate-200'
                             }`}>
                               {cand.pipeline_stage.replace('_', ' ')}
                             </span>
@@ -801,22 +828,28 @@ export default function AIInterviewsPage() {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => openCandidateDetail(cand.id)}
-                                className="h-8 text-xs border-slate-700 text-indigo-300 hover:bg-slate-800"
+                                className="h-8 text-xs border-indigo-200 bg-white text-indigo-700 hover:bg-indigo-50 font-semibold shadow-sm"
                               >
                                 <Eye className="w-3.5 h-3.5 mr-1" />
                                 Review
                               </Button>
                               <button
-                                onClick={() => handleDecision([cand.id], 'shortlist')}
-                                title="Quick Shortlist"
-                                className="p-1.5 rounded-lg bg-emerald-950/60 hover:bg-emerald-900 border border-emerald-800/60 text-emerald-400 transition-colors"
+                                onClick={() => handleDecision([cand.id], 'progress')}
+                                title={
+                                  cand.payment_status === 'verified' || cand.status === 'Accepted'
+                                    ? 'Approve Admission'
+                                    : cand.ai_score !== null || cand.session
+                                    ? 'Shortlist & Request Payment'
+                                    : 'Call for Interview'
+                                }
+                                className="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-700 shadow-sm transition-colors"
                               >
                                 <Check className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => handleDecision([cand.id], 'reject')}
                                 title="Quick Reject"
-                                className="p-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900 border border-rose-800/60 text-rose-400 transition-colors"
+                                className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-700 shadow-sm transition-colors"
                               >
                                 <X className="w-3.5 h-3.5" />
                               </button>
@@ -1208,6 +1241,15 @@ export default function AIInterviewsPage() {
               {/* Decision Action Buttons */}
               <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
                 <div className="flex items-center gap-2 flex-wrap">
+                  <Button
+                    onClick={() => handleDecision([activeCandidate.id], 'approve')}
+                    className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs px-4 flex items-center gap-1.5 shadow-sm font-bold"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    {activeCandidate?.payment_status === 'verified' || activeCandidate?.pipeline_stage === 'payment_pending'
+                      ? 'Verify Payment & Approve Admission'
+                      : 'Approve & Admit Intern'}
+                  </Button>
                   {(activeCandidate?.pipeline_stage === 'registered' || !activeSession) && (
                     <Button
                       onClick={() => handleDecision([activeCandidate.id], 'call_interview')}
@@ -1317,11 +1359,11 @@ export default function AIInterviewsPage() {
 
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Questions Count (2-5)</label>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Questions Count (2-9)</label>
                 <input
                   type="number"
                   min="2"
-                  max="5"
+                  max="9"
                   value={editingSetting.question_count}
                   onChange={(e) => setEditingSetting({ ...editingSetting, question_count: Number(e.target.value) })}
                   className="w-full bg-white border border-slate-300 text-sm text-slate-900 rounded p-2.5 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"

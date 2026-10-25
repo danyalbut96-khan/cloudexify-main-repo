@@ -26,6 +26,8 @@ export default function InterviewPage() {
   sessionRef.current = session;
   const handleAutoSubmitRef = useRef<(reason: string) => Promise<void>>(() => Promise.resolve());
 
+  const handleAutoSubmitRef = useRef<(reason: string) => Promise<void>>(() => Promise.resolve());
+
   // Initialize or fetch session
   useEffect(() => {
     async function init() {
@@ -74,6 +76,8 @@ export default function InterviewPage() {
 
   // Authoritative Display Timer Countdown
   useEffect(() => {
+    if (!session || isEnded) return;
+
       if (!session || isEnded) return;
     if (session.expires_at) {
       const diff = Math.floor((new Date(session.expires_at).getTime() - Date.now()) / 1000);
@@ -82,10 +86,12 @@ export default function InterviewPage() {
         return;
       }
     }
+
     const interval = setInterval(() => {
       setTimeLeftSeconds(prev => {
         if (prev <= 1) {
           clearInterval(interval);
+          handleAutoSubmitRef.current('Time limit expired');
            handleAutoSubmitRef.current('Time limit expired');
           return 0;
         }

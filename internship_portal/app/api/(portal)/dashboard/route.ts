@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     // 1. Fetch Intern Details
     const { data: intern, error: internError } = await supabase
       .from('interns')
-      .select('id, full_name, email, whatsapp, university, semester, registration_number, status, domain, skill_level, university_registration_number, pipeline_stage, interest, linkedin_url, resume_url, payment_deadline, payment_method, payment_transaction_id, payment_screenshot_url, payment_status, final_rejection_reason, batch_id, batches(name, status, end_date, documents_locked, release_ai_feedback)')
+      .select('id, full_name, email, whatsapp, university, semester, registration_number, status, domain, skill_level, university_registration_number, pipeline_stage, interest, linkedin_url, resume_url, payment_deadline, payment_method, payment_transaction_id, payment_screenshot_url, payment_status, final_rejection_reason, batch_id, document_lock_override, batches(name, status, end_date, documents_locked, release_ai_feedback)')
       .eq('id', internId)
       .single()
 
