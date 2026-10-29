@@ -1,30 +1,21 @@
-const { createClient } = require('@supabase/supabase-js');
+// Safe local environment check only. This script deliberately makes no database
+// requests and never prints credentials or lists production user records.
+const required = [
+  'NEXT_PUBLIC_SUPABASE_URL',
+  'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+  'SUPABASE_SERVICE_ROLE_KEY',
+];
 
-async function test() {
-  console.log("Checking Environment Variables...");
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const roleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  console.log("URL:", url ? "Set (" + url + ")" : "NOT SET");
-  console.log("Service Role Key:", roleKey ? "Set (starts with " + roleKey.substring(0, 10) + "... length: " + roleKey.length + ")" : "NOT SET");
-  console.log("Anon Key:", anonKey ? "Set (starts with " + anonKey.substring(0, 10) + "... length: " + anonKey.length + ")" : "NOT SET");
-
-  if (!url || !roleKey) {
-    console.log("Cannot test because keys are missing in current shell.");
-    return;
-  }
-
-  const adminClient = createClient(url, roleKey, { auth: { autoRefreshToken: false, persistSession: false } });
-
-  console.log("\nTesting admin.listUsers()...");
-  const { data, error } = await adminClient.auth.admin.listUsers();
-  
-  if (error) {
-    console.log("ERROR fetching users:", error.message || error);
-  } else {
-    console.log("SUCCESS! Found", data.users.length, "users.");
-  }
+let missing = false;
+for (const name of required) {
+  const configured = Boolean(process.env[name]);
+  console.log(`${name}: ${configured ? 'configured' : 'missing'}`);
+  if (!configured) missing = true;
 }
 
-test();
+if (missing) {
+  console.error('Set the required variables in a trusted local environment before running the app.');
+  process.exitCode = 1;
+} else {
+  console.log('Environment variables are present. No credentials were printed and no database request was made.');
+}
