@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
   const adminClient = getAdminClient()
 
   try {
-    const { internId, completionDate, startDate, adminEmail, performanceGrade, skillsGained } = await request.json()
+    const { internId, completionDate, startDate, adminEmail: _requestedAdminEmail, performanceGrade, skillsGained } = await request.json()
 
     if (!internId) {
       return NextResponse.json({ error: 'Missing internId parameter' }, { status: 400 })
