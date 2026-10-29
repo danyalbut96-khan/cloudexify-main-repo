@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/supabase/authorization'
 import { isRateLimited } from '@/lib/utils'
 import { logAction } from '@/lib/server-utils'
 import { pdf } from '@react-pdf/renderer'
@@ -26,6 +27,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
 
+  const authorization = await requireAdmin()
+  if (!authorization.ok) return authorization.response
+  const adminEmail = authorization.user.email || authorization.user.id
   const adminClient = getAdminClient()
 
   try {
@@ -153,8 +157,7 @@ export async function POST(request: NextRequest) {
         intern_name: intern.full_name,
         intern_domain: intern.domain,
         generated_at: generatedAt,
-        generated_by: adminEmail
-      })
+        generated_by: adminEmail: _requestedAdminEmail })
 
     if (verifyError) {
       console.error('Failed to save document verification record:', verifyError)
