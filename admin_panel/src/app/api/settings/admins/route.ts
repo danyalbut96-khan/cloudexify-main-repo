@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/lib/supabase/authorization'
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createServerClient } from '@/lib/supabase/server'
