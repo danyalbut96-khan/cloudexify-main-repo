@@ -164,7 +164,6 @@ end $;
 -- Only authenticated callers may invoke these RPCs; privileged operations still
 -- enforce Super Admin checks inside their function bodies.
 grant execute on function public.is_admin_user() to authenticated;
-grant execute on function public.check_document_access(uuid) to authenticated;
 grant execute on function public.delete_admin_user(uuid) to authenticated;
 grant execute on function public.get_admin_team_members() to authenticated;
 grant execute on function public.toggle_admin_status(uuid, text) to authenticated;
