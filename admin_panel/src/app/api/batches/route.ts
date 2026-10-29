@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
   const authorization = await requireAdmin()
   if (!authorization.ok) return authorization.response
   const { user } = authorization
+  const supabase = getAdminClient()
 
   try {
     const { data: batches, error } = await supabase
@@ -37,6 +38,7 @@ export async function POST(request: NextRequest) {
   const authorization = await requireAdmin()
   if (!authorization.ok) return authorization.response
   const { user } = authorization
+  const supabase = getAdminClient()
 
   try {
     const { name, start_date, end_date, status = 'coming', documents_locked = false, release_ai_feedback = false, mode_enum, location_enum, projects, comp_type, comp_amount, certificate, registration_deadline, domains, max_projects = 4 } = await request.json()
@@ -85,6 +87,7 @@ export async function PATCH(request: NextRequest) {
   const authorization = await requireAdmin()
   if (!authorization.ok) return authorization.response
   const { user } = authorization
+  const supabase = getAdminClient()
 
   try {
     const { id, name, start_date, end_date, status, documents_locked, release_ai_feedback, mode_enum, location_enum, projects, comp_type, comp_amount, certificate, registration_deadline, domains, is_archived, max_projects } = await request.json()
