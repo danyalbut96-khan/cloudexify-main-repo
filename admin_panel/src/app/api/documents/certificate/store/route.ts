@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
         intern_name: intern.full_name,
         intern_domain: intern.domain,
         generated_at: generatedAt,
-        generated_by: adminEmail: _requestedAdminEmail })
+        generated_by: adminEmail })
 
     if (verifyError) {
       console.error('Failed to save document verification record:', verifyError)
