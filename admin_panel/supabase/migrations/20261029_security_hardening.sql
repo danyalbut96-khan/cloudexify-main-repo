@@ -26,6 +26,7 @@ grant execute on function public.is_admin_user() to authenticated;
 -- Prevent authenticated users from writing the privileged role column even when
 -- an old policy accidentally allows updating their own profile row.
 revoke all on table public.admin_profiles from public, anon, authenticated;
+revoke update (is_super_admin) on table public.admin_profiles from public, anon, authenticated;
 grant select on table public.admin_profiles to authenticated;
 grant update (display_name, avatar_url, signature_url, designation)
   on table public.admin_profiles to authenticated;
