@@ -18,7 +18,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Valid email, name, and a password of at least 12 characters are required.' }, { status: 400 })
     }
 
-    // Registration is denied unless the database explicitly enables it.
+    // Registration is denied unless the database enables it AND the email is
+    // explicitly allowlisted by a server-only environment variable.
+    const allowlist = (process.env.ADMIN_SIGNUP_ALLOWLIST || '')
+      .split(',')
+      .map(value => value.trim().toLowerCase())
+      .filter(Boolean)
+    if (allowlist.length === 0 || !allowlist.includes(email)) {
+      return NextResponse.json({ error: 'This email is not authorized for administrator registration.' }, { status: 403 })
+    }
+
     const admin = getAdminClient()
     const { data: settings, error: settingsError } = await admin
       .from('intern_analysis_settings')
