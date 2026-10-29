@@ -144,4 +144,35 @@ create policy intern_projects_admin_delete
   on public.intern_projects for delete to authenticated
   using (public.is_admin_user());
 
+
+-- Harden existing SECURITY DEFINER functions. Trigger functions do not need to be
+-- directly executable by browser roles; RPC functions are allowlisted below.
+do $
+declare f record;
+begin
+  for f in
+    select p.oid::regprocedure as signature
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.prosecdef
+  loop
+    execute format('alter function %s set search_path = pg_catalog, public, auth', f.signature);
+    execute format('revoke all on function %s from public, anon', f.signature);
+  end loop;
+end $;
+
+-- Only authenticated callers may invoke these RPCs; privileged operations still
+-- enforce Super Admin checks inside their function bodies.
+grant execute on function public.check_document_access(uuid) to authenticated;
+grant execute on function public.delete_admin_user(uuid) to authenticated;
+grant execute on function public.get_admin_team_members() to authenticated;
+grant execute on function public.toggle_admin_status(uuid, text) to authenticated;
+grant execute on function public.update_admin_password(uuid, text) to authenticated;
+
+-- Storage bucket visibility is deliberately not changed in this migration because
+-- Internship Portal currently consumes stored document URLs. Before making
+-- intern-documents, payment_receipts, resumes, admin-signatures, or tasks private,
+-- migrate those consumers to short-lived signed URLs in a coordinated follow-up.
+-- Also enable Supabase Auth leaked-password protection in the project dashboard.
+
 commit;
