@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: NextRequest) {
   const authorization = await requireAdmin()
   if (!authorization.ok) return authorization.response
-  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1'
+  const ip = request.headers.get('x-real-ip') || request.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
   if (isRateLimited(ip)) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1'
+  const ip = request.headers.get('x-real-ip') || request.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
   if (isRateLimited(ip, 3, 60000)) { // Stricter rate limit for creation
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
   }
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   const authorization = await requireAdmin()
   if (!authorization.ok) return authorization.response
-  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1'
+  const ip = request.headers.get('x-real-ip') || request.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
   if (isRateLimited(ip)) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
