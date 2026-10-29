@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getAdminClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/supabase/authorization'
 import { isRateLimited } from '@/lib/utils'
 import { pdf } from '@react-pdf/renderer'
 import React from 'react'
@@ -19,6 +20,8 @@ function getLogoBase64(): string | null {
 }
 
 export async function GET(request: NextRequest) {
+  const authorization = await requireAdmin()
+  if (!authorization.ok) return authorization.response
   const ip = request.headers.get('x-forwarded-for') || '127.0.0.1'
   if (isRateLimited(ip)) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })

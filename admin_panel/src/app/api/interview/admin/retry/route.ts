@@ -1,8 +1,11 @@
 import { createClient, getAdminClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/supabase/authorization'
 import { NextRequest, NextResponse } from 'next/server'
 import { sendRetryGrantedEmail } from '@/lib/email-service'
 
 export async function POST(request: NextRequest) {
+  const authorization = await requireAdmin()
+  if (!authorization.ok) return authorization.response
   try {
     const supabase = createClient()
     const adminDb = getAdminClient()

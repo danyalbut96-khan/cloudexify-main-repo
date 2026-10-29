@@ -1,4 +1,6 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getAdminClient } from '@/lib/supabase/server'
+import { randomBytes } from 'node:crypto'
+import { requireAdmin } from '@/lib/supabase/authorization'
 import { isRateLimited, sanitizeInput } from '@/lib/utils'
 import { logAction, notifyAdmin } from '@/lib/server-utils'
 import { NextRequest, NextResponse } from 'next/server'
@@ -6,7 +8,9 @@ import { NextRequest, NextResponse } from 'next/server'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
-  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1'
+  const authorization = await requireAdmin()
+  if (!authorization.ok) return authorization.response
+  const ip = request.headers.get('x-real-ip') || request.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
   if (isRateLimited(ip)) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
@@ -59,27 +63,30 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1'
+  const ip = request.headers.get('x-real-ip') || request.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
   if (isRateLimited(ip, 3, 60000)) { // Stricter rate limit for creation
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
   }
 
-  const supabase = createClient()
+  const supabase = getAdminClient()
 
   try {
     const body = await request.json()
-    const name = sanitizeInput(body.user_name || '')
-    const email = String(body.user_email || '').trim().toLowerCase()
-    const subject = sanitizeInput(body.subject || '')
-    const description = sanitizeInput(body.description || '')
+    const rawName = typeof body.user_name === 'string' ? body.user_name.trim() : ''
+    const email = typeof body.user_email === 'string' ? body.user_email.trim().toLowerCase() : ''
+    const rawSubject = typeof body.subject === 'string' ? body.subject.trim() : ''
+    const rawDescription = typeof body.description === 'string' ? body.description.trim() : ''
 
-    if (!name || !email || !subject || !description) {
+    if (!rawName || rawName.length > 120 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email) || email.length > 254 || !rawSubject || rawSubject.length > 200 || !rawDescription || rawDescription.length > 5000) {
       return NextResponse.json({ error: 'All fields are required.' }, { status: 400 })
     }
 
-    // Generate ticket number CX-SUP-[YEAR]-[RANDOM 4 chars]
+    const name = sanitizeInput(rawName)
+    const subject = sanitizeInput(rawSubject)
+    const description = sanitizeInput(rawDescription)
+    // Use a cryptographically random ticket identifier rather than Math.random().
     const year = new Date().getFullYear()
-    const randomChars = Math.random().toString(36).substring(2, 6).toUpperCase()
+    const randomChars = randomBytes(5).toString('hex').toUpperCase()
     const ticketNumber = `CX-SUP-${year}-${randomChars}`
 
     const { data, error } = await supabase
@@ -115,7 +122,9 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1'
+  const authorization = await requireAdmin()
+  if (!authorization.ok) return authorization.response
+  const ip = request.headers.get('x-real-ip') || request.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
   if (isRateLimited(ip)) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }

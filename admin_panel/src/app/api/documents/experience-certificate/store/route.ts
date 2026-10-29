@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/supabase/authorization'
 import { isRateLimited } from '@/lib/utils'
 import { logAction } from '@/lib/server-utils'
 import { pdf } from '@react-pdf/renderer'
@@ -25,10 +26,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
 
+  const authorization = await requireAdmin()
+  if (!authorization.ok) return authorization.response
+  const adminEmail = authorization.user.email || authorization.user.id
   const adminClient = getAdminClient()
 
   try {
-    const { internId, completionDate, startDate, adminEmail, performanceGrade, skillsGained } = await request.json()
+    const { internId, completionDate, startDate, adminEmail: _requestedAdminEmail, performanceGrade, skillsGained } = await request.json()
 
     if (!internId) {
       return NextResponse.json({ error: 'Missing internId parameter' }, { status: 400 })
