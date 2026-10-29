@@ -1,4 +1,5 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getAdminClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/supabase/authorization'
 import { isRateLimited } from '@/lib/utils'
 import { logAction } from '@/lib/server-utils'
 import { NextRequest, NextResponse } from 'next/server'
@@ -9,11 +10,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
 
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authorization = await requireAdmin()
+  if (!authorization.ok) return authorization.response
+  const { user } = authorization
 
   try {
     const { data: batches, error } = await supabase
@@ -35,11 +34,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
 
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authorization = await requireAdmin()
+  if (!authorization.ok) return authorization.response
+  const { user } = authorization
 
   try {
     const { name, start_date, end_date, status = 'coming', documents_locked = false, release_ai_feedback = false, mode_enum, location_enum, projects, comp_type, comp_amount, certificate, registration_deadline, domains, max_projects = 4 } = await request.json()
@@ -85,11 +82,9 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
 
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authorization = await requireAdmin()
+  if (!authorization.ok) return authorization.response
+  const { user } = authorization
 
   try {
     const { id, name, start_date, end_date, status, documents_locked, release_ai_feedback, mode_enum, location_enum, projects, comp_type, comp_amount, certificate, registration_deadline, domains, is_archived, max_projects } = await request.json()
