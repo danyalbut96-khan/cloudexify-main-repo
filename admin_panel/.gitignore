@@ -20,12 +20,20 @@
 .DS_Store
 *.pem
 
+# private exports and local data
+*.csv
+*.tsv
+*.sql.bak
+
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
+.env.*
+!.env.example
 .env*.local
 
 # vercel
