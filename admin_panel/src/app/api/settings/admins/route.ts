@@ -13,7 +13,7 @@ async function isSuperAdmin(userId: string) {
 }
 
 export async function GET(request: NextRequest) {
-  const authorization = await requireAdmin()
+  const authorization = await requireAdmin({ superAdminOnly: true })
   if (!authorization.ok) return authorization.response
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY.includes('your-service-role-key')) {
     return NextResponse.json({ error: 'CRITICAL ERROR: SUPABASE_SERVICE_ROLE_KEY is missing or invalid. Please add your actual Service Role Key to .env.local and RESTART YOUR SERVER.' }, { status: 500 })
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  const authorization = await requireAdmin()
+  const authorization = await requireAdmin({ superAdminOnly: true })
   if (!authorization.ok) return authorization.response
   const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!.trim(),
@@ -144,7 +144,7 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const authorization = await requireAdmin()
+  const authorization = await requireAdmin({ superAdminOnly: true })
   if (!authorization.ok) return authorization.response
   const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!.trim(),
