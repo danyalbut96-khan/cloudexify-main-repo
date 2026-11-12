@@ -13,24 +13,25 @@ import BlogSection from '@/components/BlogSection';
 import ContactSection from '@/components/ContactSection';
 import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
+import ScrollReveal from '@/components/ScrollReveal';
 
 export default function HomePage() {
   return (
     <main>
       <AnnouncementPopups />
       <Navbar />
-      <HeroSection />
-      <ServicesSection />
-      <AboutSection />
-      <ProcessSection />
-      <TechStackSection />
-      <PortfolioSection />
-      <CampaignsSection />
-      <TeamSection />
-      <BlogSection />
-      <TestimonialsSection />
-      <ContactSection />
-      <FAQSection />
+      <ScrollReveal><HeroSection /></ScrollReveal>
+      <ScrollReveal direction="left"><ServicesSection /></ScrollReveal>
+      <ScrollReveal direction="right"><AboutSection /></ScrollReveal>
+      <ScrollReveal direction="left"><ProcessSection /></ScrollReveal>
+      <ScrollReveal direction="right"><TechStackSection /></ScrollReveal>
+      <ScrollReveal direction="left"><PortfolioSection /></ScrollReveal>
+      <ScrollReveal direction="right"><CampaignsSection /></ScrollReveal>
+      <ScrollReveal direction="left"><TeamSection /></ScrollReveal>
+      <ScrollReveal direction="right"><BlogSection /></ScrollReveal>
+      <ScrollReveal direction="left"><TestimonialsSection /></ScrollReveal>
+      <ScrollReveal direction="right"><ContactSection /></ScrollReveal>
+      <ScrollReveal><FAQSection /></ScrollReveal>
       <Footer />
     </main>
   );
