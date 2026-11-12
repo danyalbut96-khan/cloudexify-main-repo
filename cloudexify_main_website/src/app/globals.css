@@ -2100,3 +2100,72 @@ html.light main > section {
     scroll-behavior: auto !important;
   }
 }
+
+
+/* Final brand polish: matching Client Website's blue-violet identity */
+html:not(.dark) body,
+html.light body { font-family: 'DM Sans', Inter, sans-serif !important; }
+html:not(.dark) h1,
+html:not(.dark) h2,
+html:not(.dark) h3,
+html.light h1,
+html.light h2,
+html.light h3 { font-family: 'Plus Jakarta Sans', 'DM Sans', sans-serif; }
+
+html:not(.dark) .hero-gradient h1 span,
+html.light .hero-gradient h1 span {
+  background: linear-gradient(110deg, #1748f5 0%, #6d35ef 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+html:not(.dark) .hero-gradient [style*="rgba(255,255,255"],
+html.light .hero-gradient [style*="rgba(255,255,255"] {
+  color: #737b9b !important;
+}
+html:not(.dark) .hero-gradient [style*="#00d4ff"],
+html:not(.dark) .hero-gradient [style*="#00ff88"],
+html.light .hero-gradient [style*="#00d4ff"],
+html.light .hero-gradient [style*="#00ff88"] {
+  border-color: rgba(49, 94, 255, .24) !important;
+}
+html:not(.dark) .hero-gradient [style*="background: 'linear-gradient(135deg, #00ff88"],
+html.light .hero-gradient [style*="background: 'linear-gradient(135deg, #00ff88"] {
+  background: linear-gradient(110deg, #1748f5, #6d35ef) !important;
+}
+html:not(.dark) footer,
+html.light footer {
+  color: #090e35 !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f7f8ff 100%) !important;
+  border-top: 1px solid #e5e8f5 !important;
+}
+html:not(.dark) footer h2,
+html:not(.dark) footer h3,
+html:not(.dark) footer h4,
+html:not(.dark) footer p,
+html:not(.dark) footer span,
+html:not(.dark) footer a,
+html.light footer h2,
+html.light footer h3,
+html.light footer h4,
+html.light footer p,
+html.light footer span,
+html.light footer a {
+  color: #343b62;
+}
+html:not(.dark) .announcement-popup,
+html.light .announcement-popup {
+  color: #090e35 !important;
+  background: rgba(255,255,255,.98) !important;
+  border-color: #dfe4f2 !important;
+  box-shadow: 0 18px 48px rgba(20,30,80,.14) !important;
+}
+html:not(.dark) .announcement-popup button,
+html.light .announcement-popup button { color: #737b9b !important; }
+html:not(.dark) .announcement-popup [style*="color: white"],
+html.light .announcement-popup [style*="color: white"] { color: #090e35 !important; }
+
+@media (max-width: 767px) {
+  .container-section { width: min(100% - 32px, 1210px) !important; }
+  .hero-gradient { min-height: auto !important; padding-top: 76px !important; padding-bottom: 76px !important; }
+}
