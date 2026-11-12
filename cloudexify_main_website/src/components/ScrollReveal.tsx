@@ -2,6 +2,7 @@
 
 import { motion, type Variants } from 'framer-motion';
 import type { ReactNode } from 'react';
+import { isRtlLanguage, useLang } from '@/lib/LanguageContext';
 
 type Direction = 'up' | 'left' | 'right';
 
@@ -16,9 +17,13 @@ export default function ScrollReveal({
   delay?: number;
   className?: string;
 }) {
-  const offset = direction === 'left' ? 34 : direction === 'right' ? -34 : 0;
+  const { lang } = useLang();
+  const rtl = isRtlLanguage(lang);
+  const horizontalOffset =
+    direction === 'left' ? (rtl ? -34 : 34) : direction === 'right' ? (rtl ? 34 : -34) : 0;
+
   const variants: Variants = {
-    hidden: { opacity: 0, y: direction === 'up' ? 28 : 0, x: offset, filter: 'blur(4px)' },
+    hidden: { opacity: 0, y: direction === 'up' ? 28 : 0, x: horizontalOffset, filter: 'blur(4px)' },
     visible: {
       opacity: 1,
       y: 0,
