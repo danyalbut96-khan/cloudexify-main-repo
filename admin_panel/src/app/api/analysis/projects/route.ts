@@ -1,7 +1,10 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getAdminClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/supabase/authorization'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
+  const authorization = await requireAdmin()
+  if (!authorization.ok) return authorization.response
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

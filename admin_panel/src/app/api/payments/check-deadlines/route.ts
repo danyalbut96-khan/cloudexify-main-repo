@@ -1,12 +1,14 @@
 ﻿import { createClient, getAdminClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/supabase/authorization'
 import { sendWaitlistPromotedEmail } from '@/lib/email-service'
 
 export async function POST(request: NextRequest) {
+  const authorization = await requireAdmin()
+  if (!authorization.ok) return authorization.response
+  const { user } = authorization
+
   try {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const adminDb = getAdminClient()
     const now = new Date()

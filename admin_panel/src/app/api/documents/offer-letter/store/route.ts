@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/supabase/authorization'
 import { isRateLimited } from '@/lib/utils'
 import { logAction } from '@/lib/server-utils'
 import { pdf } from '@react-pdf/renderer'
@@ -26,20 +27,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
 
-  // We use getAdminClient here directly because the bulk generation is an Admin operation
-  // and we want to ensure we don't hit RLS issues during automated batch processing.
+  const authorization = await requireAdmin()
+  if (!authorization.ok) return authorization.response
+  const adminEmail = authorization.user.email || authorization.user.id
   const adminClient = getAdminClient()
-  
-  // Verify auth session (the frontend passes standard cookies)
-  const { data: { session } } = await adminClient.auth.getSession()
-  // Wait, session might not exist for adminClient since it uses service_role key.
-  // We must verify auth using a regular client to ensure the request is from a logged-in user.
-  // Let's import createClient
-  
-  // We will do that inside the function body.
-  
+
   try {
-    const { internId, joiningDate, adminEmail } = await request.json()
+    const { internId, joiningDate, adminEmail: _requestedAdminEmail } = await request.json()
 
     if (!internId) {
       return NextResponse.json({ error: 'Missing internId parameter' }, { status: 400 })
@@ -172,8 +166,7 @@ export async function POST(request: NextRequest) {
         intern_name: intern.full_name,
         intern_domain: intern.domain,
         generated_at: generatedAt,
-        generated_by: adminEmail
-      })
+        generated_by: adminEmail })
 
     if (verifyError) {
       console.error('Failed to save document verification record:', verifyError)
