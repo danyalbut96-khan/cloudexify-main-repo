@@ -1865,3 +1865,238 @@ body.light-mode .team-card-bio {
 }
 
 
+
+
+/* ------------------------------------------------------------------
+   Cloudexify corporate light design system
+   Aligned with the Client Website: white, ink navy, vivid blue, violet.
+   ------------------------------------------------------------------ */
+:root {
+  color-scheme: light;
+  --primary: #ffffff;
+  --secondary: #f7f8ff;
+  --accent-green: #1748f5;
+  --accent-cyan: #315eff;
+  --bg-card: #ffffff;
+  --border-subtle: #e5e8f5;
+  --text-primary: #090e35;
+  --text-secondary: #515775;
+  --text-muted: #737b9b;
+  --navbar-bg: rgba(255, 255, 255, 0.94);
+  --brand-violet: #6d35ef;
+  --brand-blue: #1748f5;
+  --brand-ink: #090e35;
+  --brand-soft: #f7f8ff;
+}
+
+html:not(.dark) body,
+html.light body {
+  background: #ffffff !important;
+  color: var(--brand-ink) !important;
+}
+
+html:not(.dark) .gradient-bg,
+html.light .gradient-bg {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfbff 100%) !important;
+}
+
+html:not(.dark) .hero-gradient,
+html.light .hero-gradient {
+  background:
+    radial-gradient(ellipse at 82% 24%, rgba(109, 53, 239, .09), transparent 34%),
+    radial-gradient(ellipse at 68% 76%, rgba(49, 94, 255, .07), transparent 36%),
+    linear-gradient(112deg, #ffffff 0%, #fbfbff 54%, #f1f2ff 100%) !important;
+}
+
+html:not(.dark) .grid-pattern,
+html.light .grid-pattern {
+  background-image: radial-gradient(rgba(23, 72, 245, .13) .7px, transparent .7px) !important;
+  background-size: 24px 24px !important;
+}
+
+html:not(.dark) .orb-1,
+html.light .orb-1 {
+  background: radial-gradient(circle, rgba(109, 53, 239, .13), transparent 70%) !important;
+}
+html:not(.dark) .orb-2,
+html.light .orb-2 {
+  background: radial-gradient(circle, rgba(49, 94, 255, .12), transparent 70%) !important;
+}
+html:not(.dark) .orb-3,
+html.light .orb-3 {
+  background: radial-gradient(circle, rgba(109, 53, 239, .08), transparent 70%) !important;
+}
+
+html:not(.dark) .section-title,
+html.light .section-title,
+html:not(.dark) h1,
+html:not(.dark) h2,
+html:not(.dark) h3,
+html:not(.dark) h4,
+html.light h1,
+html.light h2,
+html.light h3,
+html.light h4 {
+  color: var(--brand-ink);
+}
+
+html:not(.dark) .section-subtitle,
+html.light .section-subtitle {
+  color: var(--text-secondary);
+}
+
+html:not(.dark) .section-tag,
+html.light .section-tag {
+  color: var(--brand-blue);
+  background: #eef1ff;
+  border: 1px solid #dce3ff;
+  letter-spacing: .12em;
+}
+
+html:not(.dark) .gradient-text-green,
+html:not(.dark) .gradient-text-cyan,
+html.light .gradient-text-green,
+html.light .gradient-text-cyan {
+  background: linear-gradient(110deg, #1748f5 0%, #6d35ef 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+html:not(.dark) .btn-primary,
+html.light .btn-primary {
+  color: #ffffff !important;
+  background: linear-gradient(110deg, #1748f5 0%, #6d35ef 100%) !important;
+  box-shadow: 0 10px 26px rgba(49, 84, 238, .20) !important;
+}
+html:not(.dark) .btn-primary:hover,
+html.light .btn-primary:hover {
+  box-shadow: 0 14px 32px rgba(49, 84, 238, .28) !important;
+}
+html:not(.dark) .btn-secondary,
+html.light .btn-secondary {
+  color: #1748f5 !important;
+  border-color: #b9c6ff !important;
+  background: #ffffff !important;
+}
+html:not(.dark) .btn-secondary:hover,
+html.light .btn-secondary:hover {
+  background: #f2f4ff !important;
+}
+
+html:not(.dark) .glass-card,
+html.light .glass-card,
+html:not(.dark) .service-card,
+html.light .service-card,
+html:not(.dark) .stat-card,
+html.light .stat-card,
+html:not(.dark) .project-card,
+html.light .project-card,
+html:not(.dark) .pricing-card,
+html.light .pricing-card {
+  color: var(--brand-ink);
+  background: rgba(255, 255, 255, .92) !important;
+  border: 1px solid #e5e8f5 !important;
+  box-shadow: 0 12px 36px rgba(22, 35, 91, .055) !important;
+  backdrop-filter: blur(14px);
+}
+html:not(.dark) .glass-card:hover,
+html:not(.dark) .service-card:hover,
+html:not(.dark) .project-card:hover,
+html:not(.dark) .pricing-card:hover,
+html.light .glass-card:hover,
+html.light .service-card:hover,
+html.light .project-card:hover,
+html.light .pricing-card:hover {
+  border-color: #c6d0ff !important;
+  box-shadow: 0 22px 48px rgba(35, 62, 170, .11) !important;
+}
+html:not(.dark) .service-card::before,
+html.light .service-card::before {
+  background: linear-gradient(135deg, rgba(23,72,245,.035), rgba(109,53,239,.045)) !important;
+}
+
+html:not(.dark) .nav-link,
+html.light .nav-link {
+  color: #343b62 !important;
+}
+html:not(.dark) .nav-link:hover,
+html.light .nav-link:hover {
+  color: #1748f5 !important;
+}
+html:not(.dark) header[role="banner"],
+html.light header[role="banner"] {
+  background: rgba(255,255,255,.92) !important;
+  border-bottom: 1px solid #e9eafa !important;
+  backdrop-filter: blur(18px) !important;
+}
+html:not(.dark) header[role="banner"] a span,
+html.light header[role="banner"] a span {
+  color: #1748f5 !important;
+}
+html:not(.dark) .nav-campaign-pill--website,
+html.light .nav-campaign-pill--website {
+  border-color: #cbd5ff !important;
+  color: #1748f5 !important;
+  background: #f2f4ff !important;
+}
+html:not(.dark) .nav-campaign-pill--internship,
+html.light .nav-campaign-pill--internship {
+  border-color: #d8c9ff !important;
+  color: #6d35ef !important;
+  background: #f7f2ff !important;
+}
+html:not(.dark) .mobile-menu,
+html.light .mobile-menu {
+  background: rgba(255,255,255,.98) !important;
+  border-color: #e5e8f5 !important;
+  box-shadow: 0 20px 50px rgba(20,30,80,.12);
+}
+html:not(.dark) .mobile-menu a,
+html.light .mobile-menu a {
+  color: #343b62 !important;
+}
+
+html:not(.dark) .form-input,
+html.light .form-input {
+  color: #090e35 !important;
+  background: #ffffff !important;
+  border-color: #dfe4f2 !important;
+}
+html:not(.dark) .form-input::placeholder,
+html.light .form-input::placeholder { color: #8990aa !important; }
+html:not(.dark) .faq-item,
+html.light .faq-item { border-color: #e5e8f5 !important; }
+html:not(.dark) .faq-question,
+html.light .faq-question { color: #090e35 !important; background: #ffffff !important; }
+html:not(.dark) .faq-answer,
+html.light .faq-answer { color: #515775 !important; background: #f7f8ff !important; }
+html:not(.dark) .footer-link,
+html.light .footer-link { color: #515775 !important; }
+
+html:not(.dark) .orb,
+html.light .orb { opacity: .72; }
+html:not(.dark) .spinner,
+html.light .spinner { border-top-color: #1748f5 !important; }
+
+html:not(.dark) [style*="#00ff88"],
+html:not(.dark) [style*="#00d4ff"],
+html.light [style*="#00ff88"],
+html.light [style*="#00d4ff"] {
+  --legacy-brand-accent: #1748f5;
+}
+
+html:not(.dark) main > section,
+html.light main > section {
+  scroll-margin-top: 88px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
