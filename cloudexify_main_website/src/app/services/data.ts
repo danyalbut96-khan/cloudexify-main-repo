@@ -1,3 +1,7 @@
+type ServiceExample = { name: string; desc: string; tech: string };
+
+const noExamples: ServiceExample[] = [];
+
 export const servicesData = {
   'web-development': {
     title: 'Web Development',
@@ -28,7 +32,7 @@ export const servicesData = {
       { title: 'Corporate websites', icon: '🏢', desc: 'Professional brand presences.' },
       { title: 'Web portals', icon: '🌐', desc: 'Secure member and client portals.' }
     ],
-    examples: [],
+    examples: noExamples,
     faqs: [
       { q: 'How long does a typical web project take?', a: 'Depending on complexity, between 4 to 12 weeks.' },
       { q: 'Do you provide post-launch support?', a: 'Yes, we offer ongoing maintenance and support packages.' },
@@ -66,7 +70,7 @@ export const servicesData = {
       { title: 'Health & Fitness', icon: '❤️', desc: 'Workout and wellness trackers.' },
       { title: 'Social networking', icon: '💬', desc: 'Community and chat platforms.' }
     ],
-    examples: [],
+    examples: noExamples,
     faqs: [
       { q: 'Do you develop for both iOS and Android?', a: 'Yes, we use React Native to deploy to both platforms from a single codebase.' },
       { q: 'Can you help publish to the App Stores?', a: 'Absolutely, we handle the entire submission process for Apple and Google.' },
@@ -104,7 +108,7 @@ export const servicesData = {
       { title: 'Data analysis', icon: '📈', desc: 'Extracting insights from unstructured data.' },
       { title: 'Process automation', icon: '⚙️', desc: 'Automating repetitive manual tasks.' }
     ],
-    examples: [],
+    examples: noExamples,
     faqs: [
       { q: 'Is my data secure when using AI APIs?', a: 'Yes, we use enterprise API tiers that guarantee zero data retention for model training.' },
       { q: 'Which AI models do you use?', a: 'We are model-agnostic, choosing the best fit (Claude, GPT-4, Llama) for your specific use case.' },
@@ -142,7 +146,7 @@ export const servicesData = {
       { title: 'HR software', icon: '👥', desc: 'Recruiting and employee management.' },
       { title: 'Analytics dashboards', icon: '📊', desc: 'Financial and data reporting.' }
     ],
-    examples: [],
+    examples: noExamples,
     faqs: [
       { q: 'Do you integrate payment gateways?', a: 'Yes, we heavily utilize Stripe for complex subscription and usage-based billing models.' },
       { q: 'How do you ensure tenant data isolation?', a: 'We use Row Level Security (RLS) in Supabase/PostgreSQL to guarantee strict data boundaries.' },
@@ -180,7 +184,7 @@ export const servicesData = {
       { title: 'Marketplace platforms', icon: '🏪', desc: 'Multi-vendor e-commerce.' },
       { title: 'Social networks', icon: '🌐', desc: 'High-interaction community sites.' }
     ],
-    examples: [],
+    examples: noExamples,
     faqs: [
       { q: 'Do you handle the database design?', a: 'Yes, we architect highly optimized relational (SQL) or NoSQL databases based on your needs.' },
       { q: 'Will I own the source code?', a: 'Absolutely. Upon project completion and payment, 100% of the IP and code belongs to you.' },
@@ -218,7 +222,7 @@ export const servicesData = {
       { title: 'Automated testing', icon: '⚙️', desc: 'Continuous integration pipelines.' },
       { title: 'Cost optimization', icon: '💰', desc: 'Reducing bloated cloud bills.' }
     ],
-    examples: [],
+    examples: noExamples,
     faqs: [
       { q: 'Which cloud providers do you work with?', a: 'We primarily work with AWS, Vercel, and Supabase, but also handle Google Cloud and Azure.' },
       { q: 'Can you lower our AWS bill?', a: 'Yes, we perform architectural audits that often reduce cloud hosting costs by 30-50%.' },
@@ -256,7 +260,7 @@ export const servicesData = {
       { title: 'Public APIs', icon: '🌍', desc: 'Developer ecosystems and SaaS integrations.' },
       { title: 'Payment gateways', icon: '💳', desc: 'Secure transactional endpoints.' }
     ],
-    examples: [],
+    examples: noExamples,
     faqs: [
       { q: 'REST or GraphQL?', a: 'It depends on your needs. REST is great for standard resource access, while GraphQL excels in complex, data-heavy UIs.' },
       { q: 'How do you secure APIs?', a: 'We use JWTs, OAuth2, API Keys, Rate Limiting, and strict CORS policies.' },
@@ -294,7 +298,7 @@ export const servicesData = {
       { title: 'Legacy modernization', icon: '🔄', desc: 'Planning safe transitions from old tech.' },
       { title: 'Technical due diligence', icon: '🔍', desc: 'Auditing code for investors or acquisitions.' }
     ],
-    examples: [],
+    examples: noExamples,
     faqs: [
       { q: 'Do you offer Fractional CTO services?', a: 'Yes, we can act as your part-time technical leadership.' },
       { q: 'Will you review our existing code?', a: 'Absolutely. We conduct thorough security, performance, and best-practice audits.' },
