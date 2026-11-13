@@ -30,14 +30,6 @@ function IconCheckCircle({ size = 18, color = '#34A853' }: { size?: number; colo
   );
 }
 
-function IconStar({ size = 18, color = '#1A73E8' }: { size?: number; color?: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill={color} stroke={color} strokeWidth="1" aria-hidden style={{ flexShrink: 0 }}>
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-    </svg>
-  );
-}
-
 function IconArrowRight({ size = 18, color = 'currentColor' }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -305,7 +297,7 @@ export default function CampaignsSection() {
               }}
             >
               <div style={{ fontSize: 12, color: '#66758A' }}>{t('campaigns.website.price.label')}</div>
-              <div style={{ fontSize: 22, fontWeight: 900, color: '#1A73E8' }}>1,500 PKR / year</div>
+              <div style={{ fontSize: 22, fontWeight: 900, color: '#1A73E8' }}>PKR 349 / month</div>
               <div style={{ fontSize: 12, color: '#66758A' }}>{t('campaigns.website.price.suffix')}</div>
             </div>
 
