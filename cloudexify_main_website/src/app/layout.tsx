@@ -1,8 +1,14 @@
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 import { Inter, Noto_Nastaliq_Urdu, Noto_Sans_Devanagari, Noto_Sans_Bengali } from 'next/font/google';
 import './globals.css';
+import './brand-led.css';
 import FloatingChatWidget from '@/components/FloatingChatWidget';
+import ParticleBackground from '@/components/ParticleBackground';
+import ScrollRevealController from '@/components/ScrollRevealController';
+import TopBanner from '@/components/TopBanner';
 import { LanguageProvider } from '@/lib/LanguageContext';
+import { ThemeProvider } from '@/providers/ThemeProvider';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const urduFont = Noto_Nastaliq_Urdu({ subsets: ['arabic'], weight: ['400','700'], variable: '--font-urdu' });
@@ -36,9 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body
-        className={`${inter.className} ${urduFont.variable} ${hindiFont.variable} ${bengaliFont.variable}`}
-      >
+      <body className={`${inter.className} ${urduFont.variable} ${hindiFont.variable} ${bengaliFont.variable}`}>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=AW-18183422041"
           strategy="afterInteractive"
@@ -52,13 +56,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-
             gtag('config', 'AW-18183422041');
             gtag('config', 'G-3PR6CCF0MV');
           `}
         </Script>
         <ThemeProvider>
           <LanguageProvider>
+            <ScrollRevealController />
             <ParticleBackground />
             <TopBanner />
             {children}
