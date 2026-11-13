@@ -22,7 +22,7 @@ const LANGUAGES: {
 
 function getLabelColor(option: (typeof LANGUAGES)[number], selected: boolean) {
   if (selected) return '#1A73E8';
-  return option.labelColor ?? 'white';
+  return option.labelColor ?? '#526078';
 }
 
 interface LanguageToggleProps {
@@ -124,9 +124,9 @@ export default function LanguageToggle({ inline = false }: LanguageToggleProps) 
           gap: '8px',
           padding: '6px 12px',
           borderRadius: '20px',
-          border: '1px solid rgba(255,255,255,0.2)',
-          background: open ? 'rgba(26,115,232,0.15)' : 'rgba(255,255,255,0.05)',
-          color: 'white',
+          border: '1px solid #dfe5ef',
+          background: open ? '#eef2ff' : '#ffffff',
+          color: '#526078',
           fontSize: '13px',
           fontWeight: 600,
           cursor: 'pointer',
@@ -136,14 +136,14 @@ export default function LanguageToggle({ inline = false }: LanguageToggleProps) 
         }}
         onMouseEnter={(e) => {
           const btn = e.currentTarget;
-          btn.style.background = 'rgba(26,115,232,0.2)';
+          btn.style.background = '#eef2ff';
           btn.style.borderColor = '#1A73E8';
         }}
         onMouseLeave={(e) => {
           const btn = e.currentTarget;
           if (open) return;
           btn.style.background = 'rgba(255,255,255,0.05)';
-          btn.style.borderColor = 'rgba(255,255,255,0.2)';
+          btn.style.borderColor = '#dfe5ef';
         }}
       >
         <span style={{ fontSize: '16px' }}>{current.flag}</span>
@@ -173,9 +173,9 @@ export default function LanguageToggle({ inline = false }: LanguageToggleProps) 
             maxWidth: 'calc(100vw - 24px)',
             padding: 8,
             borderRadius: 12,
-            background: 'rgba(10,22,40,0.98)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+            background: '#ffffff',
+            border: '1px solid #e3e8f1',
+            boxShadow: '0 18px 48px rgba(20,35,70,0.14)',
           }}
         >
           {LANGUAGES.map((option) => {
