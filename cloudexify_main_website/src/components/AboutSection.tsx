@@ -5,138 +5,70 @@ import { useLang, isRtlLanguage } from '@/lib/LanguageContext';
 export default function AboutSection() {
   const { t, lang } = useLang();
   const isRtl = isRtlLanguage(lang);
+  const isUrdu = lang === 'ur';
 
   const stats = [
-    { value: '6', label: t('about.stat.projects'), icon: '↗' },
+    { value: '5', label: t('about.stat.projects'), icon: '↗' },
     { value: '3', label: t('about.stat.founders'), icon: '◎' },
     { value: '8', label: t('about.stat.languages'), icon: '文' },
   ];
 
   const values = [
-    { icon: '⭐', titleKey: 'about.value1.title', descKey: 'about.value1.desc' },
-    { icon: '🔬', titleKey: 'about.value2.title', descKey: 'about.value2.desc' },
-    { icon: '🤝', titleKey: 'about.value3.title', descKey: 'about.value3.desc' },
-    { icon: '📈', titleKey: 'about.value4.title', descKey: 'about.value4.desc' },
+    { titleKey: 'about.value1.title', descKey: 'about.value1.desc', en: 'We aim for understandable, maintainable work—not just a quick visual result. Quality includes clear structure, careful testing, and decisions that make future changes easier.', ur: 'ہم صرف جلدی سے خوبصورت نتیجہ بنانے کے بجائے قابلِ فہم اور برقرار رکھنے کے قابل کام کو اہمیت دیتے ہیں۔ معیار میں واضح ساخت، محتاط ٹیسٹنگ اور مستقبل کی تبدیلیوں کو آسان بنانے والے فیصلے شامل ہیں۔' },
+    { titleKey: 'about.value2.title', descKey: 'about.value2.desc', en: 'We choose technology to solve the actual problem. New tools are useful when they improve the product, workflow, security, or long-term cost—not simply because they are new.', ur: 'ہم ٹیکنالوجی کا انتخاب اصل مسئلے کو حل کرنے کے لیے کرتے ہیں۔ نئی ٹیکنالوجی تب مفید ہے جب وہ پروڈکٹ، ورک فلو، سیکیورٹی یا طویل مدتی لاگت بہتر بنائے، صرف نئی ہونے کی وجہ سے نہیں۔' },
+    { titleKey: 'about.value3.title', descKey: 'about.value3.desc', en: 'Clear communication is part of delivery. We make scope, trade-offs, progress, and open questions visible so decisions can be made with context.', ur: 'واضح رابطہ بھی ڈیلیوری کا حصہ ہے۔ ہم کام کا دائرۂ کار، ممکنہ سمجھوتے، پیش رفت اور زیرِ غور سوالات واضح رکھتے ہیں تاکہ فیصلے پوری معلومات کے ساتھ کیے جا سکیں۔' },
+    { titleKey: 'about.value4.title', descKey: 'about.value4.desc', en: 'We consider how a product may evolve: more users, more data, new workflows, or new integrations. Architecture should fit today’s needs while leaving sensible room to grow.', ur: 'ہم یہ بھی دیکھتے ہیں کہ پروڈکٹ مستقبل میں کیسے بڑھے گی: زیادہ صارفین، ڈیٹا، نئے ورک فلو یا انٹیگریشنز۔ آرکیٹیکچر آج کی ضرورت پوری کرے اور مناسب انداز میں آگے بڑھنے کی گنجائش بھی رکھے۔' },
   ];
 
   return (
-    <section
-      id="about"
-      style={{
-        padding: '100px 0',
-        background: 'linear-gradient(180deg, rgba(26,58,82,0.12) 0%, transparent 100%)',
-      }}
-    >
+    <section id="about" className="cx-about-editorial" dir={isRtl ? 'rtl' : 'ltr'}>
       <div className="container-section">
-        <div style={{ textAlign: 'center', marginBottom: 70 }}>
+        <div className="cx-about-heading">
           <div className="section-tag">{t('about.label')}</div>
           <h2 className="section-title">{t('about.title')}</h2>
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'minmax(0, 1.1fr) minmax(280px, .9fr)',
-            gap: 48,
-            alignItems: 'center',
-            marginBottom: 80,
-          }}
-        >
-          <div style={{ textAlign: isRtl ? 'right' : 'left' }}>
-            <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.85, marginBottom: 22 }}>
-              {t('about.desc1')}
-            </p>
-            <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.85, marginBottom: 22 }}>
-              {t('about.desc2')}
-            </p>
-            <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.85 }}>
-              {t('about.desc3')}
-            </p>
-
-            <div
-              style={{
-                marginTop: 32,
-                display: 'flex',
-                gap: 16,
-                flexWrap: 'wrap',
-                flexDirection: isRtl ? 'row-reverse' : 'row',
-              }}
-            >
-              <span
-                style={{
-                  background: 'rgba(0, 255, 136, 0.1)',
-                  border: '1px solid rgba(0, 255, 136, 0.25)',
-                  color: 'var(--cx-green)',
-                  padding: '8px 18px',
-                  borderRadius: 50,
-                  fontSize: 13,
-                  fontWeight: 600,
-                }}
-              >
-                {t('about.location')}
-              </span>
-              <span
-                style={{
-                  background: 'rgba(0, 212, 255, 0.1)',
-                  border: '1px solid rgba(0, 212, 255, 0.25)',
-                  color: 'var(--cx-blue)',
-                  padding: '8px 18px',
-                  borderRadius: 50,
-                  fontSize: 13,
-                  fontWeight: 600,
-                }}
-              >
-                {t('about.reach')}
-              </span>
+        <div className="cx-about-overview">
+          <div className="cx-about-copy">
+            <p>{t('about.desc1')}</p>
+            <p>{t('about.desc2')}</p>
+            <p>{t('about.desc3')}</p>
+            <div className="cx-about-tags">
+              <span>{t('about.location')}</span>
+              <span>{t('about.reach')}</span>
             </div>
           </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12 }}>
-            {stats.map((s) => (
-              <div key={s.label} className="stat-card">
-                <div style={{ fontSize: 28, marginBottom: 8 }}>{s.icon}</div>
-                <div
-                  style={{
-                    fontSize: 34,
-                    fontWeight: 900,
-                    color: 'var(--cx-blue)',
-                    letterSpacing: '-1px',
-                    marginBottom: 6,
-                  }}
-                >
-                  {s.value}
-                </div>
-                <div style={{ fontSize: 13, color: 'var(--cx-muted)', fontWeight: 600 }}>{s.label}</div>
+          <div className="cx-about-stats">
+            {stats.map((stat) => (
+              <div className="stat-card" key={stat.label}>
+                <div className="cx-about-stat-icon">{stat.icon}</div>
+                <strong>{stat.value}</strong>
+                <span>{stat.label}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="divider" style={{ marginBottom: 60 }} />
-
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <h3 style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
-            {t('about.values.title')}
-          </h3>
-          <p style={{ color: 'var(--text-muted)', fontSize: 15 }}>{t('about.values.subtitle')}</p>
-        </div>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-            gap: 20,
-          }}
-        >
-          {values.map((v) => (
-            <div key={v.titleKey} className="glass-card" style={{ padding: '28px 24px', textAlign: 'center' }}>
-              <div style={{ fontSize: 36, marginBottom: 14 }}>{v.icon}</div>
-              <h4 style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 10 }}>
-                {t(v.titleKey)}
-              </h4>
-              <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7 }}>{t(v.descKey)}</p>
-            </div>
-          ))}
+        <div className="cx-values-divider" />
+        <div className="cx-values-layout">
+          <div className="cx-values-intro">
+            <span className="section-tag">{isUrdu ? 'ہمارے اصول' : 'HOW WE THINK'}</span>
+            <h3>{t('about.values.title')}</h3>
+            <p>{t('about.values.subtitle')}</p>
+            <div className="cx-values-statement">{isUrdu ? 'اصول صرف الفاظ نہیں، روزمرہ کے فیصلوں میں نظر آنے چاہئیں۔' : 'Principles matter when they shape everyday decisions.'}</div>
+          </div>
+          <div className="cx-values-list">
+            {values.map((value, index) => (
+              <article className="cx-value-row" key={value.titleKey}>
+                <span className="cx-value-index">{String(index + 1).padStart(2, '0')}</span>
+                <div>
+                  <h4>{t(value.titleKey)}</h4>
+                  <p>{isUrdu ? value.ur : value.en}</p>
+                </div>
+                <span className="cx-value-arrow" aria-hidden="true">↗</span>
+              </article>
+            ))}
+          </div>
         </div>
       </div>
     </section>
