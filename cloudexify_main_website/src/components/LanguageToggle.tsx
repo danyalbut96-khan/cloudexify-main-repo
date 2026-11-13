@@ -142,7 +142,7 @@ export default function LanguageToggle({ inline = false }: LanguageToggleProps) 
         onMouseLeave={(e) => {
           const btn = e.currentTarget;
           if (open) return;
-          btn.style.background = '#ffffff';
+          btn.style.background = 'rgba(255,255,255,0.05)';
           btn.style.borderColor = '#dfe5ef';
         }}
       >
