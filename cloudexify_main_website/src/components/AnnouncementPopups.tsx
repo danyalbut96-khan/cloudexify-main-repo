@@ -18,8 +18,6 @@ function isDismissed(key: string): boolean {
 export default function AnnouncementPopups() {
   const { t } = useLang();
   const [showWebsite, setShowWebsite] = useState(false);
-  const [showIntern, setShowIntern] = useState(false);
-  const [websiteClosed, setWebsiteClosed] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -33,45 +31,15 @@ export default function AnnouncementPopups() {
       }
     }, websiteDelay);
 
-    let internTimer: ReturnType<typeof setTimeout> | undefined;
-    if (!isMobile) {
-      internTimer = setTimeout(() => {
-        if (!isDismissed('popup_intern_closed')) {
-          setShowIntern(true);
-        }
-      }, 4000);
-    }
-
     return () => {
       clearTimeout(websiteTimer);
-      if (internTimer) clearTimeout(internTimer);
     };
   }, []);
 
-  useEffect(() => {
-    if (!websiteClosed) return;
-    if (typeof window === 'undefined' || window.innerWidth >= 768) return;
-    if (isDismissed('popup_intern_closed')) return;
-
-    const timer = setTimeout(() => {
-      setShowIntern(true);
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, [websiteClosed]);
-
   const closeWebsite = () => {
     setShowWebsite(false);
-    setWebsiteClosed(true);
     if (typeof window !== 'undefined') {
       localStorage.setItem('popup_website_closed', Date.now().toString());
-    }
-  };
-
-  const closeIntern = () => {
-    setShowIntern(false);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('popup_intern_closed', Date.now().toString());
     }
   };
 
@@ -239,157 +207,6 @@ export default function AnnouncementPopups() {
         )}
       </AnimatePresence>
 
-      <AnimatePresence>
-        {showIntern && (
-          <motion.div
-            className="announcement-popup announcement-popup--intern"
-            variants={popupVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={transition}
-            style={{
-              ...popupBaseStyle,
-              right: 24,
-              zIndex: 9998,
-              border: '1px solid #1A73E8',
-              boxShadow:
-                '0 0 0 1px rgba(251,188,4,0.2),' +
-                '0 20px 60px rgba(0,0,0,0.5),' +
-                '0 0 40px rgba(251,188,4,0.1)',
-            }}
-          >
-            <div
-              style={{
-                height: 3,
-                background: 'linear-gradient(90deg,#1A73E8,#FF6B35)',
-              }}
-            />
-            <div style={{ padding: 16 }}>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: 10,
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: 11,
-                    color: '#1A73E8',
-                    fontWeight: 700,
-                    letterSpacing: 1,
-                  }}
-                >
-                  {t('popup.intern.label')}
-                </span>
-                <button
-                  type="button"
-                  onClick={closeIntern}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#66758A',
-                    fontSize: 18,
-                    cursor: 'pointer',
-                    lineHeight: 1,
-                  }}
-                >
-                  ×
-                </button>
-              </div>
-              <div style={{ marginBottom: 10 }}>
-                <div
-                  style={{
-                    color: 'var(--cx-ink)',
-                    fontSize: 15,
-                    fontWeight: 700,
-                  }}
-                >
-                  {t('popup.intern.title')}
-                </div>
-                <div
-                  style={{
-                    color: 'var(--cx-ink)',
-                    fontSize: 17,
-                    fontWeight: 800,
-                  }}
-                >
-                  {t('popup.intern.subtitle')}
-                </div>
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 4,
-                  marginBottom: 8,
-                }}
-              >
-                {['popup.intern.f1', 'popup.intern.f2', 'popup.intern.f3'].map((key) => (
-                  <span
-                    key={key}
-                    style={{
-                      fontSize: 11,
-                      color: '#53647B',
-                    }}
-                  >
-                    {t(key)}
-                  </span>
-                ))}
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  marginBottom: 14,
-                }}
-              >
-                <span
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: '50%',
-                    background: '#FF6B35',
-                    display: 'inline-block',
-                    animation: 'pulse 1.5s infinite',
-                  }}
-                />
-                <span
-                  style={{
-                    fontSize: 11,
-                    color: '#1A73E8',
-                  }}
-                >
-                  {t('popup.intern.closing')}
-                </span>
-              </div>
-              <a
-                href="https://internship.cloudexify.site"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'block',
-                  width: '100%',
-                  padding: '11px',
-                  textAlign: 'center',
-                  background: 'linear-gradient(135deg,#1A73E8,#155DB8)',
-                  borderRadius: 10,
-                  color: '#0D1B2A',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  textDecoration: 'none',
-                  boxShadow: '0 4px 20px rgba(251,188,4,0.3)',
-                }}
-              >
-                {t('popup.intern.cta')}
-              </a>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <style>{`
         @media (max-width: 639px) {
@@ -402,9 +219,6 @@ export default function AnnouncementPopups() {
           }
           .announcement-popup--website {
             right: 12px !important;
-          }
-          .announcement-popup--intern {
-            left: 12px !important;
           }
         }
       `}</style>
