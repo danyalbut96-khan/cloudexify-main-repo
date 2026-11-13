@@ -24,11 +24,47 @@ export const viewport: Viewport = { width: 'device-width', initialScale: 1, them
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" dir="ltr" suppressHydrationWarning>
-      <body className={`${inter.variable} ${urduFont.variable} ${hindiFont.variable} ${bengaliFont.variable}`}>
-        <LanguageProvider>
-          {children}
-          <FloatingChatWidget />
-        </LanguageProvider>
+      <head>
+        <link rel="icon" type="image/jpeg" href="/logo.jpg" />
+        <link rel="shortcut icon" type="image/jpeg" href="/logo.jpg" />
+        <link rel="apple-touch-icon" href="/logo.jpg" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Crimson+Text:wght@400;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body
+        className={`${inter.className} ${urduFont.variable} ${hindiFont.variable} ${bengaliFont.variable}`}
+      >
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-18183422041"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-3PR6CCF0MV"
+          strategy="afterInteractive"
+        />
+        <Script id="google-tag-manager" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'AW-18183422041');
+            gtag('config', 'G-3PR6CCF0MV');
+          `}
+        </Script>
+        <ThemeProvider>
+          <LanguageProvider>
+            <ParticleBackground />
+            <TopBanner />
+            {children}
+            <FloatingChatWidget />
+          </LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -17,7 +17,7 @@ export default function ParticleBackground() {
     let height = (canvas.height = window.innerHeight);
 
     const particles: Particle[] = [];
-    const maxParticles = width < 768 ? 40 : 100; // Fewer particles on mobile for better performance
+    const maxParticles = width < 768 ? 24 : 58; // Keep the ambient field lightweight on all devices
     const connectionDistance = 120;
     const mouse = { x: -9999, y: -9999, radius: 150 };
 
@@ -61,7 +61,7 @@ export default function ParticleBackground() {
         const isLight = document.documentElement.classList.contains('light');
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = isLight ? 'rgba(0, 136, 204, 0.6)' : 'rgba(0, 212, 255, 0.6)';
+        ctx.fillStyle = isLight ? 'rgba(49, 94, 255, 0.34)' : 'rgba(0, 212, 255, 0.6)';
         ctx.fill();
       }
     }
@@ -93,7 +93,7 @@ export default function ParticleBackground() {
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = isLight ? `rgba(0, 168, 95, ${alpha})` : `rgba(0, 255, 136, ${alpha})`;
+            ctx.strokeStyle = isLight ? `rgba(109, 53, 239, ${alpha})` : `rgba(0, 255, 136, ${alpha})`;
             ctx.lineWidth = 0.8;
             ctx.stroke();
           }
