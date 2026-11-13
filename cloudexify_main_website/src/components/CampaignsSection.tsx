@@ -30,14 +30,6 @@ function IconCheckCircle({ size = 18, color = '#34A853' }: { size?: number; colo
   );
 }
 
-function IconStar({ size = 18, color = '#1A73E8' }: { size?: number; color?: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill={color} stroke={color} strokeWidth="1" aria-hidden style={{ flexShrink: 0 }}>
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-    </svg>
-  );
-}
-
 function IconArrowRight({ size = 18, color = 'currentColor' }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -305,7 +297,7 @@ export default function CampaignsSection() {
               }}
             >
               <div style={{ fontSize: 12, color: '#66758A' }}>{t('campaigns.website.price.label')}</div>
-              <div style={{ fontSize: 22, fontWeight: 900, color: '#1A73E8' }}>1,500 PKR / year</div>
+              <div style={{ fontSize: 22, fontWeight: 900, color: '#1A73E8' }}>PKR 349 / month</div>
               <div style={{ fontSize: 12, color: '#66758A' }}>{t('campaigns.website.price.suffix')}</div>
             </div>
 
@@ -342,135 +334,41 @@ export default function CampaignsSection() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="campaign-card campaign-card--intern"
+            className="campaign-card campaign-card--intern campaign-card--coming-soon"
+            aria-label="Internship programme coming soon"
             style={{
               position: 'relative',
+              display: 'flex',
+              minHeight: 420,
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              textAlign: 'center',
               background: '#FFFFFF',
               border: '1px solid rgba(26,115,232,0.22)',
               borderRadius: 24,
               padding: 40,
               overflow: 'hidden',
-              transition: 'all 0.3s ease',
             }}
           >
-            <div
-              aria-hidden
-              style={{
-                position: 'absolute',
-                top: -20,
-                right: -20,
-                pointerEvents: 'none',
-              }}
-            >
-              <IconGraduationCap size={160} color="rgba(26,115,232,0.05)" />
+            <div aria-hidden style={{ position: 'absolute', top: -18, right: -18, opacity: 0.06, pointerEvents: 'none' }}>
+              <IconGraduationCap size={180} color="#1A73E8" />
             </div>
-
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: 24,
-                position: 'relative',
-              }}
-            >
-              <div
-                style={{
-                  width: 52,
-                  height: 52,
-                  background: 'rgba(26,115,232,0.08)',
-                  border: '1px solid rgba(26,115,232,0.25)',
-                  borderRadius: 14,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <IconGraduationCap size={26} color="#1A73E8" />
-              </div>
-              <span
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  background: 'rgba(26,115,232,0.08)',
-                  border: '1px solid #1A73E8',
-                  color: '#1A73E8',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  padding: '4px 10px',
-                  borderRadius: 20,
-                  letterSpacing: 1,
-                }}
-              >
-                <PulsingDot color="#1A73E8" />
-                {t('campaigns.intern.badge')}
-              </span>
+            <div style={{ width: 64, height: 64, display: 'grid', placeItems: 'center', borderRadius: 18, background: '#EEF5FF', color: '#1A73E8', marginBottom: 24 }}>
+              <IconGraduationCap size={32} color="#1A73E8" />
             </div>
-
-            <h3 style={{ fontSize: 26, fontWeight: 800, color: 'var(--cx-ink)', marginBottom: 8, position: 'relative' }}>
-              {t('campaigns.intern.title')}
+            <span style={{ color: '#1A73E8', fontSize: 12, fontWeight: 800, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 14 }}>
+              CLOUDExIFY INTERNSHIP
+            </span>
+            <h3 style={{ fontSize: 28, fontWeight: 850, color: 'var(--cx-ink)', margin: '0 0 12px' }}>
+              Coming Soon
             </h3>
-            <p
-              style={{
-                fontSize: 15,
-                color: '#53647B',
-                lineHeight: 1.6,
-                marginBottom: 28,
-                position: 'relative',
-              }}
-            >
-              {t('campaigns.intern.subtitle')}
+            <p style={{ maxWidth: 340, fontSize: 15, color: '#53647B', lineHeight: 1.7, margin: 0 }}>
+              Next batch announcing soon. Follow Cloudexify for the official announcement.
             </p>
-
-            <div style={{ marginBottom: 32, position: 'relative' }}>
-              <FeatureItem icon={<IconStar />} title={t('campaigns.intern.f1')} subtitle={t('campaigns.intern.f1.sub')} />
-              <FeatureItem icon={<IconStar />} title={t('campaigns.intern.f2')} subtitle={t('campaigns.intern.f2.sub')} />
-              <FeatureItem icon={<IconStar />} title={t('campaigns.intern.f3')} subtitle={t('campaigns.intern.f3.sub')} />
-              <FeatureItem icon={<IconStar />} title={t('campaigns.intern.f4')} subtitle={t('campaigns.intern.f4.sub')} />
-            </div>
-
-            <div
-              style={{
-                background: 'rgba(26,115,232,0.05)',
-                border: '1px solid rgba(26,115,232,0.16)',
-                borderRadius: 12,
-                padding: 16,
-                marginBottom: 28,
-                position: 'relative',
-              }}
-            >
-              <div style={{ fontSize: 12, color: '#66758A', marginBottom: 8 }}>{t('campaigns.intern.reward.title')}</div>
-              <div style={{ fontSize: 16, fontWeight: 800, color: '#1A73E8', marginBottom: 4 }}>{t('campaigns.intern.reward1')}</div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#53647B' }}>{t('campaigns.intern.reward2')}</div>
-            </div>
-
-            <a
-              href="https://internship.cloudexify.site"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="campaign-cta campaign-cta--gold"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                width: '100%',
-                padding: 16,
-                background: 'linear-gradient(135deg, #1A73E8 0%, #155DB8 100%)',
-                borderRadius: 14,
-                color: '#0D1B2A',
-                fontSize: 15,
-                fontWeight: 700,
-                textDecoration: 'none',
-                boxShadow: '0 8px 32px rgba(26,115,232,0.18)',
-                transition: 'all 0.3s ease',
-                position: 'relative',
-              }}
-            >
-              {t('campaigns.intern.cta')}
-              <IconArrowRight size={18} color="#0D1B2A" />
-            </a>
+            <span style={{ marginTop: 28, padding: '9px 16px', borderRadius: 999, background: '#EEF5FF', color: '#1A73E8', fontSize: 12, fontWeight: 750 }}>
+              NEXT BATCH ANNOUNCING
+            </span>
           </motion.article>
         </div>
 
