@@ -147,7 +147,7 @@ export default function LanguageToggle({ inline = false }: LanguageToggleProps) 
         }}
       >
         <span style={{ fontSize: '16px' }}>{current.flag}</span>
-        <span style={{ color: current.labelColor ?? 'white' }}>{current.label}</span>
+        <span style={{ color: current.labelColor ?? '#526078' }}>{current.label}</span>
         <span
           style={{
             fontSize: '10px',
@@ -169,7 +169,7 @@ export default function LanguageToggle({ inline = false }: LanguageToggleProps) 
             top: 'calc(100% + 8px)',
             ...(isRtl ? { left: 0, right: 'auto' } : { right: 0, left: 'auto' }),
             zIndex: 9999,
-            minWidth: 160,
+            minWidth: 184,
             maxWidth: 'calc(100vw - 24px)',
             padding: 8,
             borderRadius: 12,

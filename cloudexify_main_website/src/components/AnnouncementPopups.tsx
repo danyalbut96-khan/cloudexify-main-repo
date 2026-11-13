@@ -90,7 +90,7 @@ export default function AnnouncementPopups() {
     position: 'fixed',
     bottom: 24,
     width: 300,
-    background: 'rgba(10,22,40,0.97)',
+    background: '#FFFFFF',
     borderRadius: 16,
     backdropFilter: 'blur(20px)',
     overflow: 'hidden',
@@ -149,7 +149,7 @@ export default function AnnouncementPopups() {
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: 'rgba(255,255,255,0.4)',
+                    color: '#66758A',
                     fontSize: 18,
                     cursor: 'pointer',
                     lineHeight: 1,
@@ -161,7 +161,7 @@ export default function AnnouncementPopups() {
               <div style={{ marginBottom: 10 }}>
                 <div
                   style={{
-                    color: 'white',
+                    color: 'var(--cx-ink)',
                     fontSize: 15,
                     fontWeight: 700,
                   }}
@@ -192,7 +192,7 @@ export default function AnnouncementPopups() {
                     key={key}
                     style={{
                       fontSize: 11,
-                      color: 'rgba(255,255,255,0.5)',
+                      color: '#53647B',
                     }}
                   >
                     {t(key)}
@@ -202,12 +202,17 @@ export default function AnnouncementPopups() {
               <div
                 style={{
                   fontSize: 11,
-                  color: 'rgba(255,255,255,0.35)',
+                  color: '#66758A',
                   fontStyle: 'italic',
                   marginBottom: 14,
                 }}
               >
                 {t('popup.website.note')}
+              </div>
+              <div className="popup-hosting-price" aria-label={t('popup.website.price') + ' — ' + t('popup.website.term')}>
+                <strong>PKR 349</strong><span>/ month</span>
+                <small>{t('popup.website.price')}</small>
+                <small>{t('popup.website.term')}</small>
               </div>
               <a
                 href="https://client.cloudexify.site"
@@ -220,7 +225,7 @@ export default function AnnouncementPopups() {
                   textAlign: 'center',
                   background: 'linear-gradient(135deg,#1A73E8,#0D47A1)',
                   borderRadius: 10,
-                  color: 'white',
+                  color: 'var(--cx-ink)',
                   fontSize: 13,
                   fontWeight: 700,
                   textDecoration: 'none',
@@ -247,7 +252,7 @@ export default function AnnouncementPopups() {
               ...popupBaseStyle,
               right: 24,
               zIndex: 9998,
-              border: '1px solid #FBBC04',
+              border: '1px solid #1A73E8',
               boxShadow:
                 '0 0 0 1px rgba(251,188,4,0.2),' +
                 '0 20px 60px rgba(0,0,0,0.5),' +
@@ -257,7 +262,7 @@ export default function AnnouncementPopups() {
             <div
               style={{
                 height: 3,
-                background: 'linear-gradient(90deg,#FBBC04,#FF6B35)',
+                background: 'linear-gradient(90deg,#1A73E8,#FF6B35)',
               }}
             />
             <div style={{ padding: 16 }}>
@@ -272,7 +277,7 @@ export default function AnnouncementPopups() {
                 <span
                   style={{
                     fontSize: 11,
-                    color: '#FBBC04',
+                    color: '#1A73E8',
                     fontWeight: 700,
                     letterSpacing: 1,
                   }}
@@ -285,7 +290,7 @@ export default function AnnouncementPopups() {
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: 'rgba(255,255,255,0.4)',
+                    color: '#66758A',
                     fontSize: 18,
                     cursor: 'pointer',
                     lineHeight: 1,
@@ -297,7 +302,7 @@ export default function AnnouncementPopups() {
               <div style={{ marginBottom: 10 }}>
                 <div
                   style={{
-                    color: 'white',
+                    color: 'var(--cx-ink)',
                     fontSize: 15,
                     fontWeight: 700,
                   }}
@@ -306,7 +311,7 @@ export default function AnnouncementPopups() {
                 </div>
                 <div
                   style={{
-                    color: 'white',
+                    color: 'var(--cx-ink)',
                     fontSize: 17,
                     fontWeight: 800,
                   }}
@@ -327,7 +332,7 @@ export default function AnnouncementPopups() {
                     key={key}
                     style={{
                       fontSize: 11,
-                      color: 'rgba(255,255,255,0.65)',
+                      color: '#53647B',
                     }}
                   >
                     {t(key)}
@@ -355,7 +360,7 @@ export default function AnnouncementPopups() {
                 <span
                   style={{
                     fontSize: 11,
-                    color: '#FBBC04',
+                    color: '#1A73E8',
                   }}
                 >
                   {t('popup.intern.closing')}
@@ -370,7 +375,7 @@ export default function AnnouncementPopups() {
                   width: '100%',
                   padding: '11px',
                   textAlign: 'center',
-                  background: 'linear-gradient(135deg,#FBBC04,#F57C00)',
+                  background: 'linear-gradient(135deg,#1A73E8,#155DB8)',
                   borderRadius: 10,
                   color: '#0D1B2A',
                   fontSize: 13,

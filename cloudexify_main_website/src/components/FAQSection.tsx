@@ -16,7 +16,7 @@ const faqKeys = [
 export default function FAQSection() {
   const { t, lang } = useLang();
   const isRtl = isRtlLanguage(lang);
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const toggle = (i: number) => {
     setOpenIndex((prev) => (prev === i ? null : i));
@@ -50,7 +50,7 @@ export default function FAQSection() {
                 </span>
                 <span
                   style={{
-                    color: openIndex === i ? '#00ff88' : '#00d4ff',
+                    color: openIndex === i ? '#258746' : '#1A73E8',
                     fontSize: 20,
                     fontWeight: 300,
                     flexShrink: 0,

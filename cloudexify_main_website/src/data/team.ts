@@ -38,7 +38,7 @@ export const teamMembers: TeamMember[] = [
     certifications: ['AI Agents — Simplilearn, 2026', 'No-Code AI Agent Building — Simplilearn, 2026'],
     image: '/images/team/team-member-1-majid-khan.png',
     imageAlt: 'Muhammad Majid Khan — Co-Founder and CEO of Cloudexify',
-    roleBadgeColor: '#00ff88',
+    roleBadgeColor: '#1A73E8',
   },
   {
     id: 2,
@@ -60,7 +60,7 @@ export const teamMembers: TeamMember[] = [
     ],
     image: '/images/team/team-member-2-shayan-abbas.png',
     imageAlt: 'Shayan Abbas — Co-Founder and Chairman of Cloudexify',
-    roleBadgeColor: '#00d4ff',
+    roleBadgeColor: '#1A73E8',
   },
   {
     id: 3,
@@ -82,6 +82,6 @@ export const teamMembers: TeamMember[] = [
     ],
     image: '/images/team/team-member-3-mustafa-hussain.png',
     imageAlt: 'Mustafa Hussain — Co-Founder and COO of Cloudexify',
-    roleBadgeColor: '#ff8800',
+    roleBadgeColor: '#1A73E8',
   },
 ];

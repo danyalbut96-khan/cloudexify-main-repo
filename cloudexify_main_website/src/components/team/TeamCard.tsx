@@ -90,7 +90,7 @@ export default function TeamCard({ member, index }: TeamCardProps) {
         className="team-card-badge"
         style={{
           background: member.roleBadgeColor,
-          color: '#0a0e1a',
+          color: '#FFFFFF',
         }}
       >
         {t(roleKeys[member.id] || 'team.role.ceo')}

@@ -103,15 +103,15 @@ export const servicesData = {
       { title: 'Monitoring & Maintenance', desc: 'Tracking AI performance and improving over time.' }
     ],
     useCases: [
-      { title: 'Customer support', icon: '🎧', desc: 'Automated 24/7 intelligent agents.' },
+      { title: 'Customer support', icon: '🎧', desc: 'AI-assisted support and request-routing workflows.' },
       { title: 'Content generation', icon: '✍️', desc: 'Automated writing and image creation.' },
       { title: 'Data analysis', icon: '📈', desc: 'Extracting insights from unstructured data.' },
       { title: 'Process automation', icon: '⚙️', desc: 'Automating repetitive manual tasks.' }
     ],
     examples: noExamples,
     faqs: [
-      { q: 'Is my data secure when using AI APIs?', a: 'Yes, we use enterprise API tiers that guarantee zero data retention for model training.' },
-      { q: 'Which AI models do you use?', a: 'We are model-agnostic, choosing the best fit (Claude, GPT-4, Llama) for your specific use case.' },
+      { q: 'Is my data secure when using AI APIs?', a: 'Data handling depends on the selected provider, account tier and configuration. We review these settings and align the integration with your privacy requirements.' },
+      { q: 'Which AI models do you use?', a: 'We evaluate available hosted and open-source models against your use case, quality needs, privacy requirements and operating budget.' },
       { q: 'Can the AI learn from my custom data?', a: 'Yes, we use Retrieval-Augmented Generation (RAG) to ground the AI in your company knowledge base.' }
     ],
     pricing: 'Request a tailored quote',
@@ -120,7 +120,7 @@ export const servicesData = {
   'saas-development': {
     title: 'SaaS Development',
     heroSubtitle: 'Complete software-as-a-service solutions from concept to recurring revenue.',
-    overview: 'Building a successful SaaS requires more than just good code; it requires rock-solid architecture, seamless billing, and excellent user management. We build secure, scalable, and feature-rich SaaS platforms that are ready to handle thousands of concurrent users.',
+    overview: 'Building a successful SaaS requires more than just good code; it requires rock-solid architecture, seamless billing, and excellent user management. We build secure, scalable, and feature-rich SaaS platforms that are designed to support growth as usage and business requirements evolve.',
     features: [
       'Multi-tenant Architecture',
       'User Authentication',
@@ -148,9 +148,9 @@ export const servicesData = {
     ],
     examples: noExamples,
     faqs: [
-      { q: 'Do you integrate payment gateways?', a: 'Yes, we heavily utilize Stripe for complex subscription and usage-based billing models.' },
-      { q: 'How do you ensure tenant data isolation?', a: 'We use Row Level Security (RLS) in Supabase/PostgreSQL to guarantee strict data boundaries.' },
-      { q: 'Can the SaaS scale to millions of users?', a: 'Yes, our cloud-native architectures are designed to auto-scale infinitely.' }
+      { q: 'Do you integrate payment gateways?', a: 'We can integrate a suitable payment provider based on your target markets, billing model and compliance requirements.' },
+      { q: 'How do you ensure tenant data isolation?', a: 'We implement tenant isolation at the application and database layers, using controls such as PostgreSQL Row Level Security where appropriate.' },
+      { q: 'Can the platform scale as our business grows?', a: 'We plan for growth, but real capacity depends on workload, infrastructure, database design and budget. We can test and scale the system in measured stages.' }
     ],
     pricing: 'Request a tailored quote',
     relatedServiceIds: ['web-development', 'cloud-devops']
@@ -187,8 +187,8 @@ export const servicesData = {
     examples: noExamples,
     faqs: [
       { q: 'Do you handle the database design?', a: 'Yes, we architect highly optimized relational (SQL) or NoSQL databases based on your needs.' },
-      { q: 'Will I own the source code?', a: 'Absolutely. Upon project completion and payment, 100% of the IP and code belongs to you.' },
-      { q: 'What happens if we need to scale later?', a: 'Our architectures use decoupled components (like separate APIs and Frontends) to allow easy vertical and horizontal scaling.' }
+      { q: 'Will I own the source code?', a: 'Source-code ownership, licensing and handover terms are agreed in the project contract before work begins.' },
+      { q: 'What happens if we need to scale later?', a: 'We design modular architectures so capacity and components can be expanded as traffic, data and business needs grow.' }
     ],
     pricing: 'Request a tailored quote',
     relatedServiceIds: ['api-development', 'web-development']
@@ -225,8 +225,8 @@ export const servicesData = {
     examples: noExamples,
     faqs: [
       { q: 'Which cloud providers do you work with?', a: 'We primarily work with AWS, Vercel, and Supabase, but also handle Google Cloud and Azure.' },
-      { q: 'Can you lower our AWS bill?', a: 'Yes, we perform architectural audits that often reduce cloud hosting costs by 30-50%.' },
-      { q: 'Do you offer 24/7 monitoring?', a: 'We set up automated alerting (PagerDuty, Slack) so your team is instantly notified of any anomalies.' }
+      { q: 'Can you lower our AWS bill?', a: 'We review infrastructure usage and architecture, then recommend cost optimizations. Actual savings depend on the existing setup.' },
+      { q: 'Do you offer 24/7 monitoring?', a: 'We can configure monitoring and alerting integrations so the right people are notified when defined issues occur.' }
     ],
     pricing: 'Request a tailored quote',
     relatedServiceIds: ['saas-development', 'full-stack-development']
@@ -283,7 +283,7 @@ export const servicesData = {
       'Team Training',
       'Roadmap Planning'
     ],
-    techStack: ['Architecture Design', 'System Audits', 'Agile Methodologies', 'Cloud Strategy', 'Security Best Practices'],
+    techStack: ['AWS', 'Vercel', 'Supabase', 'PostgreSQL', 'GitHub Actions'],
     process: [
       { title: 'Initial Consultation', desc: 'Understanding your business goals and challenges.' },
       { title: 'Assessment & Analysis', desc: 'Deep dive into your codebase or architecture plans.' },

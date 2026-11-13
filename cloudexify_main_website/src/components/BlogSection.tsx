@@ -58,10 +58,10 @@ const posts: BlogPost[] = [
 ];
 
 const categoryColors: Record<string, string> = {
-  'Web Development': '#00ff88',
-  'AI Solutions': '#00d4ff',
-  'Mobile Apps': '#a78bfa',
-  'SaaS': '#fb923c',
+  'Web Development': '#258746',
+  'AI Solutions': '#155DB8',
+  'Mobile Apps': '#6C3AE8',
+  'SaaS': '#A85D10',
 };
 
 export default function BlogSection() {
