@@ -54,7 +54,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
   }).filter((s): s is { slug: string; data: NonNullable<ReturnType<typeof getSafeService>> } => !!s.data);
 
   return (
-    <main>
+    <main className="inner-page service-detail-page">
       <Navbar />
 
       {/* 1. Hero Section */}
@@ -180,23 +180,24 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
          </div>
       </section>
 
-      {/* 6. Real-World Examples */}
-      <section style={{ padding: '80px 0', background: 'transparent' }}>
-        <div className="container-section">
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <h2 style={{ fontSize: 32, fontWeight: 800, color: 'var(--text-primary)' }}>{t('services.realWorldExamples')}</h2>
+      {service.examples.length > 0 && (
+        <section style={{ padding: '80px 0', background: 'transparent' }}>
+          <div className="container-section">
+            <div style={{ textAlign: 'center', marginBottom: 48 }}>
+              <h2 style={{ fontSize: 32, fontWeight: 800 }}>{t('services.realWorldExamples')}</h2>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 32 }}>
+              {service.examples.map(ex => (
+                <div key={ex.name} className="project-card" style={{ padding: '32px' }}>
+                  <h3 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>{ex.name}</h3>
+                  <p style={{ fontSize: 15, lineHeight: 1.7, marginBottom: 20 }}>{ex.desc}</p>
+                  <div style={{ color: 'var(--cx-blue)', fontSize: 13, fontWeight: 600 }}>{t('services.technologiesLabel')}{ex.tech}</div>
+                </div>
+              ))}
+            </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 32 }}>
-            {service.examples.map(ex => (
-              <div key={ex.name} className="project-card" style={{ padding: '32px' }}>
-                <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>{ex.name}</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.7, marginBottom: 20 }}>{ex.desc}</p>
-                <div style={{ color: 'var(--accent-green)', fontSize: 13, fontWeight: 600 }}>{t('services.technologiesLabel')}{ex.tech}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 7. Use Cases / Industries */}
       <section style={{ padding: '80px 0', background: 'rgba(26,58,82,0.2)' }}>

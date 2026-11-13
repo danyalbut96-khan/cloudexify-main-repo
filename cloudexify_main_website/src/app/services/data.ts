@@ -1,3 +1,7 @@
+type ServiceExample = { name: string; desc: string; tech: string };
+
+const noExamples: ServiceExample[] = [];
+
 export const servicesData = {
   'web-development': {
     title: 'Web Development',
@@ -28,16 +32,13 @@ export const servicesData = {
       { title: 'Corporate websites', icon: '🏢', desc: 'Professional brand presences.' },
       { title: 'Web portals', icon: '🌐', desc: 'Secure member and client portals.' }
     ],
-    examples: [
-      { name: 'E-commerce Platform', desc: 'A headless commerce solution serving 10k+ daily users.', tech: 'Next.js, Stripe, Supabase' },
-      { name: 'SaaS Dashboard', desc: 'B2B analytics dashboard with real-time data visualization.', tech: 'React, Tailwind, Node.js' }
-    ],
+    examples: noExamples,
     faqs: [
       { q: 'How long does a typical web project take?', a: 'Depending on complexity, between 4 to 12 weeks.' },
       { q: 'Do you provide post-launch support?', a: 'Yes, we offer ongoing maintenance and support packages.' },
       { q: 'Is SEO included?', a: 'Yes, all our Next.js applications are built with technical SEO best practices.' }
     ],
-    pricing: 'Starting from $5,000',
+    pricing: 'Request a tailored quote',
     relatedServiceIds: ['full-stack-development', 'api-development', 'saas-development']
   },
   'mobile-app-development': {
@@ -69,16 +70,13 @@ export const servicesData = {
       { title: 'Health & Fitness', icon: '❤️', desc: 'Workout and wellness trackers.' },
       { title: 'Social networking', icon: '💬', desc: 'Community and chat platforms.' }
     ],
-    examples: [
-      { name: 'Fitness Tracker', desc: 'A cross-platform app for tracking daily workouts with offline support.', tech: 'React Native, SQLite' },
-      { name: 'Delivery App', desc: 'Real-time driver tracking and ordering system.', tech: 'Expo, Firebase, Maps API' }
-    ],
+    examples: noExamples,
     faqs: [
       { q: 'Do you develop for both iOS and Android?', a: 'Yes, we use React Native to deploy to both platforms from a single codebase.' },
       { q: 'Can you help publish to the App Stores?', a: 'Absolutely, we handle the entire submission process for Apple and Google.' },
       { q: 'How do you handle app updates?', a: 'We use Over-The-Air (OTA) updates where possible to bypass store reviews for minor fixes.' }
     ],
-    pricing: 'Starting from $8,000',
+    pricing: 'Request a tailored quote',
     relatedServiceIds: ['api-development', 'cloud-devops']
   },
   'ai-solutions': {
@@ -105,27 +103,24 @@ export const servicesData = {
       { title: 'Monitoring & Maintenance', desc: 'Tracking AI performance and improving over time.' }
     ],
     useCases: [
-      { title: 'Customer support', icon: '🎧', desc: 'Automated 24/7 intelligent agents.' },
+      { title: 'Customer support', icon: '🎧', desc: 'AI-assisted support and request-routing workflows.' },
       { title: 'Content generation', icon: '✍️', desc: 'Automated writing and image creation.' },
       { title: 'Data analysis', icon: '📈', desc: 'Extracting insights from unstructured data.' },
       { title: 'Process automation', icon: '⚙️', desc: 'Automating repetitive manual tasks.' }
     ],
-    examples: [
-      { name: 'Support AI Agent', desc: 'Resolved 60% of tier-1 support tickets automatically.', tech: 'OpenAI, Node.js, Zendesk API' },
-      { name: 'Document Parser', desc: 'Extracted structured data from thousands of PDFs.', tech: 'Python, Claude API, OCR' }
-    ],
+    examples: noExamples,
     faqs: [
-      { q: 'Is my data secure when using AI APIs?', a: 'Yes, we use enterprise API tiers that guarantee zero data retention for model training.' },
-      { q: 'Which AI models do you use?', a: 'We are model-agnostic, choosing the best fit (Claude, GPT-4, Llama) for your specific use case.' },
+      { q: 'Is my data secure when using AI APIs?', a: 'Data handling depends on the selected provider, account tier and configuration. We review these settings and align the integration with your privacy requirements.' },
+      { q: 'Which AI models do you use?', a: 'We evaluate available hosted and open-source models against your use case, quality needs, privacy requirements and operating budget.' },
       { q: 'Can the AI learn from my custom data?', a: 'Yes, we use Retrieval-Augmented Generation (RAG) to ground the AI in your company knowledge base.' }
     ],
-    pricing: 'Starting from $6,000',
+    pricing: 'Request a tailored quote',
     relatedServiceIds: ['saas-development', 'full-stack-development']
   },
   'saas-development': {
     title: 'SaaS Development',
     heroSubtitle: 'Complete software-as-a-service solutions from concept to recurring revenue.',
-    overview: 'Building a successful SaaS requires more than just good code; it requires rock-solid architecture, seamless billing, and excellent user management. We build secure, scalable, and feature-rich SaaS platforms that are ready to handle thousands of concurrent users.',
+    overview: 'Building a successful SaaS requires more than just good code; it requires rock-solid architecture, seamless billing, and excellent user management. We build secure, scalable, and feature-rich SaaS platforms that are designed to support growth as usage and business requirements evolve.',
     features: [
       'Multi-tenant Architecture',
       'User Authentication',
@@ -151,16 +146,13 @@ export const servicesData = {
       { title: 'HR software', icon: '👥', desc: 'Recruiting and employee management.' },
       { title: 'Analytics dashboards', icon: '📊', desc: 'Financial and data reporting.' }
     ],
-    examples: [
-      { name: 'Marketing SaaS', desc: 'A platform handling 1M+ emails daily with Stripe billing.', tech: 'Next.js, AWS, Stripe' },
-      { name: 'HR Platform', desc: 'Multi-tenant system managing payroll and leave.', tech: 'React, Node.js, Supabase' }
-    ],
+    examples: noExamples,
     faqs: [
-      { q: 'Do you integrate payment gateways?', a: 'Yes, we heavily utilize Stripe for complex subscription and usage-based billing models.' },
-      { q: 'How do you ensure tenant data isolation?', a: 'We use Row Level Security (RLS) in Supabase/PostgreSQL to guarantee strict data boundaries.' },
-      { q: 'Can the SaaS scale to millions of users?', a: 'Yes, our cloud-native architectures are designed to auto-scale infinitely.' }
+      { q: 'Do you integrate payment gateways?', a: 'We can integrate a suitable payment provider based on your target markets, billing model and compliance requirements.' },
+      { q: 'How do you ensure tenant data isolation?', a: 'We implement tenant isolation at the application and database layers, using controls such as PostgreSQL Row Level Security where appropriate.' },
+      { q: 'Can the platform scale as our business grows?', a: 'We plan for growth, but real capacity depends on workload, infrastructure, database design and budget. We can test and scale the system in measured stages.' }
     ],
-    pricing: 'Starting from $15,000',
+    pricing: 'Request a tailored quote',
     relatedServiceIds: ['web-development', 'cloud-devops']
   },
   'full-stack-development': {
@@ -192,16 +184,13 @@ export const servicesData = {
       { title: 'Marketplace platforms', icon: '🏪', desc: 'Multi-vendor e-commerce.' },
       { title: 'Social networks', icon: '🌐', desc: 'High-interaction community sites.' }
     ],
-    examples: [
-      { name: 'B2B Marketplace', desc: 'A complex multi-vendor platform with escrow payments.', tech: 'Next.js, Node.js, PostgreSQL' },
-      { name: 'Logistics ERP', desc: 'Custom enterprise tool managing fleets and inventory.', tech: 'React, Express, AWS' }
-    ],
+    examples: noExamples,
     faqs: [
       { q: 'Do you handle the database design?', a: 'Yes, we architect highly optimized relational (SQL) or NoSQL databases based on your needs.' },
-      { q: 'Will I own the source code?', a: 'Absolutely. Upon project completion and payment, 100% of the IP and code belongs to you.' },
-      { q: 'What happens if we need to scale later?', a: 'Our architectures use decoupled components (like separate APIs and Frontends) to allow easy vertical and horizontal scaling.' }
+      { q: 'Will I own the source code?', a: 'Source-code ownership, licensing and handover terms are agreed in the project contract before work begins.' },
+      { q: 'What happens if we need to scale later?', a: 'We design modular architectures so capacity and components can be expanded as traffic, data and business needs grow.' }
     ],
-    pricing: 'Starting from $10,000',
+    pricing: 'Request a tailored quote',
     relatedServiceIds: ['api-development', 'web-development']
   },
   'cloud-devops': {
@@ -233,16 +222,13 @@ export const servicesData = {
       { title: 'Automated testing', icon: '⚙️', desc: 'Continuous integration pipelines.' },
       { title: 'Cost optimization', icon: '💰', desc: 'Reducing bloated cloud bills.' }
     ],
-    examples: [
-      { name: 'AWS Migration', desc: 'Moved a legacy monolithic app to scalable AWS microservices.', tech: 'AWS ECS, Terraform' },
-      { name: 'CI/CD Pipeline', desc: 'Reduced deployment times from hours to minutes.', tech: 'GitHub Actions, Docker' }
-    ],
+    examples: noExamples,
     faqs: [
       { q: 'Which cloud providers do you work with?', a: 'We primarily work with AWS, Vercel, and Supabase, but also handle Google Cloud and Azure.' },
-      { q: 'Can you lower our AWS bill?', a: 'Yes, we perform architectural audits that often reduce cloud hosting costs by 30-50%.' },
-      { q: 'Do you offer 24/7 monitoring?', a: 'We set up automated alerting (PagerDuty, Slack) so your team is instantly notified of any anomalies.' }
+      { q: 'Can you lower our AWS bill?', a: 'We review infrastructure usage and architecture, then recommend cost optimizations. Actual savings depend on the existing setup.' },
+      { q: 'Do you offer 24/7 monitoring?', a: 'We can configure monitoring and alerting integrations so the right people are notified when defined issues occur.' }
     ],
-    pricing: 'Starting from $3,000',
+    pricing: 'Request a tailored quote',
     relatedServiceIds: ['saas-development', 'full-stack-development']
   },
   'api-development': {
@@ -274,16 +260,13 @@ export const servicesData = {
       { title: 'Public APIs', icon: '🌍', desc: 'Developer ecosystems and SaaS integrations.' },
       { title: 'Payment gateways', icon: '💳', desc: 'Secure transactional endpoints.' }
     ],
-    examples: [
-      { name: 'Public GraphQL API', desc: 'A developer API serving millions of requests daily.', tech: 'GraphQL, Node.js, Redis' },
-      { name: 'Payment Webhooks', desc: 'Secure, resilient webhook receivers for Stripe.', tech: 'Express, Serverless' }
-    ],
+    examples: noExamples,
     faqs: [
       { q: 'REST or GraphQL?', a: 'It depends on your needs. REST is great for standard resource access, while GraphQL excels in complex, data-heavy UIs.' },
       { q: 'How do you secure APIs?', a: 'We use JWTs, OAuth2, API Keys, Rate Limiting, and strict CORS policies.' },
       { q: 'Do you provide API documentation?', a: 'Yes, we provide interactive Swagger/OpenAPI documentation for all REST endpoints.' }
     ],
-    pricing: 'Starting from $4,000',
+    pricing: 'Request a tailored quote',
     relatedServiceIds: ['mobile-app-development', 'full-stack-development']
   },
   'technical-consultation': {
@@ -300,7 +283,7 @@ export const servicesData = {
       'Team Training',
       'Roadmap Planning'
     ],
-    techStack: ['Architecture Design', 'System Audits', 'Agile Methodologies', 'Cloud Strategy', 'Security Best Practices'],
+    techStack: ['AWS', 'Vercel', 'Supabase', 'PostgreSQL', 'GitHub Actions'],
     process: [
       { title: 'Initial Consultation', desc: 'Understanding your business goals and challenges.' },
       { title: 'Assessment & Analysis', desc: 'Deep dive into your codebase or architecture plans.' },
@@ -315,16 +298,13 @@ export const servicesData = {
       { title: 'Legacy modernization', icon: '🔄', desc: 'Planning safe transitions from old tech.' },
       { title: 'Technical due diligence', icon: '🔍', desc: 'Auditing code for investors or acquisitions.' }
     ],
-    examples: [
-      { name: 'Startup MVP Architecture', desc: 'Designed a cost-effective, scalable stack that saved $50k in initial dev costs.', tech: 'Consultation' },
-      { name: 'Performance Audit', desc: 'Identified database bottlenecks that sped up load times by 400%.', tech: 'Code Review, DB Analysis' }
-    ],
+    examples: noExamples,
     faqs: [
       { q: 'Do you offer Fractional CTO services?', a: 'Yes, we can act as your part-time technical leadership.' },
       { q: 'Will you review our existing code?', a: 'Absolutely. We conduct thorough security, performance, and best-practice audits.' },
       { q: 'How is consulting billed?', a: 'We offer hourly rates, project-based flat fees, or monthly retainers depending on engagement depth.' }
     ],
-    pricing: 'Starting from $1,000 / week',
+    pricing: 'Request a tailored quote',
     relatedServiceIds: ['cloud-devops', 'web-development']
   }
 };

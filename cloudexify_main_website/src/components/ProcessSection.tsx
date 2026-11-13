@@ -3,13 +3,13 @@
 import { useLang, isRtlLanguage } from '@/lib/LanguageContext';
 
 const processSteps = [
-  { icon: '🎯', titleKey: 'process.step1.title', descKey: 'process.step1.desc', duration: '1-2 weeks' },
-  { icon: '🏗️', titleKey: 'process.step2.title', descKey: 'process.step2.desc', duration: '1-2 weeks' },
-  { icon: '🎨', titleKey: 'process.step3.title', descKey: 'process.step3.desc', duration: '2-3 weeks' },
-  { icon: '💻', titleKey: 'process.step4.title', descKey: 'process.step4.desc', duration: '4-12 weeks' },
-  { icon: '✅', titleKey: 'process.step5.title', descKey: 'process.step5.desc', duration: '1-2 weeks' },
-  { icon: '🚀', titleKey: 'process.step6.title', descKey: 'process.step6.desc', duration: '1 week' },
-  { icon: '🛠️', titleKey: 'process.step7.title', descKey: 'process.step7.desc', duration: 'Ongoing' },
+  { icon: '🎯', titleKey: 'process.step1.title', descKey: 'process.step1.desc' },
+  { icon: '🏗️', titleKey: 'process.step2.title', descKey: 'process.step2.desc' },
+  { icon: '🎨', titleKey: 'process.step3.title', descKey: 'process.step3.desc' },
+  { icon: '💻', titleKey: 'process.step4.title', descKey: 'process.step4.desc' },
+  { icon: '✅', titleKey: 'process.step5.title', descKey: 'process.step5.desc' },
+  { icon: '🚀', titleKey: 'process.step6.title', descKey: 'process.step6.desc' },
+  { icon: '🛠️', titleKey: 'process.step7.title', descKey: 'process.step7.desc' },
 ];
 
 export default function ProcessSection() {
@@ -46,8 +46,8 @@ export default function ProcessSection() {
                   width: 60,
                   height: 60,
                   borderRadius: 16,
-                  background: 'rgba(0, 212, 255, 0.1)',
-                  border: '1px solid rgba(0, 212, 255, 0.2)',
+                  background: '#EEF5FF',
+                  border: '1px solid #DCE8F8',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -56,7 +56,7 @@ export default function ProcessSection() {
                   marginTop: 4,
                 }}
               >
-                {step.icon}
+                {String(idx + 1).padStart(2, '0')}
               </div>
               <div style={{ flex: 1, textAlign: isRtl ? 'right' : 'left' }}>
                 <div
@@ -83,18 +83,7 @@ export default function ProcessSection() {
                               : `Step ${idx + 1}: `}
                     {t(step.titleKey)}
                   </h3>
-                  <span
-                    style={{
-                      fontSize: 12,
-                      background: 'rgba(0, 255, 136, 0.1)',
-                      color: 'var(--accent-green)',
-                      padding: '4px 10px',
-                      borderRadius: 12,
-                      fontWeight: 600,
-                    }}
-                  >
-                    ⏱ {step.duration}
-                  </span>
+
                 </div>
                 <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: 15, lineHeight: 1.6 }}>
                   {t(step.descKey)}

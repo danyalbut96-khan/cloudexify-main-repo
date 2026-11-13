@@ -214,7 +214,7 @@ export default function ContactSection() {
               {/* Full Name */}
               <div style={{ marginBottom: 20 }}>
                 <label htmlFor="from_name" className="form-label">
-                  {t('contact.form.name')} <span style={{ color: '#00ff88' }}>*</span>
+                  {t('contact.form.name')} <span style={{ color: '#258746' }}>*</span>
                 </label>
                 <input
                   id="from_name"
@@ -228,7 +228,7 @@ export default function ContactSection() {
                   aria-describedby={errors.from_name ? 'name-error' : undefined}
                 />
                 {errors.from_name && (
-                  <p id="name-error" style={{ color: '#ff6b6b', fontSize: 12, marginTop: 6 }} role="alert">
+                  <p id="name-error" style={{ color: '#B42318', fontSize: 12, marginTop: 6 }} role="alert">
                     {errors.from_name}
                   </p>
                 )}
@@ -237,7 +237,7 @@ export default function ContactSection() {
               {/* Email */}
               <div style={{ marginBottom: 20 }}>
                 <label htmlFor="from_email" className="form-label">
-                  {t('contact.form.email')} <span style={{ color: '#00ff88' }}>*</span>
+                  {t('contact.form.email')} <span style={{ color: '#258746' }}>*</span>
                 </label>
                 <input
                   id="from_email"
@@ -251,7 +251,7 @@ export default function ContactSection() {
                   aria-describedby={errors.from_email ? 'email-error' : undefined}
                 />
                 {errors.from_email && (
-                  <p id="email-error" style={{ color: '#ff6b6b', fontSize: 12, marginTop: 6 }} role="alert">
+                  <p id="email-error" style={{ color: '#B42318', fontSize: 12, marginTop: 6 }} role="alert">
                     {errors.from_email}
                   </p>
                 )}
@@ -276,7 +276,7 @@ export default function ContactSection() {
               {/* Project Type */}
               <div style={{ marginBottom: 20 }}>
                 <label htmlFor="project_type" className="form-label">
-                  {t('contact.form.projecttype')} <span style={{ color: '#00ff88' }}>*</span>
+                  {t('contact.form.projecttype')} <span style={{ color: '#258746' }}>*</span>
                 </label>
                 <select
                   id="project_type"
@@ -300,7 +300,7 @@ export default function ContactSection() {
                   <option value="Other">Other</option>
                 </select>
                 {errors.project_type && (
-                  <p id="type-error" style={{ color: '#ff6b6b', fontSize: 12, marginTop: 6 }} role="alert">
+                  <p id="type-error" style={{ color: '#B42318', fontSize: 12, marginTop: 6 }} role="alert">
                     {errors.project_type}
                   </p>
                 )}
@@ -309,7 +309,7 @@ export default function ContactSection() {
               {/* Description */}
               <div style={{ marginBottom: 20 }}>
                 <label htmlFor="project_description" className="form-label">
-                  {t('contact.form.description')} <span style={{ color: '#00ff88' }}>*</span>
+                  {t('contact.form.description')} <span style={{ color: '#258746' }}>*</span>
                 </label>
                 <textarea
                   id="project_description"
@@ -324,7 +324,7 @@ export default function ContactSection() {
                   style={{ resize: 'vertical', minHeight: 100 }}
                 />
                 {errors.project_description && (
-                  <p id="desc-error" style={{ color: '#ff6b6b', fontSize: 12, marginTop: 6 }} role="alert">
+                  <p id="desc-error" style={{ color: '#B42318', fontSize: 12, marginTop: 6 }} role="alert">
                     {errors.project_description}
                   </p>
                 )}
@@ -422,7 +422,7 @@ export default function ContactSection() {
                     background: message.includes('✅')
                       ? 'rgba(0, 255, 136, 0.1)'
                       : 'rgba(255, 107, 107, 0.1)',
-                    color: message.includes('✅') ? '#00ff88' : '#ff6b6b',
+                    color: message.includes('✅') ? '#258746' : '#B42318',
                     border: `1px solid ${
                       message.includes('✅')
                         ? 'rgba(0, 255, 136, 0.3)'
@@ -496,7 +496,7 @@ export default function ContactSection() {
                     <a
                       href={item.href}
                       style={{
-                        color: '#00d4ff',
+                        color: '#1A73E8',
                         fontSize: 15,
                         fontWeight: 600,
                         textDecoration: 'none',

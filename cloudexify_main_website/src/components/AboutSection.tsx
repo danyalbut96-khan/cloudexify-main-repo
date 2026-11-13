@@ -7,10 +7,9 @@ export default function AboutSection() {
   const isRtl = isRtlLanguage(lang);
 
   const stats = [
-    { value: '6', labelKey: 'about.stat.projects', icon: '🚀' },
-    { value: '4+', labelKey: 'about.stat.clients', icon: '😊' },
-    { value: '1+', labelKey: 'about.stat.experience', icon: '📅' },
-    { value: 'team', labelKey: 'about.stat.team', icon: '👥' },
+    { value: '6', label: t('about.stat.projects'), icon: '↗' },
+    { value: '3', label: t('about.stat.founders'), icon: '◎' },
+    { value: '8', label: t('about.stat.languages'), icon: '文' },
   ];
 
   const values = [
@@ -37,8 +36,8 @@ export default function AboutSection() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: 64,
+            gridTemplateColumns: 'minmax(0, 1.1fr) minmax(280px, .9fr)',
+            gap: 48,
             alignItems: 'center',
             marginBottom: 80,
           }}
@@ -67,7 +66,7 @@ export default function AboutSection() {
                 style={{
                   background: 'rgba(0, 255, 136, 0.1)',
                   border: '1px solid rgba(0, 255, 136, 0.25)',
-                  color: '#00ff88',
+                  color: 'var(--cx-green)',
                   padding: '8px 18px',
                   borderRadius: 50,
                   fontSize: 13,
@@ -80,7 +79,7 @@ export default function AboutSection() {
                 style={{
                   background: 'rgba(0, 212, 255, 0.1)',
                   border: '1px solid rgba(0, 212, 255, 0.25)',
-                  color: '#00d4ff',
+                  color: 'var(--cx-blue)',
                   padding: '8px 18px',
                   borderRadius: 50,
                   fontSize: 13,
@@ -92,25 +91,22 @@ export default function AboutSection() {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12 }}>
             {stats.map((s) => (
-              <div key={s.labelKey} className="stat-card">
+              <div key={s.label} className="stat-card">
                 <div style={{ fontSize: 28, marginBottom: 8 }}>{s.icon}</div>
                 <div
                   style={{
                     fontSize: 34,
                     fontWeight: 900,
-                    background: 'linear-gradient(135deg, #00ff88, #00d4ff)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
+                    color: 'var(--cx-blue)',
                     letterSpacing: '-1px',
                     marginBottom: 6,
                   }}
                 >
                   {s.value}
                 </div>
-                <div style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 500 }}>{t(s.labelKey)}</div>
+                <div style={{ fontSize: 13, color: 'var(--cx-muted)', fontWeight: 600 }}>{s.label}</div>
               </div>
             ))}
           </div>

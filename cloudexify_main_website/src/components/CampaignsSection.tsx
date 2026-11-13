@@ -30,7 +30,7 @@ function IconCheckCircle({ size = 18, color = '#34A853' }: { size?: number; colo
   );
 }
 
-function IconStar({ size = 18, color = '#FBBC04' }: { size?: number; color?: string }) {
+function IconStar({ size = 18, color = '#1A73E8' }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill={color} stroke={color} strokeWidth="1" aria-hidden style={{ flexShrink: 0 }}>
       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -66,7 +66,7 @@ function IconMapPin({ size = 18, color = '#1A73E8' }: { size?: number; color?: s
   );
 }
 
-function IconZap({ size = 18, color = '#FBBC04' }: { size?: number; color?: string }) {
+function IconZap({ size = 18, color = '#1A73E8' }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
@@ -87,8 +87,8 @@ function FeatureItem({
     <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 12 }}>
       {icon}
       <div>
-        <div style={{ fontWeight: 700, color: '#FFFFFF', fontSize: 14 }}>{title}</div>
-        <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12 }}>{subtitle}</div>
+        <div style={{ fontWeight: 700, color: 'var(--cx-ink)', fontSize: 14 }}>{title}</div>
+        <div style={{ color: '#66758A', fontSize: 12 }}>{subtitle}</div>
       </div>
     </div>
   );
@@ -106,12 +106,12 @@ export default function CampaignsSection() {
       className="campaigns-section"
       style={{
         padding: '80px 0',
-        background: 'linear-gradient(135deg, #060E18 0%, #0D1B2A 50%, #060E18 100%)',
+        background: '#F7F8FF',
         position: 'relative',
         zIndex: 1,
         overflow: 'hidden',
-        borderTop: '1px solid rgba(255,255,255,0.06)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        borderTop: '1px solid #E3E9F2',
+        borderBottom: '1px solid #E3E9F2',
       }}
       aria-labelledby="campaigns-heading"
     >
@@ -141,7 +141,7 @@ export default function CampaignsSection() {
           width: 320,
           height: 320,
           borderRadius: '50%',
-          background: '#FBBC04',
+          background: '#1A73E8',
           filter: 'blur(80px)',
           opacity: 0.06,
           pointerEvents: 'none',
@@ -154,7 +154,7 @@ export default function CampaignsSection() {
             style={{
               fontSize: 12,
               letterSpacing: 3,
-              color: 'rgba(255,255,255,0.4)',
+              color: '#66758A',
               textTransform: 'uppercase',
               marginBottom: 12,
             }}
@@ -167,7 +167,7 @@ export default function CampaignsSection() {
               fontSize: 'clamp(28px, 4vw, 42px)',
               fontWeight: 900,
               margin: 0,
-              background: 'linear-gradient(135deg, #FFFFFF 0%, #90CAF9 100%)',
+              background: 'linear-gradient(135deg, var(--cx-ink) 0%, #90CAF9 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -178,7 +178,7 @@ export default function CampaignsSection() {
           <p
             style={{
               fontSize: 16,
-              color: 'rgba(255,255,255,0.5)',
+              color: '#53647B',
               maxWidth: 500,
               margin: '12px auto 0',
               textAlign: 'center',
@@ -208,7 +208,7 @@ export default function CampaignsSection() {
             className="campaign-card campaign-card--website"
             style={{
               position: 'relative',
-              background: 'rgba(255,255,255,0.02)',
+              background: '#FFFFFF',
               border: '1px solid rgba(26,115,232,0.3)',
               borderRadius: 24,
               padding: 40,
@@ -272,13 +272,13 @@ export default function CampaignsSection() {
               </span>
             </div>
 
-            <h3 style={{ fontSize: 26, fontWeight: 800, color: '#FFFFFF', marginBottom: 8, position: 'relative' }}>
+            <h3 style={{ fontSize: 26, fontWeight: 800, color: 'var(--cx-ink)', marginBottom: 8, position: 'relative' }}>
               {t('campaigns.website.title')}
             </h3>
             <p
               style={{
                 fontSize: 15,
-                color: 'rgba(255,255,255,0.6)',
+                color: '#53647B',
                 lineHeight: 1.6,
                 marginBottom: 28,
                 position: 'relative',
@@ -304,9 +304,9 @@ export default function CampaignsSection() {
                 position: 'relative',
               }}
             >
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{t('campaigns.website.price.label')}</div>
+              <div style={{ fontSize: 12, color: '#66758A' }}>{t('campaigns.website.price.label')}</div>
               <div style={{ fontSize: 22, fontWeight: 900, color: '#1A73E8' }}>1,500 PKR / year</div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{t('campaigns.website.price.suffix')}</div>
+              <div style={{ fontSize: 12, color: '#66758A' }}>{t('campaigns.website.price.suffix')}</div>
             </div>
 
             <a
@@ -345,8 +345,8 @@ export default function CampaignsSection() {
             className="campaign-card campaign-card--intern"
             style={{
               position: 'relative',
-              background: 'rgba(255,255,255,0.02)',
-              border: '1px solid rgba(251,188,4,0.3)',
+              background: '#FFFFFF',
+              border: '1px solid rgba(26,115,232,0.22)',
               borderRadius: 24,
               padding: 40,
               overflow: 'hidden',
@@ -362,7 +362,7 @@ export default function CampaignsSection() {
                 pointerEvents: 'none',
               }}
             >
-              <IconGraduationCap size={160} color="rgba(251,188,4,0.06)" />
+              <IconGraduationCap size={160} color="rgba(26,115,232,0.05)" />
             </div>
 
             <div
@@ -378,24 +378,24 @@ export default function CampaignsSection() {
                 style={{
                   width: 52,
                   height: 52,
-                  background: 'rgba(251,188,4,0.12)',
-                  border: '1px solid rgba(251,188,4,0.4)',
+                  background: 'rgba(26,115,232,0.08)',
+                  border: '1px solid rgba(26,115,232,0.25)',
                   borderRadius: 14,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
-                <IconGraduationCap size={26} color="#FBBC04" />
+                <IconGraduationCap size={26} color="#1A73E8" />
               </div>
               <span
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
-                  background: 'rgba(251,188,4,0.12)',
-                  border: '1px solid #FBBC04',
-                  color: '#FBBC04',
+                  background: 'rgba(26,115,232,0.08)',
+                  border: '1px solid #1A73E8',
+                  color: '#1A73E8',
                   fontSize: 11,
                   fontWeight: 700,
                   padding: '4px 10px',
@@ -403,18 +403,18 @@ export default function CampaignsSection() {
                   letterSpacing: 1,
                 }}
               >
-                <PulsingDot color="#FBBC04" />
+                <PulsingDot color="#1A73E8" />
                 {t('campaigns.intern.badge')}
               </span>
             </div>
 
-            <h3 style={{ fontSize: 26, fontWeight: 800, color: '#FFFFFF', marginBottom: 8, position: 'relative' }}>
+            <h3 style={{ fontSize: 26, fontWeight: 800, color: 'var(--cx-ink)', marginBottom: 8, position: 'relative' }}>
               {t('campaigns.intern.title')}
             </h3>
             <p
               style={{
                 fontSize: 15,
-                color: 'rgba(255,255,255,0.6)',
+                color: '#53647B',
                 lineHeight: 1.6,
                 marginBottom: 28,
                 position: 'relative',
@@ -432,17 +432,17 @@ export default function CampaignsSection() {
 
             <div
               style={{
-                background: 'rgba(251,188,4,0.06)',
-                border: '1px solid rgba(251,188,4,0.2)',
+                background: 'rgba(26,115,232,0.05)',
+                border: '1px solid rgba(26,115,232,0.16)',
                 borderRadius: 12,
                 padding: 16,
                 marginBottom: 28,
                 position: 'relative',
               }}
             >
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>{t('campaigns.intern.reward.title')}</div>
-              <div style={{ fontSize: 16, fontWeight: 800, color: '#FBBC04', marginBottom: 4 }}>{t('campaigns.intern.reward1')}</div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: 'rgba(251,188,4,0.7)' }}>{t('campaigns.intern.reward2')}</div>
+              <div style={{ fontSize: 12, color: '#66758A', marginBottom: 8 }}>{t('campaigns.intern.reward.title')}</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: '#1A73E8', marginBottom: 4 }}>{t('campaigns.intern.reward1')}</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#53647B' }}>{t('campaigns.intern.reward2')}</div>
             </div>
 
             <a
@@ -457,13 +457,13 @@ export default function CampaignsSection() {
                 gap: 8,
                 width: '100%',
                 padding: 16,
-                background: 'linear-gradient(135deg, #FBBC04 0%, #F57C00 100%)',
+                background: 'linear-gradient(135deg, #1A73E8 0%, #155DB8 100%)',
                 borderRadius: 14,
                 color: '#0D1B2A',
                 fontSize: 15,
                 fontWeight: 700,
                 textDecoration: 'none',
-                boxShadow: '0 8px 32px rgba(251,188,4,0.25)',
+                boxShadow: '0 8px 32px rgba(26,115,232,0.18)',
                 transition: 'all 0.3s ease',
                 position: 'relative',
               }}
@@ -488,15 +488,15 @@ export default function CampaignsSection() {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <IconUsers />
-            <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>{t('campaigns.trust1')}</span>
+            <span style={{ fontSize: 14, color: '#53647B', fontWeight: 500 }}>{t('campaigns.trust1')}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <IconMapPin />
-            <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>{t('campaigns.trust2')}</span>
+            <span style={{ fontSize: 14, color: '#53647B', fontWeight: 500 }}>{t('campaigns.trust2')}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <IconZap />
-            <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>{t('campaigns.trust3')}</span>
+            <span style={{ fontSize: 14, color: '#53647B', fontWeight: 500 }}>{t('campaigns.trust3')}</span>
           </div>
         </div>
       </div>
@@ -541,17 +541,17 @@ export default function CampaignsSection() {
           box-shadow: 0 0 60px rgba(26,115,232,0.15);
         }
         .campaign-card--intern:hover {
-          border-color: #FBBC04 !important;
-          background: rgba(251,188,4,0.04) !important;
+          border-color: #1A73E8 !important;
+          background: rgba(26,115,232,0.04) !important;
           transform: translateY(-4px);
-          box-shadow: 0 0 60px rgba(251,188,4,0.1);
+          box-shadow: 0 0 60px rgba(26,115,232,0.08);
         }
         .campaign-cta--blue:hover {
           box-shadow: 0 8px 48px rgba(26,115,232,0.6) !important;
           transform: translateY(-1px);
         }
         .campaign-cta--gold:hover {
-          box-shadow: 0 8px 48px rgba(251,188,4,0.5) !important;
+          box-shadow: 0 8px 48px rgba(26,115,232,0.35) !important;
           transform: translateY(-1px);
         }
       `}</style>

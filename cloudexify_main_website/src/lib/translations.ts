@@ -11,15 +11,15 @@ const translationsBase: Record<string, { en: string; ur: string }> = {
 
   // ── TOP BANNER ───────────────────────
   'banner.text': {
-    en: '🌐 Free Website Campaign — client.cloudexify.site  |  🎓 Summer Internship 2026 — Apply Now!',
-    ur: '🌐 مفت ویب سائٹ کمپین — client.cloudexify.site  |  🎓 سمر انٹرنشپ 2026 — ابھی اپلائی کریں!',
+    en: '🌐 Free Website Campaign — client.cloudexify.site  |  🎓 Cloudexify Internship — Current Cohort',
+    ur: '🌐 مفت ویب سائٹ کمپین — client.cloudexify.site  |  🎓 کلاؤڈایکسفائی انٹرنشپ — موجودہ بیچ',
   },
   'banner.freewebsite': { en: 'Free Website Campaign', ur: 'مفت ویب سائٹ کمپین' },
-  'banner.internship': { en: 'Summer Internship 2026', ur: 'سمر انٹرنشپ 2026' },
+  'banner.internship': { en: 'Current Internship Cohort', ur: 'موجودہ انٹرنشپ بیچ' },
   'banner.apply': { en: 'Apply Now!', ur: 'ابھی اپلائی کریں!' },
   'banner.mobile': {
-    en: '🌐 Free Website — client.cloudexify.site  |  🎓 Internship 2026 — internship.cloudexify.site',
-    ur: '🌐 مفت ویب سائٹ — client.cloudexify.site  |  🎓 انٹرنشپ 2026 — internship.cloudexify.site',
+    en: '🌐 Free Website — client.cloudexify.site  |  🎓 Current Internship Cohort — internship.cloudexify.site',
+    ur: '🌐 مفت ویب سائٹ — client.cloudexify.site  |  🎓 موجودہ انٹرنشپ بیچ — internship.cloudexify.site',
   },
 
   // ── HERO ────────────────────────────
@@ -43,10 +43,10 @@ const translationsBase: Record<string, { en: string; ur: string }> = {
 
   // ── TECH STACK ───────────────────────
   'techstack.label': { en: 'Technology Stack', ur: 'ٹیکنالوجی اسٹیک' },
-  'techstack.title': { en: 'Tools We Master', ur: 'ہمارے ماہر ٹولز' },
+  'techstack.title': { en: 'Technologies We Work With', ur: 'وہ ٹیکنالوجیز جن کے ساتھ ہم کام کرتے ہیں' },
   'techstack.subtitle': {
-    en: 'Modern technologies we use to build world-class software.',
-    ur: 'عالمی معیار کے سافٹ ویئر بنانے کے لیے جدید ٹیکنالوجیز۔',
+    en: 'A practical selection of technologies chosen to fit each product, integration and delivery requirement.',
+    ur: 'ہر پروڈکٹ، انٹیگریشن اور ڈیلیوری کی ضرورت کے مطابق منتخب کردہ ٹیکنالوجیز۔',
   },
   'techstack.frontend': { en: 'Frontend', ur: 'فرنٹ اینڈ' },
   'techstack.backend': { en: 'Backend', ur: 'بیک اینڈ' },
@@ -119,10 +119,12 @@ const translationsBase: Record<string, { en: string; ur: string }> = {
   },
   'about.location': { en: '🇵🇰 Islamabad, Pakistan', ur: '🇵🇰 اسلام آباد، پاکستان' },
   'about.reach': { en: '🌍 Global Reach', ur: '🌍 عالمی رسائی' },
-  'about.stat.projects': { en: 'Projects Completed', ur: 'مکمل شدہ پروجیکٹس' },
+  'about.stat.projects': { en: 'Projects in our portfolio', ur: 'ہمارے پورٹ فولیو میں پروجیکٹس' },
   'about.stat.clients': { en: 'Happy Clients', ur: 'مطمئن کلائنٹس' },
   'about.stat.experience': { en: 'Years of Experience', ur: 'سال کا تجربہ' },
-  'about.stat.team': { en: 'Growing Team', ur: 'بڑھتی ہوئی ٹیم' },
+  'about.stat.team': { en: 'Co-founders', ur: 'شریک بانی' },
+  'about.stat.founders': { en: 'Co-founders', ur: 'شریک بانی' },
+  'about.stat.languages': { en: 'Website languages', ur: 'ویب سائٹ کی زبانیں' },
   'about.values.title': { en: 'Our Core Values', ur: 'ہماری بنیادی اقدار' },
   'about.values.subtitle': {
     en: 'The principles that guide everything we build',
@@ -294,11 +296,11 @@ const translationsBase: Record<string, { en: string; ur: string }> = {
   'campaigns.website.price.label': { en: 'Hosting plans from', ur: 'ہوسٹنگ پلانز' },
   'campaigns.website.price.suffix': { en: 'for a Landing Page', ur: 'لینڈنگ پیج کے لیے' },
   'campaigns.website.cta': { en: 'Get My Free Website', ur: 'مفت ویب سائٹ حاصل کریں' },
-  'campaigns.intern.badge': { en: 'APPLICATIONS OPEN', ur: 'درخواستیں کھلی ہیں' },
-  'campaigns.intern.title': { en: 'Summer Internship 2026', ur: 'سمر انٹرنشپ 2026' },
+  'campaigns.intern.badge': { en: 'CURRENT COHORT', ur: 'موجودہ بیچ' },
+  'campaigns.intern.title': { en: 'Cloudexify Internship Program', ur: 'Cloudexify انٹرنشپ پروگرام' },
   'campaigns.intern.subtitle': {
-    en: 'Learn Full Stack Web Development on real client projects. Earn a certificate and launch your career.',
-    ur: 'اصل کلائنٹ پروجیکٹس پر فل اسٹیک ویب ڈویلپمنٹ سیکھیں۔ سرٹیفکیٹ حاصل کریں اور اپنا کیریئر شروع کریں۔',
+    en: 'Explore the current Cloudexify internship cohort, its learning activities and project workflow through the internship portal.',
+    ur: 'کلاؤڈایکسفائی کے موجودہ انٹرنشپ بیچ، سیکھنے کی سرگرمیوں اور پروجیکٹ ورک فلو کی تفصیلات پورٹل پر دیکھیں۔',
   },
   'campaigns.intern.f1': { en: 'Real Client Projects', ur: 'اصل کلائنٹ پروجیکٹس' },
   'campaigns.intern.f1.sub': { en: '3 actual projects in 2 months', ur: '2 مہینوں میں 3 اصل پروجیکٹس' },
@@ -311,10 +313,10 @@ const translationsBase: Record<string, { en: string; ur: string }> = {
   'campaigns.intern.reward.title': { en: 'Top 5 Interns Win', ur: 'ٹاپ 5 انٹرنز جیتیں گے' },
   'campaigns.intern.reward1': { en: '🥇🥈 Part-Time Job', ur: '🥇🥈 پارٹ ٹائم نوکری' },
   'campaigns.intern.reward2': { en: '🥉4th 5th — Paid Projects', ur: '🥉 چوتھا پانچواں — پیڈ پروجیکٹس' },
-  'campaigns.intern.cta': { en: 'Apply for Internship', ur: 'انٹرنشپ کے لیے اپلائی کریں' },
-  'campaigns.trust1': { en: '6+ Businesses Served', ur: '+6 کاروبار خدمت میں' },
-  'campaigns.trust2': { en: 'Based in Pakistan 🇵🇰', ur: 'پاکستان میں قائم 🇵🇰' },
-  'campaigns.trust3': { en: '100% Remote & Free', ur: '100% ریموٹ اور مفت' },
+  'campaigns.intern.cta': { en: 'View Internship Portal', ur: 'انٹرنشپ پورٹل دیکھیں' },
+  'campaigns.trust1': { en: '3 Co-founders', ur: '3 شریک بانی' },
+  'campaigns.trust2': { en: 'Based in Islamabad, Pakistan', ur: 'اسلام آباد، پاکستان میں قائم' },
+  'campaigns.trust3': { en: '8 Website Languages', ur: 'ویب سائٹ کی 8 زبانیں' },
 
   // ── ANNOUNCEMENT POPUPS ─────────────
   'popup.website.label': { en: '🌐 FREE WEBSITE CAMPAIGN', ur: '🌐 مفت ویب سائٹ کمپین' },
@@ -324,6 +326,8 @@ const translationsBase: Record<string, { en: string; ur: string }> = {
   'popup.website.f2': { en: '✅ 7-Day Revisions', ur: '✅ 7 دن ترمیم' },
   'popup.website.f3': { en: '✅ Fast Delivery', ur: '✅ تیز ڈیلیوری' },
   'popup.website.note': { en: 'You only pay for hosting', ur: 'آپ صرف ہوسٹنگ ادا کریں' },
+  'popup.website.price': { en: 'Managed hosting starts at PKR 349/month', ur: 'مینجڈ ہوسٹنگ 349 روپے ماہانہ سے شروع' },
+  'popup.website.term': { en: 'Starter plan · 24-month minimum', ur: 'اسٹارٹر پلان · کم از کم 24 ماہ' },
   'popup.website.cta': { en: 'Get My Free Website →', ur: 'مفت ویب سائٹ حاصل کریں ←' },
   'popup.intern.label': { en: '🎓 SUMMER INTERNSHIP 2026', ur: '🎓 سمر انٹرنشپ 2026' },
   'popup.intern.title': { en: 'Launch Your Tech Career', ur: 'اپنا ٹیک کیریئر شروع کریں' },
