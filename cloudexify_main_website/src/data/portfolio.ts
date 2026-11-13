@@ -87,22 +87,7 @@ export const portfolioProjects: PortfolioProject[] = [
     image: '/images/portfolio/project-5-medi-finder.png.png',
     imageAlt:
       'AI-powered medicine information system interface with search functionality and structured medical data display',
-  },
-  {
-    id: 6,
-    title: 'Masjid Management System',
-    slug: 'masjid-management-system',
-    liveLink: 'https://masjid-lilac.vercel.app/',
-    techStack: ['Next.js', 'React', 'TypeScript', 'Supabase', 'PostgreSQL'],
-    description:
-      'Comprehensive masjid management platform for administrative control and community engagement. Features donation tracking, prayer timing display, donor database, community announcements, event scheduling, and admin dashboard.',
-    category: 'Management System',
-    categoryGroup: 'Management Systems',
-    status: 'Live',
-    image: '/images/portfolio/project-6-masjid-management.png.png',
-    imageAlt:
-      'Masjid management dashboard showing prayer times, donation tracking, and community announcements interface',
-  },
+  }
 ];
 
 export const categoryFilters = [
@@ -110,5 +95,4 @@ export const categoryFilters = [
   'SaaS / Web Apps',
   'Business Websites',
   'Healthcare',
-  'Management Systems',
 ];
